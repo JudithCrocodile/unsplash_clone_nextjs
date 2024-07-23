@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from 'next/link'
 import { Inter } from "next/font/google";
 import StarIcon from '@mui/icons-material/Star';
 import Icon from '@mui/material/Icon';
@@ -8,6 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const itemList = [
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -15,6 +17,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -22,6 +25,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -29,6 +33,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -36,6 +41,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -43,6 +49,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -50,6 +57,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -57,6 +65,7 @@ export default function Home() {
       stars: 5
     },
     {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -64,97 +73,7 @@ export default function Home() {
       stars: 5
     },
     {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'Beautiful flower',
-      descriptio: 'very beautiful flower in the park',
-      author: 'Anderson',
-      stars: 5
-    },
-    {
+      id: 0,
       img: 'https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'Beautiful flower',
       descriptio: 'very beautiful flower in the park',
@@ -167,9 +86,9 @@ export default function Home() {
     <main
       className={`flex min-h-screen flex-col items-center ${inter.className}`}
     >
-      <div className={"hero w-full px-16 py-24"}>
+      {/* <div className={"hero w-full px-16 py-24"}>
         <h1 className={'text-7xl'}>Yelp Plant</h1>
-      </div>
+      </div> */}
 
       
 
@@ -179,26 +98,30 @@ export default function Home() {
 
           {
             itemList.map((item, index) =>           
-            <li className={"item cursor-pointer"} key="index">
-              <div className={'mx-auto w-full'}>
-                <div className={"item__img w-full"} style={{backgroundImage: `url(${item.img})`, height: '200px'}}></div>
-                {/* <Image className={'item__img mx-auto object-cover'} width='100' height='200' style={{ width: '100%', height: 200 }} src="https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="flower"></Image> */}
-                <div className={"item__context text-left mt-4 text-xl"}>
-                  <p>{item.title}</p>
-                  <p className={'text-ellipsis overflow-hidden whitespace-nowrap text-base'}>{item.descriptio}</p>
-                  <div className="flex justify-between">
-                    <div className="flex items-center">
-                      <span className="mr-2"><StarIcon /></span>
-                      <span>{item.stars}</span>
-                      
+            <li className={"item cursor-pointer"} key={index}>
+              <Link href={`/detail/${item.id}`}>
+                  <div className={'mx-auto w-full'}>
+                    <div className={"item__img w-full"} style={{backgroundImage: `url(${item.img})`, height: '200px'}}></div>
+                    {/* <Image className={'item__img mx-auto object-cover'} width='100' height='200' style={{ width: '100%', height: 200 }} src="https://images.unsplash.com/photo-1476066522440-e1e84d4301bb?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="flower"></Image> */}
+                    <div className={"item__context text-left mt-4 text-xl"}>
+                      <p>{item.title}</p>
+                      <p className={'text-ellipsis overflow-hidden whitespace-nowrap text-base'}>{item.descriptio}</p>
+                      <div className="flex justify-between">
+                        <div className="flex items-center">
+                          <span className="mr-2"><StarIcon /></span>
+                          <span>{item.stars}</span>
+                          
+                          
+                        </div>
+                        <p  className={"text-right text-slate-200"}>{item.author}</p>
+                      </div>
                       
                     </div>
-                    <p  className={"text-right text-slate-200"}>{item.author}</p>
+      
                   </div>
-                  
-                </div>
-  
-              </div>
+              </Link>
+
+
               
             </li>)
           }
