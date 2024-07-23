@@ -20,8 +20,11 @@ export default function Home() {
             <label htmlFor="password">
                 <input id="password" name="password" />
             </label> 
+            <label htmlFor="repassword">
+                <input id="repassword" name="repassword" />
+            </label> 
 
-            <button>LOGIN</button>           
+            <button>Create Account</button>           
         </form>            
       </div>
 
