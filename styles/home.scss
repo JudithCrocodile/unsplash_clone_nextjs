@@ -1,0 +1,18 @@
+.hero {
+    background-image: url(https://images.unsplash.com/photo-1517495306984-f84210f9daa8?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+}
+
+.item {
+    &__img {
+        object-fit: cover;
+        background-size: 100%;
+        transition: all 300ms;
+        background-position: center;
+        filter: brightness(1);
+
+        &:hover{
+            background-size: 110%;
+            filter: brightness(0.8);
+        }
+    }
+}
