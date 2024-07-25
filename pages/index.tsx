@@ -9,7 +9,9 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {Button} from '@mui/material';
-import OperationBtn from '../components/operationBtn'
+import OperationLine from '../components/operationLine'
+import AuthorInfo from '../components/authorInfo'
+import PhotoList from '../components/photoList'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -126,54 +128,18 @@ export default function Home({ }) {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center ${inter.className}`}
+      
     >      
+    {/* <main
+      className={`flex min-h-screen flex-col items-center ${inter.className}`}
+    >       */}
       {/* <div className={"hero w-full px-16 py-24"}>
         <h1 className={'text-7xl'}>Yelp Plant</h1>
       </div> */}
 
       
 
-      <div className={'mt-20 pb-12 px-12 lg:px-24 px-6 w-full'}>
-        <h2 className={'mb-12 text-3xl'}>List</h2>
-        <ul className={'grid gap-3 gap-y-6 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1'}>
-
-          {
-            itemList.map((item, index) =>           
-            <li className={"item cursor-pointer"} key={index}>
-              <div onClick={(event)=>goToPhotoPage(event, item)}>
-                  <div className={'item__container mx-auto w-full'}>
-                    <div className={"item__img w-full"} style={{backgroundImage: `url(${item.img})`, height: '200px'}}></div>
-                    <div className={"item__context text-left text-xl"}>
-                      <div className="item__top">
-                        <div className="ml-auto w-fit">
-                          {/* {item.liked} */}
-                          <OperationBtn className={"item__favorite-btn"}>
-                            <FavoriteIcon />
-                          </OperationBtn>
-                        </div>
-                      </div>
-                      <div className="item__bottom">
-                      <div className={"item__author flex text-left items-center"}>
-                          <span>
-                            <Image className={'item__avatar rounded-full mx-auto object-cover'} width='30' height='30'  style={{ height: '30px'}} src={item.authorAavatar} alt="avatar"></Image>
-                          </span>
-                          <span className="ml-2">{item.author}</span>
-                        </div>
-                      </div>
-                      
-                    </div>
-      
-                  </div>
-              </div>
-
-
-              
-            </li>)
-          }
-        </ul>
-      </div>
-
+      <PhotoList></PhotoList>
       {photoId && <div><Photo></Photo></div>}
     
     </main>
