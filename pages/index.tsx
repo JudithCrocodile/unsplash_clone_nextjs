@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Inter } from "next/font/google";
 import StarIcon from '@mui/icons-material/Star';
 import Icon from '@mui/material/Icon';
+import OperationBtn from '../components/operationBtn'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -112,6 +113,9 @@ export default function Home() {
                           <span>{item.stars}</span>
                           
                           
+                          <OperationBtn className={"item__favorite-btn"}>
+                            <FavoriteIcon />
+                          </OperationBtn>
                         </div>
                         <p  className={"text-right text-slate-200"}>{item.author}</p>
                       </div>
