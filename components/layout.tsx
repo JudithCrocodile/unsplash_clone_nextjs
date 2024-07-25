@@ -6,9 +6,10 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Link from 'next/link'
 import MenuIcon from '@mui/icons-material/Menu';
+import OperationBtn from '../components/operationBtn'
 
 export default function Layout({ children }) {
-    const category = '';
+    const category = 0;
     const handleCategoryChange = ()=>{}
 
     return (
@@ -33,7 +34,7 @@ export default function Layout({ children }) {
                     
                 </div>
                 <div className={'new-img'}>
-                    <Button className="whitespace-nowrap" variant="outlined" sx={{ color: 'text.secondary', borderColor: 'text.secondary' }}>Submit an image</Button>
+                    <OperationBtn className="whitespace-nowrap">Submit an image</OperationBtn>
                 </div>
                 <div className={'notification'}>
                     <NotificationsIcon className="cursor-pointer"  fontSize="medium"  sx={{ color: 'text.secondary' }}></NotificationsIcon>

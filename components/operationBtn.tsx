@@ -15,6 +15,8 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   padding: '0 11px',
   height: '32px',
   transition: 'all 0.2s',
+  fontSize: '14px',
+  backgroundColor: 'white',
   '&:hover': {
     zIndex: 1,
     border: '1px solid #111',
