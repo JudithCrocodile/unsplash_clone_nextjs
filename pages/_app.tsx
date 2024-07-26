@@ -5,6 +5,7 @@ import '@/styles/all.scss'
 import type { AppProps } from "next/app";
 import Layout from '../components/layout'
 import Button from '@mui/material/Button';
+import '@/styles/login.scss'
 
 const theme = createTheme({
   palette: {

@@ -1,0 +1,27 @@
+.wdLeJ {
+    /* pointer-events: none; */
+    position: absolute;
+    stroke: #d1d1d1;
+    fill: none;
+    opacity: .8;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+
+.create-account{
+    &__block {
+        position: relative;
+        overflow: hidden;
+    }
+
+    &__curl-back-img {
+        bottom: -10px;
+        left: 4%;
+    }
+
+    &__arrow-back-img {
+        top: 0;
+        right: 5%;
+    }
+}
