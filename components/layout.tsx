@@ -52,29 +52,29 @@ export default function Layout({ children }) {
                             <SearchIcon></SearchIcon>
                         </div>
                         <Input placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
-                        <div className={'filter__sufix'}>
+                        {/* <div className={'filter__sufix'}>
                             <CenterFocusWeakIcon></CenterFocusWeakIcon>
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>
-                <div className={'new-img'}>
+                <div className={'new-img  hidden md:block'}>
                     <Link href={`/login`}>
                         <OperationBtn className="whitespace-nowrap">Log in</OperationBtn>
                     </Link>
                 </div>
-                <div className={'new-img'}>
+                <div className={'new-img hidden md:block'}>
                     <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
                 </div>
-                <div className={'notification'}>
+                <div className={'notification hidden md:block'}>
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
                 </div>
                 <div className={'user'}>
                     <AccountCircleIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}></AccountCircleIcon>
                 </div>
-                {/* <div className={'menu'}>
+                <div className={'menu'}>
                     <MenuIcon  className="cursor-pointer" fontSize="medium"  sx={{ 'color': 'text.secondary', '&:hover': 'text.primary' }}></MenuIcon>
-                </div> */}
+                </div>
 
             </div>
             {
