@@ -103,7 +103,7 @@ export default function Login() {
                 <div className="creat-account create-account__block py-10 border-slate-300 border border-solid flex items-center justify-center">
                     <p>Don’t have an account?</p>&nbsp;
                     <span>
-                        <Link className="underline text-slate-500 hover:text-slate-900" href={`/create-account`}>
+                        <Link className="underline text-slate-500 hover:text-slate-900" href={`/join`}>
                             Join
                         </Link>
                     </span>

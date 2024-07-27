@@ -5,7 +5,6 @@ import '@/styles/all.scss'
 import type { AppProps } from "next/app";
 import Layout from '../components/layout'
 import Button from '@mui/material/Button';
-import '@/styles/login.scss'
 
 const theme = createTheme({
   palette: {
@@ -16,15 +15,23 @@ const theme = createTheme({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <ThemeProvider theme={theme}>
-    
-      <Layout>
+  const getLayout = Component.getLayout ?? ((page) => <Layout>
 
-        <Component {...pageProps} />;
+   <Component {...pageProps} />;
         
-      </Layout>    
+  </Layout>  )
 
-    </ThemeProvider>
+  // return <ThemeProvider theme={theme}>
+    
+  //     <Layout>
+
+  //       <Component {...pageProps} />;
+        
+  //     </Layout>    
+
+  //   </ThemeProvider>
+
+  return <ThemeProvider theme={theme}>{getLayout(<Component {...pageProps} />)}</ThemeProvider>
   
 
   
