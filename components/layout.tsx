@@ -8,12 +8,22 @@ import Link from 'next/link'
 import MenuIcon from '@mui/icons-material/Menu';
 import OperationBtn from '../components/operationBtn'
 import { useRouter } from 'next/router'
-
-
+import UploadDialog from '../components/uploadDialog'
+import React, { useState } from 'react'
 
 
 
 export default function Layout({ children }) {
+    const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
+
+    console.log(isOpenUploadDialog)
+
+    const openUploadDialog = () => {
+        console.log('openUploadDialog')
+        setIsOpenUploadDialog(true);
+        console.log(isOpenUploadDialog)
+    }
+
     const category = 0;
     const handleCategoryChange = () => { }
 
@@ -21,6 +31,10 @@ export default function Layout({ children }) {
     console.log('router: ', router)
 
     const isLogin = router.pathname.includes('login')
+
+    const closeUploadDialog = () => {
+        setIsOpenUploadDialog(false);
+      };
 
 
     return (
@@ -50,7 +64,7 @@ export default function Layout({ children }) {
                     </Link>
                 </div>
                 <div className={'new-img'}>
-                    <OperationBtn line className="whitespace-nowrap">Submit an image</OperationBtn>
+                    <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
                 </div>
                 <div className={'notification'}>
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
@@ -83,6 +97,9 @@ export default function Layout({ children }) {
 
 
             <main>{children}</main>
+
+            isOpenUploadDialog: {isOpenUploadDialog}
+            <UploadDialog open={isOpenUploadDialog} handleClose={closeUploadDialog}></UploadDialog>
         </div>
     )
 }

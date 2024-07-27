@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 
 
 
-export default function OperationBtn({ children, className, ...props }) {
+export default function OperationBtn({ onClick, children, className, ...props  }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
         position: 'relative',
@@ -38,6 +38,7 @@ export default function OperationBtn({ children, className, ...props }) {
     <OperationBtn
         focusRipple
         className={`${className}`}
+        onClick={onClick}
     >
         <main>{children}</main>
     </OperationBtn>
