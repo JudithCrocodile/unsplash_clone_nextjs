@@ -23,5 +23,7 @@ export type TypeUser = {
     email: String,
     password: String,
     created_at: String,
-    updated_at: String,
+    updated_at: String,  
+    firstName: String,
+    lastName: String,
 }

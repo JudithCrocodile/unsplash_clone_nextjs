@@ -28,7 +28,6 @@ export default function Layout({ children }) {
     const handleCategoryChange = () => { }
 
     const router = useRouter()
-    console.log('router: ', router)
 
     const isLogin = router.pathname.includes('login')
 
@@ -98,7 +97,6 @@ export default function Layout({ children }) {
 
             <main>{children}</main>
 
-            isOpenUploadDialog: {isOpenUploadDialog}
             <UploadDialog open={isOpenUploadDialog} handleClose={closeUploadDialog}></UploadDialog>
         </div>
     )

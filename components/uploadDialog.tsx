@@ -36,7 +36,6 @@ export default function UploadDialog({ open, handleClose }) {
         <main
             className={``}
         >
-            uploadDialog: {open}
 
             <Dialog
                 className={`upload-dialog`}

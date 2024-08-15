@@ -3,8 +3,43 @@ import Image from 'next/image';
 import Link from 'next/link'
 import ButtonBase from '@mui/material/ButtonBase';
 import { styled } from '@mui/material/styles';
+import React, { useState, ChangeEvent } from 'react';
+import useSWR from 'swr';
+import { useRouter } from 'next/router'
+
+const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Login() {
+    const router = useRouter()
+    
+    const [loginForm, setLoginForm] = useState({
+        email: '',
+        password: '',
+    })
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setLoginForm((prevUser) => ({
+            ...prevUser,
+            [name]: value
+        }))
+    };
+
+    async function login() {
+
+        fetcher('/user/login',
+            {
+                method: 'POST',
+                body: JSON.stringify(loginForm)
+            }
+        ).then(res=>{
+            if (res.status === 200) {
+                localStorage.setItem('token', res.token);
+            }         
+            router.push(`/`, undefined, { shallow: true })   
+        })
+
+    }
 
     const LoginBtn = styled(ButtonBase)(({ theme }) => ({
         background: 'linear-gradient(to top, #0000 50%, #ffffff1a 100%), #111',
@@ -54,26 +89,29 @@ export default function Login() {
                         className="block flex flex-col gap-6"
                     >
                         <FormControl fullWidth className="m-0" sx={{
-                                    '&.MuiFormControl-root': {
-                                        margin: '0',
-                                    }
-                                }} >
+                            '&.MuiFormControl-root': {
+                                margin: '0',
+                            }
+                        }} >
                             <label htmlFor="email" className="mb-2">Email</label>
                             {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
-                            <OutlinedInput 
+                            <OutlinedInput
+                                value={loginForm.email}
+                                name="email"
+                                onChange={handleChange}
                                 sx={{
                                     height: '40px',
                                     '&.Mui-focused': {
                                         border: '1px solid #111'
                                     }
-                                }} 
-                            id="email" aria-describedby="email" />
+                                }}
+                                id="email" aria-describedby="email" />
                         </FormControl>
-                        <FormControl fullWidth  sx={{
-                                    '&.MuiFormControl-root': {
-                                        margin: '0',
-                                    }
-                                }}>
+                        <FormControl fullWidth sx={{
+                            '&.MuiFormControl-root': {
+                                margin: '0',
+                            }
+                        }}>
                             <div className="flex justify-between">
                                 <label htmlFor="password" className="mb-2">Password</label>
                                 <FormHelperText id="forget-password-text" className="mr-0">
@@ -81,17 +119,21 @@ export default function Login() {
                                     </button>
                                 </FormHelperText>
                             </div>
-                            <OutlinedInput 
+                            <OutlinedInput
+                                value={loginForm.password}
+                                name="password"
+                                type="password"
+                                onChange={handleChange}
                                 sx={{
                                     height: '40px',
                                     '&.Mui-focused': {
                                         border: '1px solid #111'
                                     }
-                                }} 
-                             id="password" aria-describedby="password" />
+                                }}
+                                id="password" aria-describedby="password" />
 
                         </FormControl>
-                        <LoginBtn>Login</LoginBtn>
+                        <LoginBtn onClick={login}>Login</LoginBtn>
                     </Box>
 
 

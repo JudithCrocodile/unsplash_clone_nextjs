@@ -5,9 +5,40 @@ import ButtonBase from '@mui/material/ButtonBase';
 import { styled } from '@mui/material/styles';
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import EmptyLayout from '../components/emptyLayout'
-import type { ReactElement } from 'react'
+import type { ReactElement, ChangeEvent } from 'react'
+import React, { useState, } from 'react';
+
+const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Join() {
+  const [createForm, setCreateForm] = useState({
+    email: '',
+    password: '',
+    userName: '',
+    firstName: '',
+    lastName: '',
+  })
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setCreateForm((prevUser) => ({
+      ...prevUser,
+      [name]: value
+    }))
+  };
+
+  function submit() {
+    fetcher('/user/create-user',
+      {
+        method: 'POST',
+        body: JSON.stringify(createForm)
+      }
+    ).then(res => {
+      if (res.status === 200) {
+        localStorage.setItem('token', res.token);
+      }
+    })
+  }
 
   const LoginBtn = styled(ButtonBase)(({ theme }) => ({
     background: 'linear-gradient(to top, #0000 50%, #ffffff1a 100%), #111',
@@ -39,7 +70,7 @@ export default function Join() {
         </div>
         <div className='md:my-auto'>
           <h2 className={'mb-4 font-bold leading-tight text-3xl md:text-5xl'}>Creation starts here</h2>
-          <p className={'text-lg leading-7 md:text-2xl md:leading-10'}>Access 5,825,610 free, high-resolution photos you can’t find anywhere else.</p>          
+          <p className={'text-lg leading-7 md:text-2xl md:leading-10'}>Access 5,825,610 free, high-resolution photos you can’t find anywhere else.</p>
         </div>
 
         <div className='hidden md:block'>
@@ -65,18 +96,21 @@ export default function Join() {
             autoComplete="off"
             className="block flex flex-col gap-6"
           >
-            <div className="flex gap-6" style={{margin: 0}}>
+            <div className="flex gap-6" style={{ margin: 0 }}>
               <FormControl fullWidth className="m-0" >
                 <label htmlFor="email" className="mb-2">First name</label>
                 {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                 <OutlinedInput
+                  value={createForm.firstName}
+                  name="firstName"
+                  onChange={handleChange}
                   sx={{
                     height: '40px',
                     '&.Mui-focused': {
                       border: '1px solid #111'
                     }
                   }}
-                  id="email" aria-describedby="email" />
+                  id="firstName" aria-describedby="firstName" />
               </FormControl>
               <FormControl fullWidth className="m-0" sx={{
                 '&.MuiFormControl-root': {
@@ -86,13 +120,16 @@ export default function Join() {
                 <label htmlFor="email" className="mb-2">Last name</label>
                 {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                 <OutlinedInput
+                  value={createForm.lastName}
+                  name="lastName"
+                  onChange={handleChange}
                   sx={{
                     height: '40px',
                     '&.Mui-focused': {
                       border: '1px solid #111'
                     }
                   }}
-                  id="email" aria-describedby="email" />
+                  id="lastName" aria-describedby="lastName" />
               </FormControl>
             </div>
             <FormControl fullWidth className="m-0" sx={{
@@ -104,11 +141,14 @@ export default function Join() {
                 <label htmlFor="email" className="mb-2">Email</label>
                 <FormHelperText id="forget-password-text" className="mr-0">
                   <span>(only letters, numbers and underscores)</span>
-                </FormHelperText>                
+                </FormHelperText>
               </div>
 
               {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
               <OutlinedInput
+                value={createForm.email}
+                name="email"
+                onChange={handleChange}
                 sx={{
                   height: '40px',
                   '&.Mui-focused': {
@@ -125,13 +165,16 @@ export default function Join() {
               <label htmlFor="username" className="mb-2">Username</label>
               {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
               <OutlinedInput
+                value={createForm.userName}
+                name="userName"
+                onChange={handleChange}
                 sx={{
                   height: '40px',
                   '&.Mui-focused': {
                     border: '1px solid #111'
                   }
                 }}
-                id="username" aria-describedby="username" />
+                id="userName" aria-describedby="userName" />
             </FormControl>
             <FormControl fullWidth sx={{
               '&.MuiFormControl-root': {
@@ -146,6 +189,9 @@ export default function Join() {
                 </FormHelperText>
               </div>
               <OutlinedInput
+                value={createForm.password}
+                name="password"
+                onChange={handleChange}
                 sx={{
                   height: '40px',
                   '&.Mui-focused': {
@@ -155,7 +201,7 @@ export default function Join() {
                 id="password" aria-describedby="password" />
 
             </FormControl>
-            <LoginBtn>Join</LoginBtn>
+            <LoginBtn onClick={submit}>Join</LoginBtn>
             {/* <p>By joining, you agree to the Terms and Privacy Policy.</p> */}
           </Box>
 
@@ -170,6 +216,6 @@ export default function Join() {
 
 Join.getLayout = function getLayout(page: ReactElement) {
   return (
-      <EmptyLayout>{page}</EmptyLayout>
+    <EmptyLayout>{page}</EmptyLayout>
   )
 }
