@@ -5,21 +5,21 @@ import { useSearchParams } from 'next/navigation'
 import OperationLine from '../components/operationLine'
 import AuthorInfo from '../components/authorInfo'
 import useSWR from 'swr';
-import { IPhoto } from '@/types'
+import { TypePhoto } from '@/types'
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
 // const getPhotoPage = 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({ }) {
-    const { data: photosList = [], isValidating } = useSWR<IPhoto[]>('/photo/get-photo-page', fetcher)
-    console.log('photosList', photosList)
+    const { data: photosList = [], isValidating } = useSWR<TypePhoto[]>('/photo/get-photo-page', fetcher)
+
     const router = useRouter()
     const searchParams = useSearchParams()
 
     const photoId = searchParams.get('photoId')
 
-    const goToPhotoPage = (e: Event, item: IPhoto) => { e.stopPropagation(); router.push(`/?photoId=${item.id}`, undefined, { shallow: true }) }
+    const goToPhotoPage = (e: Event, item: TypePhoto) => { e.stopPropagation(); router.push(`/?photoId=${item.id}`, undefined, { shallow: true }) }
 
     return (
         <main
@@ -30,7 +30,7 @@ export default function Home({ }) {
                 <ul className={'grid gap-2 gap-y-2 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1'}>
 
                     {
-                        !isValidating ? photosList.map((item: IPhoto, index: Number) =>
+                        !isValidating ? photosList.map((item: TypePhoto, index: Number) =>
                             <li className={"item cursor-pointer"} key={index}>
                                 <div onClick={(event) => goToPhotoPage(event, item)}>
                                     <div className={'item__container mx-auto w-full'}>

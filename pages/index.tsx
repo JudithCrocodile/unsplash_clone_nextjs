@@ -10,13 +10,13 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home({ }) {
   const searchParams = useSearchParams()
  
-  const photoId = searchParams.get('photoId')
+  const photoId: string = searchParams.get('photoId')
 
   return (
     <main
     >      
       <PhotoList></PhotoList>
-      {photoId && <div><Photo></Photo></div>}
+      {photoId && <div><Photo photoId={photoId}></Photo></div>}
     
     </main>
   );

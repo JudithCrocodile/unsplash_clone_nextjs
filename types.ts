@@ -1,23 +1,23 @@
-export interface IPhoto {
+export type TypePhoto = {
       id: Number,
-      img: String,
-      title: String,
+      img: string,
+      title: string,
       descriptio: String,
       author: String,
       authorAavatar: String,
       location: String,
       createTime: String,
-      photo_tags: Tag[]
+      photo_tags: TypeTag[]
   
 }
 
-export interface ITag {
+export type TypeTag = {
     id: Number,
     name: String,
     created_at: String,
 }
 
-export interface IUser {
+export type TypeUser = {
     id: Number,
     userName: String,
     email: String,
