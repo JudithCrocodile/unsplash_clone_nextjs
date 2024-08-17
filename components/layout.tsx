@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
 
 export default function Layout({ children }) {
     const token = useSelector((state: RootState) => state.auth.token)
@@ -24,7 +25,7 @@ export default function Layout({ children }) {
     const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleUserMenuCose = () => {
+    const handleUserMenuClose = () => {
         setAnchorEl(null);
     };
 
@@ -94,14 +95,18 @@ export default function Layout({ children }) {
                         id="basic-menu"
                         anchorEl={anchorEl}
                         open={isUserMenuOpen}
-                        onClose={handleUserMenuCose}
+                        onClose={handleUserMenuClose}
                         MenuListProps={{
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        <MenuItem onClick={handleUserMenuCose}>Profile</MenuItem>
-                        <MenuItem onClick={handleUserMenuCose}>My account</MenuItem>
-                        <MenuItem onClick={handleUserMenuCose}>Logout</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>View profilo</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>Status</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>Download history</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>Account setting</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
+                        <Divider />
+                        <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
                     </Menu>
                 </div>}
                 <div className={'menu'}>
