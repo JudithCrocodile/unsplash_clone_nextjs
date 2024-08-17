@@ -11,15 +11,23 @@ import { useRouter } from 'next/router'
 import UploadDialog from '../components/uploadDialog'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
-import {RootState} from '@/store'
-
-
+import type { RootState } from '@/store'
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 export default function Layout({ children }) {
     const token = useSelector((state: RootState) => state.auth.token)
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
 
-    console.log(isOpenUploadDialog)
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const isUserMenuOpen = Boolean(anchorEl);
+    const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleUserMenuCose = () => {
+        setAnchorEl(null);
+    };
+
 
     const openUploadDialog = () => {
         console.log('openUploadDialog')
@@ -36,7 +44,7 @@ export default function Layout({ children }) {
 
     const closeUploadDialog = () => {
         setIsOpenUploadDialog(false);
-      };
+    };
 
 
     return (
@@ -60,13 +68,13 @@ export default function Layout({ children }) {
                     </div>
 
                 </div>
-                
+
                 {!token && <div className={'new-img  hidden md:block'}>
-                        <Link href={`/login`}>
-                            <OperationBtn className="whitespace-nowrap">Log in</OperationBtn>
-                        </Link>
-                    </div>}
-                
+                    <Link href={`/login`}>
+                        <OperationBtn className="whitespace-nowrap">Log in</OperationBtn>
+                    </Link>
+                </div>}
+
 
                 <div className={'new-img hidden md:block'}>
                     <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
@@ -75,10 +83,29 @@ export default function Layout({ children }) {
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
                 </div>
                 {token && <div className={'user'}>
-                    <AccountCircleIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}></AccountCircleIcon>
+                    <AccountCircleIcon aria-controls={isUserMenuOpen ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={isUserMenuOpen ? 'true' : undefined}
+                        onClick={handleUserMenuClick}
+                        className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}>
+                    </AccountCircleIcon>
+                    
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={isUserMenuOpen}
+                        onClose={handleUserMenuCose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <MenuItem onClick={handleUserMenuCose}>Profile</MenuItem>
+                        <MenuItem onClick={handleUserMenuCose}>My account</MenuItem>
+                        <MenuItem onClick={handleUserMenuCose}>Logout</MenuItem>
+                    </Menu>
                 </div>}
                 <div className={'menu'}>
-                    <MenuIcon  className="cursor-pointer" fontSize="medium"  sx={{ 'color': 'text.secondary', '&:hover': 'text.primary' }}></MenuIcon>
+                    <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ 'color': 'text.secondary', '&:hover': 'text.primary' }}></MenuIcon>
                 </div>
 
             </div>

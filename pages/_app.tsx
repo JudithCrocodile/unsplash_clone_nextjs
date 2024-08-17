@@ -6,7 +6,8 @@ import type { AppProps } from "next/app";
 import Layout from '../components/layout'
 import Button from '@mui/material/Button';
 import { Provider } from 'react-redux';
-import { store } from '@/store'
+import { store, persistor } from '@/store'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const theme = createTheme({
   palette: {
@@ -37,11 +38,15 @@ export default function App({ Component, pageProps }: AppProps) {
   //   </ThemeProvider>
 
   return <Provider store={store}>
-    <ThemeProvider theme={theme}>{
-      getLayout(<Component {...pageProps} />)
-    }</ThemeProvider>
+    <PersistGate persistor={persistor}>
 
+      <ThemeProvider theme={theme}>{
+        getLayout(<Component {...pageProps} />)
+      }</ThemeProvider>
+    </PersistGate>
   </Provider>
+
+
 
 
 
