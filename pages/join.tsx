@@ -7,10 +7,13 @@ import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import EmptyLayout from '../components/emptyLayout'
 import type { ReactElement, ChangeEvent } from 'react'
 import React, { useState, } from 'react';
+import { useRouter } from 'next/router'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Join() {
+  const router = useRouter()
+
   const [createForm, setCreateForm] = useState({
     email: '',
     password: '',
@@ -35,7 +38,8 @@ export default function Join() {
       }
     ).then(res => {
       if (res.status === 200) {
-        localStorage.setItem('token', res.token);
+        // localStorage.setItem('token', res.token);
+        router.push(`/`, undefined, { shallow: true })
       }
     })
   }
@@ -191,6 +195,7 @@ export default function Join() {
               <OutlinedInput
                 value={createForm.password}
                 name="password"
+                type="password"
                 onChange={handleChange}
                 sx={{
                   height: '40px',

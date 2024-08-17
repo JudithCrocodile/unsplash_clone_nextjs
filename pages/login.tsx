@@ -6,11 +6,14 @@ import { styled } from '@mui/material/styles';
 import React, { useState, ChangeEvent } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router'
+import {useDispatch} from 'react-redux'
+import {setToken} from '@/store/auth'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Login() {
     const router = useRouter()
+    const dispatch = useDispatch();
     
     const [loginForm, setLoginForm] = useState({
         email: '',
@@ -34,7 +37,7 @@ export default function Login() {
             }
         ).then(res=>{
             if (res.status === 200) {
-                localStorage.setItem('token', res.token);
+                dispatch(setToken(res.token))
             }         
             router.push(`/`, undefined, { shallow: true })   
         })

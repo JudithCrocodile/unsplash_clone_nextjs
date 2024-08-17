@@ -10,10 +10,13 @@ import OperationBtn from '../components/operationBtn'
 import { useRouter } from 'next/router'
 import UploadDialog from '../components/uploadDialog'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
+import {RootState} from '@/store'
 
 
 
 export default function Layout({ children }) {
+    const token = useSelector((state: RootState) => state.auth.token)
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
 
     console.log(isOpenUploadDialog)
@@ -57,20 +60,23 @@ export default function Layout({ children }) {
                     </div>
 
                 </div>
-                <div className={'new-img  hidden md:block'}>
-                    <Link href={`/login`}>
-                        <OperationBtn className="whitespace-nowrap">Log in</OperationBtn>
-                    </Link>
-                </div>
+                
+                {!token && <div className={'new-img  hidden md:block'}>
+                        <Link href={`/login`}>
+                            <OperationBtn className="whitespace-nowrap">Log in</OperationBtn>
+                        </Link>
+                    </div>}
+                
+
                 <div className={'new-img hidden md:block'}>
                     <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
                 </div>
                 <div className={'notification hidden md:block'}>
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
                 </div>
-                <div className={'user'}>
+                {token && <div className={'user'}>
                     <AccountCircleIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}></AccountCircleIcon>
-                </div>
+                </div>}
                 <div className={'menu'}>
                     <MenuIcon  className="cursor-pointer" fontSize="medium"  sx={{ 'color': 'text.secondary', '&:hover': 'text.primary' }}></MenuIcon>
                 </div>
