@@ -6,7 +6,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const photoCollections = client.db('unsplash').collection('photos')
 
   const photo = await photoCollections.find({}).toArray();
-
-  res.status(200).send(photo)
+  res.status(200).send({status: 200, data: photo})
 }
 

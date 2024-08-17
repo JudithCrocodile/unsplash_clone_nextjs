@@ -2,7 +2,6 @@ import Image from "next/image";
 
 export default function AuthorInfo( props ) {
     const category = 0;
-    const handleCategoryChange = ()=>{}
 
     return (
         <div className={"item__author flex text-left items-center"}>

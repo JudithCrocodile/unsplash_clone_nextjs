@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if(!isNaN(id)) {
     const photo = await photoCollections.findOne({id});
     if(photo) {
-      res.status(200).send(photo)
+      res.status(200).send({status: 200, data: photo})
     } else {
       res.status(404).send('photo not found')
     }

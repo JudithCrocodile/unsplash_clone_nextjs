@@ -21,7 +21,26 @@ type Props = {
 };
 
 export default function Photo({ photoId }: Props) {
-  const { data: photosData, isValidating } = useSWR<TypePhoto>(`/photo/get-photo/${photoId}`, fetcher)
+  const [photosData, setPhotosData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    getPhotoData()
+  }, []);
+
+  const getPhotoData = (): void => {
+    setLoading(true)
+    fetcher(`/photo/get-photo/${photoId}`).then(res => {
+      if (res.status === 200) {
+        setPhotosData(res.data)
+        setLoading(false)
+      }
+    })
+  }
+
+
+
   const router = useRouter()
 
   const [open, setOpen] = useState(false);
@@ -76,40 +95,40 @@ export default function Photo({ photoId }: Props) {
 
         <DialogContent>
           {
-            photosData?.img ? 
-            <div className="detail">
-              <AuthorInfo authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
+            photosData?.img ?
+              <div className="detail">
+                <AuthorInfo authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
 
-              <div className={'my-4'}>
-                <OperationLine></OperationLine>
-              </div>
-
-              <div className="detail__photo max-w-xl w-full mx-auto">
-                <Image alt={itemDetail.title} src={itemDetail.img} width="100" height="100" style={{ width: '100%' }}></Image>
-
-              </div>
-
-              <div className="detail__info info text-slate-400 my-6 flex flex-col gap-4">
-                <div className="info__location">
-                  <span><LocationOnIcon></LocationOnIcon></span>
-                  {itemDetail.location}
-                </div>
-                <div className="info__create-date">
-                  <span><CalendarTodayIcon></CalendarTodayIcon></span>
-                  {itemDetail.createTime}
+                <div className={'my-4'}>
+                  <OperationLine></OperationLine>
                 </div>
 
-              </div>
-              <div className="detail__tabs">
+                <div className="detail__photo max-w-xl w-full mx-auto">
+                  <Image alt={itemDetail.title} src={itemDetail.img} width="100" height="100" style={{ width: '100%' }}></Image>
+
+                </div>
+
+                <div className="detail__info info text-slate-400 my-6 flex flex-col gap-4">
+                  <div className="info__location">
+                    <span><LocationOnIcon></LocationOnIcon></span>
+                    {itemDetail.location}
+                  </div>
+                  <div className="info__create-date">
+                    <span><CalendarTodayIcon></CalendarTodayIcon></span>
+                    {itemDetail.createTime}
+                  </div>
+
+                </div>
+                <div className="detail__tabs">
+
+                </div>
+                <div className="detail__other-photos">
+                  <h3>Related images</h3>
+                  <PhotoList></PhotoList>
+                </div>
 
               </div>
-              <div className="detail__other-photos">
-                <h3>Related images</h3>
-                <PhotoList></PhotoList>
-              </div>
-
-            </div>      
-            : <div>Loading...</div>      
+              : <div>Loading...</div>
           }
 
         </DialogContent>

@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import OperationLine from '../components/operationLine'
 import AuthorInfo from '../components/authorInfo'
@@ -8,11 +8,28 @@ import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
-// const getPhotoPage = 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home({ }) {
-    const { data: photosList = [], isValidating } = useSWR<TypePhoto[]>('/photo/get-photo-page', fetcher)
+export default function PhotoList({ }) {
+
+    useEffect(() => {
+        getPhotoList()
+    }, []);
+
+    const [photosList, setPhotosList] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const getPhotoList = (): void => {
+        console.log('getPhotoList')
+        setLoading(true)
+        fetcher('/photo/get-photo-page').then(res => {
+            console.log('res', res)
+            if (res.status === 200) {
+                setPhotosList(res.data)
+                setLoading(false)
+            }
+        })
+    }
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -30,7 +47,7 @@ export default function Home({ }) {
                 <ul className={'grid gap-2 gap-y-2 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1'}>
 
                     {
-                        !isValidating ? photosList.map((item: TypePhoto, index: Number) =>
+                        !loading ? photosList.map((item: TypePhoto, index: Number) =>
                             <li className={"item cursor-pointer"} key={index}>
                                 <div onClick={(event) => goToPhotoPage(event, item)}>
                                     <div className={'item__container mx-auto w-full'}>
@@ -55,7 +72,7 @@ export default function Home({ }) {
 
 
                             </li>)
-                            : 
+                            :
                             <div>Loading...</div>
                     }
                 </ul>
