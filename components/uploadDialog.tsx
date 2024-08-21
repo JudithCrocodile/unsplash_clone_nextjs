@@ -153,7 +153,7 @@ export default function UploadDialog({ open, handleClose }: props) {
     }
 
     const UploadInput = () => {
-        return <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" multiple />
+        return <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" multiple accept="image/png, image/jpeg, image/jpg" />
     }
 
     return (
