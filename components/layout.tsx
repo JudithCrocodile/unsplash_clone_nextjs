@@ -33,7 +33,6 @@ export default function Layout({ children }) {
     const openUploadDialog = () => {
         console.log('openUploadDialog')
         setIsOpenUploadDialog(true);
-        console.log(isOpenUploadDialog)
     }
 
     const category = 0;
@@ -45,6 +44,7 @@ export default function Layout({ children }) {
 
     const closeUploadDialog = () => {
         setIsOpenUploadDialog(false);
+        // refresh photo list
     };
 
 

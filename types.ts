@@ -1,6 +1,6 @@
 export type TypePhoto = {
       id: Number,
-      img: string,
+      path: string,
       title: string,
       descriptio: String,
       author: String,

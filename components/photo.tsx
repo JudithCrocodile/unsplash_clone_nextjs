@@ -95,7 +95,7 @@ export default function Photo({ photoId }: Props) {
 
         <DialogContent>
           {
-            photosData?.img ?
+            photosData?.path ?
               <div className="detail">
                 <AuthorInfo authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
 
@@ -104,7 +104,7 @@ export default function Photo({ photoId }: Props) {
                 </div>
 
                 <div className="detail__photo max-w-xl w-full mx-auto">
-                  <Image alt={itemDetail.title} src={itemDetail.img} width="100" height="100" style={{ width: '100%' }}></Image>
+                  <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
 
                 </div>
 

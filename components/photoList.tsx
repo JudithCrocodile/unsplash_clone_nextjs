@@ -51,7 +51,7 @@ export default function PhotoList({ }) {
                             <li className={"item cursor-pointer"} key={index}>
                                 <div onClick={(event) => goToPhotoPage(event, item)}>
                                     <div className={'item__container mx-auto w-full'}>
-                                        <div className={"item__img w-full"} style={{ backgroundImage: `url(${item.img})`, height: '200px' }}></div>
+                                        <div className={"item__img w-full"} style={{ backgroundImage: `url(${item.path})`, height: '200px' }}></div>
                                         <div className={"item__context text-left text-xl"}>
                                             <div className="item__top">
                                                 <div className="ml-auto w-fit">
