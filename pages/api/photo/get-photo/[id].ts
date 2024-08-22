@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import connectToDatabase from "@/lib/mongoose";
+import mongoose from "mongoose";
 import Photo from '../../models/Photo'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,9 +9,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   await connectToDatabase()
 
-  const id = Number(req.query.id)
-  if(!isNaN(id)) {
-    const photo = await Photo.findOne({id});
+  const id = req.query.id
+
+  if(id) {
+    mongoose.set('debug', true);
+    const photo = await Photo.findById(id)
+      .populate('photo_tags')
+      .exec();
+
     if(photo) {
       res.status(200).send({status: 200, data: photo})
     } else {

@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const busboy = Busboy({headers: req.headers})
         
         busboy.on('file', (fieldname, file, filename) => {
-            const filePath = `/uploads/${ Date.now() + '-' + filename.filename}`
+            const filePath = `/uploads/${ new Date() + '-' + filename.filename}`
             const saveTo = `./public${filePath}`;
             photos.push({file, filePath: filePath})
             file.pipe(fs.createWriteStream(saveTo))
@@ -71,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         description,
                         photo_tags: tabIds,
                         author: user._id,
-                        createTime: Date.now(),
+                        createTime: new Date(),
                     })
 
                     await newPhoto.save();

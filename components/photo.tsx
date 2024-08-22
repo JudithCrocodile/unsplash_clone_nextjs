@@ -12,6 +12,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhotoList from '../components/photoList'
 import useSWR from 'swr';
 import { TypePhoto } from '@/types'
+import dynamic from 'next/dynamic';
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -63,6 +64,18 @@ export default function Photo({ photoId }: Props) {
 
   const itemDetail: TypePhoto = photosData
 
+  const CreatedTimeHtml = ()=>{
+    if(typeof window !== "undefined") {
+      // import DayJS from 'react-dayjs';
+      // const DayJS = require('react-dayjs')
+      const DayJS = dynamic(() => import('react-dayjs'), { ssr: false });
+      return <span>Published on <DayJS format="MMMM d, YYYY">{ itemDetail.createTime }</DayJS></span>
+    } 
+      return <span></span>
+    
+    
+  }
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
@@ -109,22 +122,25 @@ export default function Photo({ photoId }: Props) {
                 </div>
 
                 <div className="detail__info info text-slate-400 my-6 flex flex-col gap-4">
-                  <div className="info__location">
+                  {itemDetail.location && <div className="info__location gap-2">
                     <span><LocationOnIcon></LocationOnIcon></span>
                     {itemDetail.location}
-                  </div>
-                  <div className="info__create-date">
+                  </div>}
+                  {(typeof window !== "undefined") && <div className="info__create-date flex items-center gap-2">
                     <span><CalendarTodayIcon></CalendarTodayIcon></span>
-                    {itemDetail.createTime}
-                  </div>
+                    <CreatedTimeHtml></CreatedTimeHtml>
+                  </div>}
 
                 </div>
-                <div className="detail__tabs">
-
+                <div className="detail__tabs gap-2 flex flex-wrap">
+                  {
+                    photosData.photo_tags.map(t=><span key={t.name} className="px-2 py-1 cursor-pointer bg-gray-200 hover:bg-gray-300 text-slate-600 font-light rounded transition-all">{t.name}</span>)
+                  }
                 </div>
                 <div className="detail__other-photos">
-                  <h3>Related images</h3>
-                  <PhotoList></PhotoList>
+
+                   <h3 className={'mb-12 text-2xl'}>Related images</h3>
+                  <PhotoList showCategoryBar={false} showTitle={false} propTabId={photosData.photo_tags.map(t=>t._id)}></PhotoList>
                 </div>
 
               </div>

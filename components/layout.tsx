@@ -9,12 +9,15 @@ import MenuIcon from '@mui/icons-material/Menu';
 import OperationBtn from '../components/operationBtn'
 import { useRouter } from 'next/router'
 import UploadDialog from '../components/uploadDialog'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+
+
+const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Layout({ children }) {
     const token = useSelector((state: RootState) => state.auth.token)
@@ -29,14 +32,12 @@ export default function Layout({ children }) {
         setAnchorEl(null);
     };
 
-
     const openUploadDialog = () => {
         console.log('openUploadDialog')
         setIsOpenUploadDialog(true);
     }
 
-    const category = 0;
-    const handleCategoryChange = () => { }
+
 
     const router = useRouter()
 
@@ -57,12 +58,12 @@ export default function Layout({ children }) {
                         <AutoAwesomeMosaicIcon fontSize="large" className="cursor-pointer"></AutoAwesomeMosaicIcon>
                     </Link>
                 </div>
-                <div className={'filter-container'}>
+                <div className={'filter-container flex-1'}>
                     <div className={'filter flex gap-4 bg-slate-100 px-4 py-2 rounded-full'}>
                         <div className={'filter__prefix'}>
                             <SearchIcon></SearchIcon>
                         </div>
-                        <Input placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
+                        <Input sx={{ width: '100%' }} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
                         {/* <div className={'filter__sufix'}>
                             <CenterFocusWeakIcon></CenterFocusWeakIcon>
                         </div> */}
@@ -90,7 +91,7 @@ export default function Layout({ children }) {
                         onClick={handleUserMenuClick}
                         className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}>
                     </AccountCircleIcon>
-                    
+
                     <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
@@ -114,25 +115,6 @@ export default function Layout({ children }) {
                 </div>
 
             </div>
-            {
-                !isLogin && <div className="category w-full">
-                    <Tabs value={category} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
-                        scrollButtons="auto" allowScrollButtonsMobile>
-                        <Tab label="Item One" />
-                        <Tab label="Item Two" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                        <Tab label="Item Three" />
-                    </Tabs>
-
-                </div>
-            }
-
-
             <main>{children}</main>
 
             <UploadDialog open={isOpenUploadDialog} handleClose={closeUploadDialog}></UploadDialog>
