@@ -10,14 +10,49 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import Divider from '@mui/material/Divider';
+import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux';
 
 export default function UserLayout({ children }) {
     const [currentTabName, setCurrentTabName] = useState<string>('0')
+    // const [currentPathValue, setCurrentPathValue] = useState<string>('0')
+    const router = useRouter()
+    const userInfo = useSelector((state: RootState) => state.user.userInfo)
+
+    const pathData: object[] = [
+        {   
+            value: '0',
+            path: '/'
+        },
+        {   
+            value: '1',
+            path: '/likes'
+        },
+        {   
+            value: '2',
+            path: '/collections'
+        },
+        {   
+            value: '3',
+            path: '/stats'
+        },
+    ]
+
+    useEffect(()=>{
+        pathData.forEach(path=>{
+            if(router.pathname.includes(path.path)) {
+                // setCurrentPathValue(path.value)
+                setCurrentTabName(path.value)
+            }
+            
+        })        
+    }, [])
+
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-        console.log('newValue', newValue)
         setCurrentTabName(newValue)
-
+        const path = pathData.find(p=>p.value === newValue)
+        router.push(`/${userInfo.userName}${path?.path}`)
     }
 
     const [tags, setTags] = useState<object[]>([{ name: 'nature' }, { name: 'tree' }])
@@ -65,8 +100,8 @@ export default function UserLayout({ children }) {
                         },
                     }} value="0" icon={<ImageIcon />} iconPosition="start" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     <Tab value="1" icon={<FavoriteIcon />} iconPosition="start" label='Likes' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-                    <Tab value="2" icon={<FolderCopyIcon />} iconPosition="start" label='Collections' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-                    <Tab value="3" icon={<EqualizerIcon />} iconPosition="start" label='Stats' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    {/* <Tab value="2" icon={<FolderCopyIcon />} iconPosition="start" label='Collections' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    <Tab value="3" icon={<EqualizerIcon />} iconPosition="start" label='Stats' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} /> */}
                 </Tabs>
             </div>
             <Divider></Divider>
