@@ -73,7 +73,7 @@ export default function UserLayout({ children }) {
                         </div>
 
                         <div className="user__detail-container flex flex-col gap-4">
-                            <p>Download free, beautiful high-quality photos curated by Judith.</p>
+                            <p>Download free, beautiful high-quality photos curated by {userInfo.userName}.</p>
                             <div className="user__tags-container">
                                 <h4 className='mb-4'>Interests</h4>
                                 <div className="user__tags">
