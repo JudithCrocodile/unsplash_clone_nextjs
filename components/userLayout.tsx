@@ -1,0 +1,76 @@
+import { Tabs, Tab } from '@mui/material';
+import React, { useState, useEffect } from 'react'
+import AvatarComponent from '@/components/avatar'
+import TagList from '@/components/tagList'
+import Tag from '@/components/tag'
+import OperationBtn from '@/components/operationBtn'
+import EditIcon from '@mui/icons-material/Edit';
+import ImageIcon from '@mui/icons-material/Image';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import Divider from '@mui/material/Divider';
+
+export default function UserLayout({ children }) {
+    const [currentTabName, setCurrentTabName] = useState<string>('0')
+
+    const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+        console.log('newValue', newValue)
+        setCurrentTabName(newValue)
+
+    }
+
+    const [tags, setTags] = useState<object[]>([{ name: 'nature' }, { name: 'tree' }])
+
+    return (
+        <div>
+            <div className="user pt-16 pb-[72px]">
+                <div className=" grid grid-cols-12 gap-8">
+                    <div className="user__avatar mr-8 ml-auto col-span-4">
+                        <AvatarComponent size="150px"></AvatarComponent>
+                    </div>
+                    <div className="user__info-container col-span-8">
+                        <div className="user_name-container mb-4 flex gap-6">
+                            <h2 className="text-4xl font-bold leading-5">username</h2>
+                            <div>
+                                <OperationBtn line><EditIcon sx={{ '&.MuiSvgIcon-root': { width: '15px', height: '15px', marginTop: '-4px' } }} className="mr-2"></EditIcon>Edit profile</OperationBtn>
+                            </div>
+                        </div>
+
+                        <div className="user__detail-container flex flex-col gap-4">
+                            <p>Download free, beautiful high-quality photos curated by Judith.</p>
+                            <div className="user__tags-container">
+                                <h4 className='mb-4'>Interests</h4>
+                                <div className="user__tags">
+                                    <TagList>
+                                        {
+                                            tags.map(t => <Tag key={t.name} name={t.name} ></Tag>)
+                                        }
+                                    </TagList>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="tab__container px-5">
+                <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleTabChange} aria-label="category tabs" variant="scrollable"
+                    scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
+                    <Tab sx={{
+                        '&$selected': {
+                            backgroundColor: 'unset',
+                        },
+                    }} value="0" icon={<ImageIcon />} iconPosition="start" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    <Tab value="1" icon={<FavoriteIcon />} iconPosition="start" label='Likes' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    <Tab value="2" icon={<FolderCopyIcon />} iconPosition="start" label='Collections' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    <Tab value="3" icon={<EqualizerIcon />} iconPosition="start" label='Stats' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                </Tabs>
+            </div>
+            <Divider></Divider>
+            <main>{children}</main>
+        </div>
+    )
+}

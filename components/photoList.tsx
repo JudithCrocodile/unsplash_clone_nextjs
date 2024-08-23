@@ -8,6 +8,7 @@ import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 import { TypeTag } from '@/types'
 import { Input, Tabs, Tab, Button } from '@mui/material';
+import Divider from '@mui/material/Divider';
 
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -178,6 +179,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                             )
                         }
                     </Tabs>
+
+                    <Divider></Divider>
 
                 </div>
             }

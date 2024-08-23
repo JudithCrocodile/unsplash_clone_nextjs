@@ -13,6 +13,8 @@ import PhotoList from '../components/photoList'
 import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 import dynamic from 'next/dynamic';
+import TagList from '@/components/tagList'
+import Tag from '@/components/tag'
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -132,11 +134,12 @@ export default function Photo({ photoId }: Props) {
                   </div>}
 
                 </div>
-                <div className="detail__tabs gap-2 flex flex-wrap">
+                <TagList>
                   {
-                    photosData.photo_tags.map(t=><span key={t.name} className="px-2 py-1 cursor-pointer bg-gray-200 hover:bg-gray-300 text-slate-600 font-light rounded transition-all">{t.name}</span>)
+                    photosData.photo_tags.map(t=><Tag key={t.name} name={t.name} ></Tag>)
                   }
-                </div>
+                </TagList>
+
                 <div className="detail__other-photos">
 
                    <h3 className={'mb-12 text-2xl'}>Related images</h3>

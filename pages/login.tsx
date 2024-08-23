@@ -8,6 +8,7 @@ import useSWR from 'swr';
 import { useRouter } from 'next/router'
 import {useDispatch} from 'react-redux'
 import {setToken} from '@/store/auth'
+import {setUserInfo} from '@/store/user'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -38,6 +39,7 @@ export default function Login() {
         ).then(res=>{
             if (res.status === 200) {
                 dispatch(setToken(res.token))
+                dispatch(setUserInfo(res.userInfo))
             }         
             router.push(`/`, undefined, { shallow: true })   
         })

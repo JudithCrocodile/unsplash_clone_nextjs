@@ -15,6 +15,7 @@ import type { RootState } from '@/store'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+import AvatarComponent from '@/components/avatar'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -50,7 +51,7 @@ export default function Layout({ children }) {
 
 
     const [searchInputValue, setSearchInputValue] = useState<string>('')
-    
+
     const keyDownSearchInput = (key: string) => {
         if (key === 'Enter') {
             // const newPhotoValues = [...selectedFileDetail]
@@ -100,12 +101,16 @@ export default function Layout({ children }) {
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
                 </div>
                 {token && <div className={'user'}>
-                    <AccountCircleIcon aria-controls={isUserMenuOpen ? 'basic-menu' : undefined}
+
+                    <div aria-controls={isUserMenuOpen ? 'basic-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={isUserMenuOpen ? 'true' : undefined}
                         onClick={handleUserMenuClick}
                         className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}>
-                    </AccountCircleIcon>
+                        <AvatarComponent></AvatarComponent>
+
+                    </div>
+
 
                     <Menu
                         id="basic-menu"

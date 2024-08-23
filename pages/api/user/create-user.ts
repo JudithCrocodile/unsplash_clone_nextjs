@@ -21,8 +21,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             userName, 
             firstName, 
             lastName,
-            created_at: Date.now(),
-            updated_at: Date.now(),
+            created_at: new Date(),
+            updated_at: new Date(),
         })
         newUser.save();
         res.status(200).send({status: 200, message: 'User registered successfully'});
