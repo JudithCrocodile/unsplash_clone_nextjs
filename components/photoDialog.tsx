@@ -5,11 +5,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { useRouter } from 'next/router'
-import AuthorInfo from '../components/authorInfo'
-import OperationLine from '../components/operationLine'
+import AuthorInfo from './authorInfo'
+import OperationLine from './operationLine'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import PhotoList from '../components/photoList'
+import PhotoList from './photoList'
 import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 import dynamic from 'next/dynamic';

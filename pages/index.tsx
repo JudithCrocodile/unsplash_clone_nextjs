@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import Photo from '../components/photo'
+import Photo from '../components/photoDialog'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 

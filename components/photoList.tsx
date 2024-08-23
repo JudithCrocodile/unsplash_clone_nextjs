@@ -13,7 +13,7 @@ import Divider from '@mui/material/Divider';
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName=null }: {propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string|null}) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, authorId = null, fullHeight=true }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, authorId: string | null, propTabName: string | null, fullHeight: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
@@ -71,16 +71,15 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const [loading, setLoading] = useState(false);
 
     const getPhotoList = (page: number): void => {
-        if(page === 1){
+        if (page === 1) {
             setPhotosList([])
         }
-
-        console.log('propTabName', propTabName)
 
         const params = JSON.stringify({
             page,
             tabId: propTabId || currentTab?._id,
-            category: propTabName
+            category: propTabName,
+            authorId,
         })
         setLoading(true)
         fetcher('/photo/get-photo-page', {
@@ -128,7 +127,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const [getTabLoading, setGetTabLoading] = React.useState(false)
 
     const getAllTabs = (): void => {
-        if(!showCategoryBar) return;
+        if (!showCategoryBar) return;
         setGetTabLoading(true)
         fetcher('/tab/get-tabs', {
             method: 'POST',
@@ -145,7 +144,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         getAllTabs()
     }, [])
 
-    
+
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
         const newTab: TypeTag | undefined = allTabs.find(t => t.name === newValue)
         if (newTab) {
@@ -162,10 +161,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     return (
         <main
-            className={`flex min-h-screen flex-col items-center ${inter.className}`}
+            className={`flex ${fullHeight && 'min-h-screen'} flex-col items-center ${inter.className}`}
         >
 
-{
+            {
                 (showCategoryBar && !getTabLoading) && <div className="category w-full px-6 flex gap-6">
                     <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
@@ -187,46 +186,54 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
             <div className={`mt-20 pb-12 px-12 lg:px-24 px-6 w-full ${!showTitle && 'mt-0 px-0'}`}>
                 {showTitle && <h2 className={'mb-12 text-3xl'}>List</h2>}
-                <ul className={`grid gap-2 gap-y-2 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1`}>
-
+                {photosList.length > 0 ? <ul className={`grid gap-2 gap-y-2 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1`}>
                     {
-                        !loading ? columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
-                        (<div key={columnIndex} className={'flex flex-col gap-y-2'}>
-                            {column.map((item: TypePhoto, index: number) => (
-                                <li className={"item cursor-pointer"} key={index}>
-                                    <div onClick={(event) => goToPhotoPage(event, item)}>
-                                        <div className={'item__container mx-auto w-full'}>
-                                            <div className={"item__img w-full"} style={{ height: 'auto' }}>
-                                                <img src={item.path} alt="" />
-                                            </div>
-                                            <div className={"item__context text-left text-xl"}>
-                                                <div className="item__top">
-                                                    <div className="ml-auto w-fit">
-                                                        {/* {item.liked} */}
-                                                        <OperationLine>
-                                                        </OperationLine>
+                        !loading ?
+                            (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
+                            (
+                                <div key={columnIndex} className={'flex flex-col gap-y-2'}>
+                                    {column.map((item: TypePhoto, index: number) => (
+                                        <li className={"item cursor-pointer"} key={index}>
+                                            <div onClick={(event) => goToPhotoPage(event, item)}>
+                                                <div className={'item__container mx-auto w-full'}>
+                                                    <div className={"item__img w-full"} style={{ height: 'auto' }}>
+                                                        <img src={item.path} alt="" />
                                                     </div>
-                                                </div>
-                                                <div className="item__bottom">
-                                                    <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
-                                                </div>
+                                                    <div className={"item__context text-left text-xl"}>
+                                                        <div className="item__top">
+                                                            <div className="ml-auto w-fit">
+                                                                {/* {item.liked} */}
+                                                                <OperationLine>
+                                                                </OperationLine>
+                                                            </div>
+                                                        </div>
+                                                        <div className="item__bottom">
+                                                            <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
+                                                        </div>
 
+                                                    </div>
+
+                                                </div>
                                             </div>
 
-                                        </div>
-                                    </div>
 
 
+                                        </li>)
+                                    )}
+                                </div>
+                            )
 
-                                </li>)
-                            )}
-                        </div>)
+                            ))
 
-                        )
                             :
                             <div>Loading...</div>
                     }
                 </ul>
+                    :
+                    <div className="flex justify-center">
+                        <img src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" />
+                    </div>
+                }
             </div>
 
         </main>
