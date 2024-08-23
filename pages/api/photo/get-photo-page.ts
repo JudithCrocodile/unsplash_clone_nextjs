@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-// import '../models/User';
+import '../models/User';
 import Photo from '../models/Photo'
 import Tab from '../models/Tab'
 import connectToDatabase from "@/lib/mongoose";
@@ -7,9 +7,11 @@ import mongoose from "mongoose";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
-  const page = parseInt(req.body.page) || 1
-  const pageSize = parseInt(req.body.ppageSizeage) || 10;
-  const tabId = req.body.tabId;
+  const body = JSON.parse(req.body)
+  const page = parseInt(body.page) || 1
+  const pageSize = parseInt(body.ppageSizeage) || 10;
+  const tabId = body.tabId;
+  const category = body.category;
 
   try {
     const filter = {};
@@ -21,20 +23,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       
     }
-    const photos = await Photo.find(filter)      
-      .sort({createTime: -1})
-      .skip((page-1) * pageSize)
-      .limit(pageSize)
-      .populate('author')
-      .exec()
 
-      const totalPhotos = await Photo.countDocuments(filter);
-      const totalPages = Math.ceil(totalPhotos / pageSize);
+      const photos = await Photo.aggregate([
+        {
+          $lookup: {
+            from: 'tabs',
+            localField: 'photo_tags',
+            foreignField: '_id',
+            as: 'tags'
+          }
+        },
+        ...(category ? [{
+          $match: {'tags.name': category}
+        }] : []),
+        {
+          $facet: {
+            photos: [
+              {$sort:{createTime: -1}},
+              {$skip:(page-1) * pageSize},
+              {$limit:pageSize},
+            ],
+            totalCount: [
+              {$count: 'count'}
+            ]
+          }
+        }
+      ])
+
+      const photosWithAuthor = await Photo.populate(photos[0].photos, {path: 'author'})
+
+      // console.log('photos', photos);
+
+      const totalPhotos: number = photos[0].totalCount[0]?.count || 0;
+      const totalPages: number = Math.ceil(totalPhotos / pageSize);
 
       res.json({
         status: 200,
         data: {
-          photos,
+          photos: photosWithAuthor,
           currentPage: page,
           totalPhotos,
           totalPages

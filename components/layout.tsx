@@ -16,7 +16,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 
-
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Layout({ children }) {
@@ -49,6 +48,22 @@ export default function Layout({ children }) {
     };
 
 
+
+    const [searchInputValue, setSearchInputValue] = useState<string>('')
+    
+    const keyDownSearchInput = (key: string) => {
+        if (key === 'Enter') {
+            // const newPhotoValues = [...selectedFileDetail]
+            // newPhotoValues[photoIndex].tabs.push('')
+            // setSelectedFileDetail(newPhotoValues)
+            router.push(`/s/photos/${searchInputValue}`)
+        }
+    }
+    const handleSearchInputChange = (newValue: string) => {
+        setSearchInputValue(newValue)
+    }
+
+
     return (
         <div>
 
@@ -63,7 +78,7 @@ export default function Layout({ children }) {
                         <div className={'filter__prefix'}>
                             <SearchIcon></SearchIcon>
                         </div>
-                        <Input sx={{ width: '100%' }} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
+                        <Input value={searchInputValue} onChange={(e) => handleSearchInputChange(e.target.value)} onKeyDown={((e) => { keyDownSearchInput(e.key) })} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
                         {/* <div className={'filter__sufix'}>
                             <CenterFocusWeakIcon></CenterFocusWeakIcon>
                         </div> */}

@@ -9,10 +9,10 @@ import { TypePhoto } from '@/types'
 import { TypeTag } from '@/types'
 import { Input, Tabs, Tab, Button } from '@mui/material';
 
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true }: {propTabId: string[], showCategoryBar: boolean, showTitle: boolean}) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName=null }: {propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string|null}) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
@@ -37,6 +37,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
         return () => window.removeEventListener('resize', handleResize)
     }, [])
+
+    useEffect(() => {
+        getPhotoList(1)
+    }, [propTabName])
 
     useEffect(() => {
         function handleResize() {
@@ -69,9 +73,13 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         if(page === 1){
             setPhotosList([])
         }
+
+        console.log('propTabName', propTabName)
+
         const params = JSON.stringify({
             page,
-            tabId: propTabId || currentTab?._id
+            tabId: propTabId || currentTab?._id,
+            category: propTabName
         })
         setLoading(true)
         fetcher('/photo/get-photo-page', {
@@ -157,11 +165,13 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         >
 
 {
-                (showCategoryBar && !getTabLoading) && <div className="category w-full px-6">
+                (showCategoryBar && !getTabLoading) && <div className="category w-full px-6 flex gap-6">
                     <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         <Tab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-
+                    </Tabs>
+                    <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
+                        scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         {
                             allTabs.map((tab: TypeTag, tabIndex: number) =>
                                 (<Tab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
