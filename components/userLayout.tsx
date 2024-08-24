@@ -12,6 +12,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import Divider from '@mui/material/Divider';
 import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux';
+import Link from 'next/link'
 
 export default function UserLayout({ children }) {
     const [currentTabName, setCurrentTabName] = useState<string>('0')
@@ -68,7 +69,16 @@ export default function UserLayout({ children }) {
                         <div className="user_name-container mb-4 flex gap-6">
                             <h2 className="text-4xl font-bold leading-5">username</h2>
                             <div>
-                                <OperationBtn line><EditIcon sx={{ '&.MuiSvgIcon-root': { width: '15px', height: '15px', marginTop: '-4px' } }} className="mr-2"></EditIcon>Edit profile</OperationBtn>
+                                <OperationBtn line>
+                                    <Link href="/account">
+                                    <span>
+                                        <EditIcon sx={{ '&.MuiSvgIcon-root': { width: '15px', height: '15px', marginTop: '-4px' } }} className="mr-2"></EditIcon>
+                                        Edit profile
+                                    </span>
+                                        
+                                   </Link>
+                                </OperationBtn>
+                                    
                             </div>
                         </div>
 

@@ -19,7 +19,7 @@ import AvatarComponent from '@/components/avatar'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
-export default function Layout({ children }) {
+export default function Layout({ children, inAccountPage=false }: {inAccountPage: boolean}) {
     const token = useSelector((state: RootState) => state.auth.token)
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
 
@@ -67,14 +67,13 @@ export default function Layout({ children }) {
 
     return (
         <div>
-
             <div className={'header flex justify-between p-4 gap-4 items-center'}>
                 <div className={'icon'}>
                     <Link href={`/`}>
                         <AutoAwesomeMosaicIcon fontSize="large" className="cursor-pointer"></AutoAwesomeMosaicIcon>
                     </Link>
                 </div>
-                <div className={'filter-container flex-1'}>
+                {!inAccountPage && <div className={'filter-container flex-1'}>
                     <div className={'filter flex gap-4 bg-slate-100 px-4 py-2 rounded-full'}>
                         <div className={'filter__prefix'}>
                             <SearchIcon></SearchIcon>
@@ -85,7 +84,7 @@ export default function Layout({ children }) {
                         </div> */}
                     </div>
 
-                </div>
+                </div>}
 
                 {!token && <div className={'new-img  hidden md:block'}>
                     <Link href={`/login`}>
@@ -94,12 +93,12 @@ export default function Layout({ children }) {
                 </div>}
 
 
-                <div className={'new-img hidden md:block'}>
+                {!inAccountPage && <div className={'new-img hidden md:block'}>
                     <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
-                </div>
-                <div className={'notification hidden md:block'}>
+                </div>}
+                {!inAccountPage && <div className={'notification hidden md:block'}>
                     <NotificationsIcon className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary' }}></NotificationsIcon>
-                </div>
+                </div>}
                 {token && <div className={'user'}>
 
                     <div aria-controls={isUserMenuOpen ? 'basic-menu' : undefined}
@@ -107,7 +106,7 @@ export default function Layout({ children }) {
                         aria-expanded={isUserMenuOpen ? 'true' : undefined}
                         onClick={handleUserMenuClick}
                         className="cursor-pointer" fontSize="medium" sx={{ color: 'text.secondary', '&:hover': 'black' }}>
-                        <AvatarComponent></AvatarComponent>
+                        <AvatarComponent size={'32px'}></AvatarComponent>
 
                     </div>
 
@@ -130,9 +129,9 @@ export default function Layout({ children }) {
                         <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
                     </Menu>
                 </div>}
-                <div className={'menu'}>
+                {!inAccountPage && <div className={'menu'}>
                     <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ 'color': 'text.secondary', '&:hover': 'text.primary' }}></MenuIcon>
-                </div>
+                </div>}
 
             </div>
             <main>{children}</main>
