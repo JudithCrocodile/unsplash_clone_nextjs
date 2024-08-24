@@ -8,30 +8,35 @@ import React, { useState, useEffect } from 'react'
 export default function AccountLayout({ children }) {
     const router = useRouter()
 
+    const [title, setTitle] = useState<string>('')
     const [pathData, setPathData] = useState<object[]>([
         {
             value: '0',
             path: '/account',
             active: false,
-            label: 'Edit profile'
+            label: 'Edit profile',
+            title: 'Edit profile',
         },
         {
             value: '1',
             path: '/account/history',
             active: false,
-            label: 'Download history'
+            label: 'Download history',
+            title: 'Download history',
         },
         {
             value: '2',
             path: '/account/password',
             active: false,
-            label: 'Change password'
+            label: 'Change password',
+            title: 'Change password',
         },
         {
             value: '3',
             path: '/account/close',
             active: false,
-            label: 'Close account'
+            label: 'Close account',
+            title: 'Close account',
         },
     ])
 
@@ -41,6 +46,7 @@ export default function AccountLayout({ children }) {
         newPathData.forEach(path => {
             if (router.pathname === path.path) {
                 path.active = true
+                setTitle(path.title)
             } else {
                 path.active = false
             }
@@ -52,8 +58,8 @@ export default function AccountLayout({ children }) {
 
     return (
         <div className="account-layout">
-            <div className="flex px-3 py-[45px]">
-                <div className="menu w-1/3 md:w-1/4">
+            <div className="flex px-3 py-[45px] flex-col md:flex-row">
+                <div className="menu w-1/3 md:w-1/4 pb-9 md:pb-0">
                     <h3 className="mb-[30px] font-bold text-lg">Account settings</h3>
                     <ul className="flex flex-col gap-4">
                         {
@@ -64,7 +70,8 @@ export default function AccountLayout({ children }) {
                     </ul>
 
                 </div>
-                <div className="account-body">
+                <div className="account-body px-3 flex-1">
+                    <h1 className="font-bold text-lg mb-8">{title}</h1>
                     {children}
                 </div>
             </div>
