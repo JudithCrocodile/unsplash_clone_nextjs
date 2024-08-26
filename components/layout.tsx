@@ -19,7 +19,7 @@ import AvatarComponent from '@/components/avatar'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
-export default function Layout({ children, inAccountPage=false }: {children: ReactNode, inAccountPage: boolean}) {
+export default function Layout({ children, inAccountPage=false }: {children: ReactNode, inAccountPage?: boolean}) {
     const token = useSelector((state: RootState) => state.auth.token)
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
 
