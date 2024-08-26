@@ -9,6 +9,30 @@ import { TypePhoto } from '@/types'
 import { TypeTag } from '@/types'
 import { Input, Tabs, Tab, Button } from '@mui/material';
 import Divider from '@mui/material/Divider';
+import {StyledTabs, CustomerTab} from '@/components/tab'
+// import { styled } from '@mui/material/styles';
+
+interface StyledTabsProps {
+    label: string;
+  }
+// const CustomerTab = styled((props: StyledTabsProps) => <Tab disableRipple {...props} />)(
+//     ({ }) => ({
+//       color: 'rgb(118, 118, 118)',
+//       fontWeight: 500,
+//       fontSize: '14px',
+//       '&:hover': {
+//         color: 'rgb(17, 17, 17)',
+//       },
+//       '&.Mui-selected': {
+//         color: 'rgb(17, 17, 17)',
+//       },
+//       '&.Mui-focusVisible': {
+//         backgroundColor: '#d1eaff',
+//       },
+//     }),
+//   );
+
+
 
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -146,6 +170,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
 
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
+
+        console.log('handleCategoryChange')
         const newTab: TypeTag | undefined = allTabs.find(t => t.name === newValue)
         if (newTab) {
             setCurrentTab(newTab)
@@ -163,35 +189,35 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         <main
             className={`flex ${fullHeight && 'min-h-screen'} flex-col items-center ${inter.className}`}
         >
-
             {
-                (showCategoryBar && !getTabLoading) && <div className="category w-full px-6 flex gap-6">
-                    <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
+                (showCategoryBar && !getTabLoading) && 
+                <div className="category w-full px-6 flex gap-6 items-center">
+                    <StyledTabs value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
-                        <Tab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-                    </Tabs>
-                    <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
+                        <CustomerTab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    </StyledTabs>
+                    <div style={{backgroundColor: '#d1d1d1', height: '32px', width: '1px'}}></div>
+                    <StyledTabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         {
                             allTabs.map((tab: TypeTag, tabIndex: number) =>
-                                (<Tab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
+                                (<CustomerTab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
                             )
                         }
-                    </Tabs>
-
-                    <Divider></Divider>
+                    </StyledTabs>
 
                 </div>
+                    
             }
-
-            <div className={`mt-20 pb-12 px-12 lg:px-24 px-6 w-full ${!showTitle && 'mt-0 px-0'}`}>
-                {showTitle && <h2 className={'mb-12 text-3xl'}>List</h2>}
-                {photosList.length > 0 ? <ul className={`grid gap-2 gap-y-2 lg:gap-8 grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1`}>
+                    {showCategoryBar && <Divider className="w-full" sx={{marginTop: '-2px'}}></Divider>}
+            <div className={`mt-14 pb-12 px-12 px-6 w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
+                {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
+                {photosList.length > 0 ? <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
                     {
                         !loading ?
                             (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
                             (
-                                <div key={columnIndex} className={'flex flex-col gap-y-2'}>
+                                <div key={columnIndex} className={'flex flex-col gap-y-6'}>
                                     {column.map((item: TypePhoto, index: number) => (
                                         <li className={"item cursor-pointer"} key={index}>
                                             <div onClick={(event) => goToPhotoPage(event, item)}>
