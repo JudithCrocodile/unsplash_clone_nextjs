@@ -5,11 +5,19 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState, useEffect, ReactNode } from 'react'
 
+interface IPath {
+    value: string,
+    path: string,
+    active: boolean,
+    label: string,
+    title: string,
+}
+
 export default function AccountLayout({ children }: {children: ReactNode}) {
     const router = useRouter()
 
     const [title, setTitle] = useState<string>('')
-    const [pathData, setPathData] = useState<object[]>([
+    const [pathData, setPathData] = useState<IPath[]>([
         {
             value: '0',
             path: '/account',

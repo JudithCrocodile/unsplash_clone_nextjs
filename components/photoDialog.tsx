@@ -10,7 +10,6 @@ import OperationLine from './operationLine'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhotoList from './photoList'
-import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 import dynamic from 'next/dynamic';
 import TagList from '@/components/tagList'

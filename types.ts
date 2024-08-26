@@ -7,7 +7,7 @@ export type TypePhoto = {
     authorAavatar: String,
     location: String,
     createTime: String,
-    photo_tags: TypeTag[]
+    photo_tags: TypeTag[],
 
 }
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Avatar from '@mui/material/Avatar';
 import { useSelector } from 'react-redux';
+import type { RootState } from '@/store'
 
 export default function AvatarComponent({ size = '24px' }: { size: string }) {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)

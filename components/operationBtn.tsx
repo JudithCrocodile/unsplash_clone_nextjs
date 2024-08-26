@@ -9,12 +9,14 @@ import Typography from '@mui/material/Typography';
 
 
 
-export default function OperationBtn({ onClick, children, className, ...props  }: {children: ReactNode}) {
+export default function OperationBtn({ onClick, children, className, line  }: {
+    children: ReactNode, className: string, line: boolean,  onClick: () => void
+}) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
         position: 'relative',
-        border: props.line ? '1px solid rgb(209, 209, 209)' : '',
-        boxShadow: props.line ? 'rgba(0, 0, 0, 0.08) 0px 1px 1px 0px' : '',
+        border: line ? '1px solid rgb(209, 209, 209)' : '',
+        boxShadow: line ? 'rgba(0, 0, 0, 0.08) 0px 1px 1px 0px' : '',
         color: '#767676',
         borderRadius: '4px',
         padding: '0 11px',
@@ -24,7 +26,7 @@ export default function OperationBtn({ onClick, children, className, ...props  }
         backgroundColor: 'white',
         '&:hover': {
             zIndex: 1,
-            border: props.line ? '1px solid #111' : '',
+            border: line ? '1px solid #111' : '',
             color: '#111',
         },
         '& .MuiSvgIcon-root': {

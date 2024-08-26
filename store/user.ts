@@ -1,15 +1,18 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
+interface IUserInfo {
+    userName:  string,
+    email: string,
+    password:  string,
+    created_at:  string,
+    updated_at:  string,
+    firstName:  string,
+    lastName:  string,
+    avatarPath:  string,
+}
+
 interface AuthState {
-    userInfo: object,
-    // userName:  string,
-    // email: string,
-    // password:  string,
-    // created_at:  string,
-    // updated_at:  string,
-    // firstName:  string,
-    // lastName:  string,
-    // avatarPath:  string,
+    userInfo: IUserInfo,
 }
 
 const initialState: AuthState = {
