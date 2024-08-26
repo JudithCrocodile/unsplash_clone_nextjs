@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactNode } from 'react';
 import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography';
 
 
 
-
-export default function OperationBtn({ onClick, children, className, ...props  }) {
+export default function OperationBtn({ onClick, children, className, ...props  }: {children: ReactNode}) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
         position: 'relative',

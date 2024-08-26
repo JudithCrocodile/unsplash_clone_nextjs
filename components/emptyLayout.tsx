@@ -1,6 +1,6 @@
+import React, { ReactNode } from 'react'
 
-
-export default function EmptyLayout({ children }) {
+export default function EmptyLayout({ children }: {children: ReactNode}) {
 
 
 

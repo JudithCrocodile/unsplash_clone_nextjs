@@ -1,5 +1,5 @@
 import { Tabs, Tab } from '@mui/material';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import AvatarComponent from '@/components/avatar'
 import TagList from '@/components/tagList'
 import Tag from '@/components/tag'
@@ -14,7 +14,7 @@ import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux';
 import Link from 'next/link'
 
-export default function UserLayout({ children }) {
+export default function UserLayout({ children }: {children: ReactNode}) {
     const [currentTabName, setCurrentTabName] = useState<string>('0')
     // const [currentPathValue, setCurrentPathValue] = useState<string>('0')
     const router = useRouter()
@@ -108,7 +108,8 @@ export default function UserLayout({ children }) {
                         '&$selected': {
                             backgroundColor: 'unset',
                         },
-                    }} value="0" icon={<ImageIcon />} iconPosition="start" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                        paddingLeft: 0, paddingRight: 0, minWidth: 'unset'
+                    }} value="0" icon={<ImageIcon />} iconPosition="start" label='Photos' />
                     <Tab value="1" icon={<FavoriteIcon />} iconPosition="start" label='Likes' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     {/* <Tab value="2" icon={<FolderCopyIcon />} iconPosition="start" label='Collections' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     <Tab value="3" icon={<EqualizerIcon />} iconPosition="start" label='Stats' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} /> */}

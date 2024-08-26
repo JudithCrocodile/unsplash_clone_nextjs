@@ -9,7 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import OperationBtn from '../components/operationBtn'
 import { useRouter } from 'next/router'
 import UploadDialog from '../components/uploadDialog'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, ReactNode } from 'react'
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import Menu from '@mui/material/Menu';
@@ -19,7 +19,7 @@ import AvatarComponent from '@/components/avatar'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
-export default function Layout({ children, inAccountPage=false }: {inAccountPage: boolean}) {
+export default function Layout({ children, inAccountPage=false }: {children: ReactNode, inAccountPage: boolean}) {
     const token = useSelector((state: RootState) => state.auth.token)
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
 

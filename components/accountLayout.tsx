@@ -3,9 +3,9 @@ import Footer from '@/components/footer';
 import type { ReactElement } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 
-export default function AccountLayout({ children }) {
+export default function AccountLayout({ children }: {children: ReactNode}) {
     const router = useRouter()
 
     const [title, setTitle] = useState<string>('')
@@ -17,13 +17,13 @@ export default function AccountLayout({ children }) {
             label: 'Edit profile',
             title: 'Edit profile',
         },
-        {
-            value: '1',
-            path: '/account/history',
-            active: false,
-            label: 'Download history',
-            title: 'Download history',
-        },
+        // {
+        //     value: '1',
+        //     path: '/account/history',
+        //     active: false,
+        //     label: 'Download history',
+        //     title: 'Download history',
+        // },
         {
             value: '2',
             path: '/account/password',
@@ -58,7 +58,7 @@ export default function AccountLayout({ children }) {
 
     return (
         <div className="account-layout">
-            <div className="flex px-3 py-[45px] flex-col md:flex-row">
+            <div className="flex px-6 py-[45px] flex-col md:flex-row">
                 <div className="menu w-1/3 md:w-1/4 pb-9 md:pb-0">
                     <h3 className="mb-[30px] font-bold text-lg">Account settings</h3>
                     <ul className="flex flex-col gap-4">
