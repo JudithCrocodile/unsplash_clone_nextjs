@@ -2,7 +2,7 @@ import Image from "next/image";
 import OperationBtn from '../components/operationBtn'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-export default function perationLine( props ) {
+export default function perationLine( ) {
     const category = 0;
     const handleCategoryChange = ()=>{}
 

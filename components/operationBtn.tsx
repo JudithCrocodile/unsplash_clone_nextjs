@@ -9,8 +9,8 @@ import Typography from '@mui/material/Typography';
 
 
 
-export default function OperationBtn({ onClick, children, className, line  }: {
-    children: ReactNode, className: string, line: boolean,  onClick: () => void
+export default function OperationBtn({ onClick, children, className, line=false  }: {
+    children?: ReactNode, className: string, line?: boolean,  onClick?: () => void
 }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({

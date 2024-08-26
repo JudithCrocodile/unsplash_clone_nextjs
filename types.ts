@@ -1,29 +1,30 @@
 export type TypePhoto = {
-    _id: Number,
+    _id: number,
     path: string,
     title: string,
-    descriptio: String,
-    author: String,
-    authorAavatar: String,
-    location: String,
-    createTime: String,
+    descriptio: string,
+    author: string,
+    authorAavatar: string,
+    location: string,
+    createTime: string,
     photo_tags: TypeTag[],
 
 }
 
 export type TypeTag = {
-    _id: Number,
-    name: String,
-    created_at: String,
+    _id: number,
+    name: string,
+    created_at: string,
 }
 
 export type TypeUser = {
-    _id: Number,
-    userName: String,
-    email: String,
-    password: String,
-    created_at: String,
-    updated_at: String,
-    firstName: String,
-    lastName: String,
+    _id: number,
+    userName: string,
+    email: string,
+    password: string,
+    created_at: string,
+    updated_at: string,
+    firstName: string,
+    lastName: string,
+    avatarPath: string,
 }

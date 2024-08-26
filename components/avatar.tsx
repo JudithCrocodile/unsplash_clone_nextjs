@@ -3,15 +3,13 @@ import Avatar from '@mui/material/Avatar';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 
-export default function AvatarComponent({ size = '24px' }: { size: string }) {
+export default function AvatarComponent({ size = '24px', avatarPath }: { size?: string, avatarPath?: string }) {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
-    const avatarPath = userInfo.avatarPath || '/img_default-avatar.jpg'
-
-    console.log('userInfo', userInfo)
+    const path = avatarPath || userInfo.avatarPath || '/img_default-avatar.jpg'
 
     return (
         <div className="avatar">
-            <Avatar alt={'userName'} src={avatarPath} sx={{ width: size, height: size }} />
+            <Avatar alt={'userName'} src={path} sx={{ width: size, height: size }} />
         </div>
     )
 }

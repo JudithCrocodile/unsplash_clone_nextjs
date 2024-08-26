@@ -27,7 +27,7 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const isUserMenuOpen = Boolean(anchorEl);
-    const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleUserMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleUserMenuClose = () => {
@@ -108,8 +108,8 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                             aria-haspopup="true"
                             aria-expanded={isUserMenuOpen ? 'true' : undefined}
                             onClick={handleUserMenuClick}
-                            className="cursor-pointer" fontSize="medium" sx={{ '&:hover': 'black' }}>
-                            <AvatarComponent size={'32px'}></AvatarComponent>
+                            className="cursor-pointer">
+                            <AvatarComponent size='32px'></AvatarComponent>
 
                         </div>
 
