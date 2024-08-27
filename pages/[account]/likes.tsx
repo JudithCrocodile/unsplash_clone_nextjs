@@ -1,4 +1,3 @@
-import Layout from '@/components/layout'
 import UserLayout from '@/components/userLayout'
 import type { ReactElement } from 'react'
 import PhotoList from '@/components/photoList'

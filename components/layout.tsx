@@ -16,14 +16,21 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import AvatarComponent from '@/components/avatar'
+import {logout} from '@/store/auth'
+import {removeUserInfo} from '@/store/user'
+import {useDispatch} from 'react-redux'
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Layout({ children, inAccountPage=false }: {children: ReactNode, inAccountPage?: boolean}) {
+    const dispatch = useDispatch();
     const token = useSelector((state: RootState) => state.auth.token)
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
 
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
+    const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const isUserMenuOpen = Boolean(anchorEl);
@@ -35,9 +42,41 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
     };
 
     const openUploadDialog = () => {
-        console.log('openUploadDialog')
-        setIsOpenUploadDialog(true);
+        // console.log('openUploadDialog')
+        if(token) {
+            setIsOpenUploadDialog(true);
+
+        } else {
+            router.push(`/login`)
+        }
     }
+
+    const handleLogout = () => {
+        console.log('handleLogout')
+        handleUserMenuClose();
+
+        fetcher(`/user/logout`, {}).then(res => {
+            if (res.status === 200) {
+                dispatch(logout())
+                dispatch(removeUserInfo())
+                setSnackbarMessage('Successfully logged out')
+                setIsShowSnackbar(true)
+                router.push(`/`)
+
+                setTimeout(()=>{
+                    setIsShowSnackbar(false)
+                }, 2000)
+            }
+          })
+
+
+    }
+
+    useEffect(()=>{
+        handleLogout()
+
+    }, [])
+
 
 
 
@@ -96,12 +135,14 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                     </div>}
 
 
-                    {!inAccountPage && <div className={'new-img hidden md:block'}>
+                    {(!inAccountPage) && <div className={'new-img hidden md:block'}>
                         <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
                     </div>}
-                    {!inAccountPage && <div className={'notification hidden md:block'}>
+
+                    {/* todo notifictation */}
+                    {/* {!inAccountPage && <div className={'notification hidden md:block'}>
                         <NotificationsIcon className="cursor-pointer" fontSize="medium"></NotificationsIcon>
-                    </div>}
+                    </div>} */}
                     {token && <div className={'user'}>
 
                         <div aria-controls={isUserMenuOpen ? 'basic-menu' : undefined}
@@ -134,12 +175,14 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                                 <MenuItem onClick={handleUserMenuClose}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
                             </div>
                             <Divider />
-                            <MenuItem onClick={handleUserMenuClose}>Logout @{userInfo.userName}</MenuItem>
+                            <MenuItem onClick={handleLogout}>Logout @{userInfo.userName}</MenuItem>
                         </Menu>
                     </div>}
-                    {!inAccountPage && <div className={'menu'}>
+
+                    {/* todo menu */}
+                    {/* {!inAccountPage && <div className={'menu'}>
                         <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ '&:hover': 'text.primary' }}></MenuIcon>
-                    </div>}
+                    </div>} */}
 
                 </div>                
             </header>
@@ -147,6 +190,13 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
             <main>{children}</main>
 
             <UploadDialog open={isOpenUploadDialog} handleClose={closeUploadDialog}></UploadDialog>
+        
+            <Snackbar
+                open={isShowSnackbar}
+                autoHideDuration={2000}
+                message={snackbarMessage}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            />
         </div>
     )
 }
