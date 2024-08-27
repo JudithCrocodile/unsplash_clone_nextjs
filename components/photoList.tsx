@@ -9,35 +9,17 @@ import { TypePhoto } from '@/types'
 import { TypeTag } from '@/types'
 import { Input, Tabs, Tab, Button } from '@mui/material';
 import Divider from '@mui/material/Divider';
-import {StyledTabs, CustomerTab} from '@/components/tab'
-// import { styled } from '@mui/material/styles';
+import { StyledTabs, CustomerTab } from '@/components/tab'
+import Skeleton from '@mui/material/Skeleton';
 
 interface StyledTabsProps {
     label: string;
-  }
-// const CustomerTab = styled((props: StyledTabsProps) => <Tab disableRipple {...props} />)(
-//     ({ }) => ({
-//       color: 'rgb(118, 118, 118)',
-//       fontWeight: 500,
-//       fontSize: '14px',
-//       '&:hover': {
-//         color: 'rgb(17, 17, 17)',
-//       },
-//       '&.Mui-selected': {
-//         color: 'rgb(17, 17, 17)',
-//       },
-//       '&.Mui-focusVisible': {
-//         backgroundColor: '#d1eaff',
-//       },
-//     }),
-//   );
-
-
+}
 
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, authorId = null, fullHeight=true }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, authorId: string | null, propTabName: string | null, fullHeight: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, authorId = null, fullHeight = true, fullWidth = false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, authorId: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
@@ -91,14 +73,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
 
 
-    const [photosList, setPhotosList] = useState([]);
+    const [photosList, setPhotosList] = useState([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
     const [loading, setLoading] = useState(false);
 
     const getPhotoList = (page: number): void => {
-        if (page === 1) {
-            setPhotosList([])
-        }
-
         const params = JSON.stringify({
             page,
             tabId: propTabId || currentTab?._id,
@@ -111,10 +89,15 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             body: params
         }).then(res => {
             if (res.status === 200) {
-                const newPhotoList: TypePhoto[] = [...photosList, ...res.data.photos]
+                if (page === 1) {
+                    setPhotosList([...res.data.photos])
+                } else {
+                    const newPhotoList: TypePhoto[] = [...photosList, ...res.data.photos]
 
 
-                setPhotosList(newPhotoList)
+                    setPhotosList(newPhotoList)
+                }
+
 
                 setLoading(false)
             }
@@ -190,13 +173,13 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             className={`flex ${fullHeight && 'min-h-screen'} flex-col items-center ${inter.className}`}
         >
             {
-                (showCategoryBar && !getTabLoading) && 
+                (showCategoryBar && !getTabLoading) &&
                 <div className="category w-full px-6 flex gap-6 items-center">
                     <StyledTabs value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         <CustomerTab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     </StyledTabs>
-                    <div style={{backgroundColor: '#d1d1d1', height: '32px', width: '1px'}}></div>
+                    <div style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}></div>
                     <StyledTabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         {
@@ -207,20 +190,19 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                     </StyledTabs>
 
                 </div>
-                    
+
             }
-                    {showCategoryBar && <Divider className="w-full" sx={{marginTop: '-2px'}}></Divider>}
-            <div className={`mt-14 pb-12 px-12 px-6 w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
+            {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-2px' }}></Divider>}
+            <div className={`mt-14 pb-12 ${fullWidth ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
                 {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
                 {photosList.length > 0 ? <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
                     {
-                        !loading ?
                             (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
                             (
                                 <div key={columnIndex} className={'flex flex-col gap-y-6'}>
                                     {column.map((item: TypePhoto, index: number) => (
                                         <li className={"item cursor-pointer"} key={index}>
-                                            <div onClick={(event) => goToPhotoPage(event, item)}>
+                                            {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
                                                 <div className={'item__container mx-auto w-full'}>
                                                     <div className={"item__img w-full"} style={{ height: 'auto' }}>
                                                         <img src={item.path} alt="" />
@@ -241,6 +223,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
                                                 </div>
                                             </div>
+                                                : <Skeleton variant="rectangular" width={'100%'} height={300} />}
 
 
 
@@ -250,9 +233,6 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                             )
 
                             ))
-
-                            :
-                            <div>Loading...</div>
                     }
                 </ul>
                     :

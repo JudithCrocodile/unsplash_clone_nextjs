@@ -72,14 +72,6 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
 
     }
 
-    useEffect(()=>{
-        handleLogout()
-
-    }, [])
-
-
-
-
     const router = useRouter()
 
     const isLogin = router.pathname.includes('login')

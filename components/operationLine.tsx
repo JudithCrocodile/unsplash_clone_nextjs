@@ -8,7 +8,7 @@ export default function perationLine( ) {
 
     return (
         <div className={""}>
-                          <OperationBtn className={"item__favorite-btn"}>
+                          <OperationBtn line className={"item__favorite-btn"}>
                             <FavoriteIcon />
                           </OperationBtn>
       </div>

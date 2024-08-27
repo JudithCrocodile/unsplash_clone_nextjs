@@ -17,8 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .populate('photo_tags')
       .exec();
 
+      const photosWithAuthor = await Photo.populate(photo, {path: 'author'})
+
     if(photo) {
-      res.status(200).send({status: 200, data: photo})
+      res.status(200).send({status: 200, data: photosWithAuthor})
     } else {
       res.status(404).send('photo not found')
     }

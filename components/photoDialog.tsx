@@ -14,6 +14,7 @@ import { TypePhoto } from '@/types'
 import dynamic from 'next/dynamic';
 import TagList from '@/components/tagList'
 import Tag from '@/components/tag'
+import Skeleton from '@mui/material/Skeleton';
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -109,16 +110,21 @@ export default function Photo({ photoId }: Props) {
 
         <DialogContent>
           {
-            photosData?.path ?
               <div className="detail">
-                <AuthorInfo authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
 
-                <div className={'my-4'}>
-                  <OperationLine></OperationLine>
+                <div className="flex justify-between">
+                  <AuthorInfo loding={loading} authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
+
+                  <div className={'my-4'}>
+                    <OperationLine></OperationLine>
+                  </div>                  
                 </div>
 
+
                 <div className="detail__photo max-w-xl w-full mx-auto">
-                  <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
+                  {!loading ?
+                    <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
+                  : <Skeleton variant="rectangular" width={'100%'} height={500} />}
 
                 </div>
 
@@ -135,18 +141,22 @@ export default function Photo({ photoId }: Props) {
                 </div>
                 <TagList>
                   {
-                    photosData.photo_tags.map(t=><Tag key={t.name} name={t.name} ></Tag>)
+                    photosData?.photo_tags ? photosData.photo_tags.map(t=><Tag key={t.name} name={t.name} ></Tag>)
+                    : <Skeleton variant="rectangular" width={100} height={30} />
                   }
                 </TagList>
 
                 <div className="detail__other-photos">
 
-                   <h3 className={'mb-12 text-2xl'}>Related images</h3>
-                  <PhotoList showCategoryBar={false} showTitle={false} propTabId={photosData.photo_tags.map(t=>t._id)}></PhotoList>
-                </div>
+                   <h3 className={'mb-6 text-2xl mt-[72px]'}>Related images</h3>
+                   <div style={{marginTop: '-3.5rem'}}>
+                    <PhotoList fullWidth showCategoryBar={false} showTitle={false} propTabId={photosData?.photo_tags?.map(t=>t._id)}></PhotoList>
+                
+
+                    </div>
+                   </div>
 
               </div>
-              : <div>Loading...</div>
           }
 
         </DialogContent>
