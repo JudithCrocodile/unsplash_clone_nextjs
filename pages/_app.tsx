@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { Provider } from 'react-redux';
 import { store, persistor } from '@/store'
 import { PersistGate } from 'redux-persist/integration/react'
+import Head from 'next/head';
 
 const theme = createTheme({
   palette: {
@@ -37,14 +38,27 @@ export default function App({ Component, pageProps }: AppProps) {
 
   //   </ThemeProvider>
 
-  return <Provider store={store}>
+  return (
+    <>
+    <Head>
+      <title>Unsplash</title>
+      <meta name="description" content="Do-whatever-you-want free HD photos. Gifted by the world's most generous community of photographers."/>
+      <meta property="og:title" content="Unsplash" />
+      <meta property="og:description" content="Do-whatever-you-want free HD photos. Gifted by the world's most generous community of photographers." />
+      <meta property="og:image" content="/unsplash_clone.png" />
+      <meta name="twitter:card" content="Do-whatever-you-want free HD photos. Gifted by the world's most generous community of photographers." />
+    </Head>
+  <Provider store={store}>
     <PersistGate persistor={persistor}>
 
       <ThemeProvider theme={theme}>{
         getLayout(<Component {...pageProps} />)
       }</ThemeProvider>
     </PersistGate>
-  </Provider>
+  </Provider>    
+    </>
+  )
+
 
 
 

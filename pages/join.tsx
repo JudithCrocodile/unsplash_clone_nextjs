@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link'
 import ButtonBase from '@mui/material/ButtonBase';
 import { styled } from '@mui/material/styles';
-import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import EmptyLayout from '../components/emptyLayout'
 import type { ReactElement, ChangeEvent } from 'react'
 import React, { useState, } from 'react';
@@ -124,7 +123,7 @@ export default function Join() {
       <div className="hero text-white px-3 py-8 md:flex md:w-[40%] md:flex-col md:px-[5%]">
         <div className={'icon mb-8'}>
           <Link href={`/`}>
-            <AutoAwesomeMosaicIcon fontSize="large" className="cursor-pointer md:w-12 md:h-12"></AutoAwesomeMosaicIcon>
+            <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{flexShrink: '0'}}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
           </Link>
         </div>
         <div className='md:my-auto'>
@@ -291,8 +290,7 @@ export default function Join() {
                     border: '1px solid #111'
                   }
                 }}
-                id="password" aria-describedby="password"
-                maxlength="8" />
+                id="password" aria-describedby="password" />
                                   {
                   validation.password.error && <div style={{color: '#e25c3d'}}>
                     {validation.password.message}

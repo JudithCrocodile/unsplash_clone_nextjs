@@ -1,5 +1,4 @@
 import { Input, Tabs, Tab, Button } from '@mui/material';
-import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import SearchIcon from '@mui/icons-material/Search';
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -104,7 +103,7 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                 <div className={'header flex justify-between p-4 gap-4 items-center'}>
                     <div className={'icon'}>
                         <Link href={`/`}>
-                            <AutoAwesomeMosaicIcon fontSize="large" className="cursor-pointer"></AutoAwesomeMosaicIcon>
+                        <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{flexShrink: '0'}}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
                         </Link>
                     </div>
                     {!inAccountPage && <div className={'filter-container flex-1'}>

@@ -1,15 +1,9 @@
-import Layout from '@/components/layout'
-import UserLayout from '@/components/userLayout'
-import type { ReactElement } from 'react'
-import PhotoList from '@/components/photoList'
-import { useSelector } from 'react-redux';
-import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 
 export default function MakeSomethingAwesome() {
 
     return(
         <div className='flex flex-col items-center py-20'>
-            <AutoAwesomeMosaicIcon fontSize="large" className="cursor-pointer md:w-12 md:h-12"></AutoAwesomeMosaicIcon>
+            <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{flexShrink: '0'}}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
             <p className='mt-2 text-slate-500'>Make something awesome</p>
         </div>
     )
