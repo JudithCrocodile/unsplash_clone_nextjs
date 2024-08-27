@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import {useDispatch} from 'react-redux'
 import {setToken} from '@/store/auth'
 import {setUserInfo} from '@/store/user'
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -20,6 +21,8 @@ export default function Login() {
         email: '',
         password: '',
     })
+    const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -37,11 +40,18 @@ export default function Login() {
                 body: JSON.stringify(loginForm)
             }
         ).then(res=>{
+            console.log(res)
             if (res.status === 200) {
                 dispatch(setToken(res.token))
                 dispatch(setUserInfo(res.userInfo))
-            }         
-            router.push(`/`, undefined, { shallow: true })   
+                router.push(`/`, undefined, { shallow: true })   
+            } else {
+                setSnackbarMessage('Invalid email or password.')
+                setIsShowSnackbar(true)
+                setTimeout(()=>{
+                    setIsShowSnackbar(false)
+                }, 2000)
+            }      
         })
 
     }
@@ -164,7 +174,22 @@ export default function Login() {
 
 
 
-
+            <Snackbar
+                open={isShowSnackbar}
+                autoHideDuration={2000}
+                message={snackbarMessage}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                sx={{
+                    backgroundColor: '#e25c3d',
+                    '.MuiPaper-root': {
+                        backgroundColor: '#e25c3d',
+                    },
+                    '.MuiSnackbarContent-message': {
+                        textAlign: 'center',
+                        width: '100%'
+                    }
+                }}
+            />
 
         </main>
     );

@@ -8,6 +8,8 @@ import EmptyLayout from '../components/emptyLayout'
 import type { ReactElement, ChangeEvent } from 'react'
 import React, { useState, } from 'react';
 import { useRouter } from 'next/router'
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import { validateEmail } from '@/util';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -22,15 +24,66 @@ export default function Join() {
     lastName: '',
   })
 
+  const [validation, setValidation] = useState({
+    email: {error: false, message: 'Email is invalid'},
+    password: {error: false, message: 'Username must have at least one letter and contain only letters, digits, or underscores (no spaces)'},
+    userName: {error: false, message: ''},
+    firstName: {error: false, message: ''},
+    lastName: {error: false, message: ''},
+  })
+
+  const [showErrorMessage, setShowErrorMessage] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setCreateForm((prevUser) => ({
       ...prevUser,
       [name]: value
     }))
+
+    if(name === 'password') {
+      if(value.length < 8) {
+        const newValidation = {...validation}
+        newValidation[name].error = true
+        setValidation(newValidation)
+      }
+
+    }
   };
 
-  function submit() {
+  function submit(): void {
+
+    const newValidation = JSON.parse(JSON.stringify(validation))
+
+      let error: boolean = false
+    for (let key in createForm) {
+      if(!createForm[key]){
+        error = true
+        newValidation[key].error = true
+      } else if(key === 'email'){
+          if(!validateEmail(createForm[key])){
+            error = true
+            newValidation[key].error = true
+          } else {
+            newValidation[key].error = false
+          }
+      }
+       else {
+        newValidation[key].error = false
+      }
+
+      setValidation(newValidation)
+
+
+    }
+      if(error){
+        return;
+      } else {
+        setShowErrorMessage(false);
+
+      }
+
     fetcher('/user/create-user',
       {
         method: 'POST',
@@ -40,6 +93,8 @@ export default function Join() {
       if (res.status === 200) {
         // localStorage.setItem('token', res.token);
         router.push(`/`, undefined, { shallow: true })
+      } else {
+        setShowErrorMessage(true);
       }
     })
   }
@@ -88,6 +143,14 @@ export default function Join() {
           <p>Already have an account? &nbsp;<span>Login</span></p>
         </div>
 
+        {showErrorMessage && <div style={{
+              backgroundColor: '#fdf6f4',
+              color: '#e25c3d',
+        }}
+        className='px-4 py-3 mb-8'>
+        We couldn't create your account, kindly address the issues outlined below.
+      </div>}
+
 
         <div className="card">
 
@@ -105,6 +168,7 @@ export default function Join() {
                 <label htmlFor="email" className="mb-2">First name</label>
                 {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                 <OutlinedInput
+                  error={validation.firstName.error}
                   value={createForm.firstName}
                   name="firstName"
                   onChange={handleChange}
@@ -115,6 +179,11 @@ export default function Join() {
                     }
                   }}
                   id="firstName" aria-describedby="firstName" />
+                  {
+                  validation.firstName.error && <div style={{color: '#e25c3d'}}>
+                    {validation.firstName.message}
+                  </div>
+                  }
               </FormControl>
               <FormControl fullWidth className="m-0" sx={{
                 '&.MuiFormControl-root': {
@@ -124,6 +193,7 @@ export default function Join() {
                 <label htmlFor="email" className="mb-2">Last name</label>
                 {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                 <OutlinedInput
+                  error={validation.lastName.error}
                   value={createForm.lastName}
                   name="lastName"
                   onChange={handleChange}
@@ -134,6 +204,11 @@ export default function Join() {
                     }
                   }}
                   id="lastName" aria-describedby="lastName" />
+                                    {
+                  validation.lastName.error && <div style={{color: '#e25c3d'}}>
+                    {validation.lastName.message}
+                  </div>
+                  }
               </FormControl>
             </div>
             <FormControl fullWidth className="m-0" sx={{
@@ -150,6 +225,7 @@ export default function Join() {
 
               {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
               <OutlinedInput
+                  error={validation.email.error}
                 value={createForm.email}
                 name="email"
                 onChange={handleChange}
@@ -160,6 +236,11 @@ export default function Join() {
                   }
                 }}
                 id="email" aria-describedby="email" />
+                                  {
+                  validation.email.error && <div style={{color: '#e25c3d'}}>
+                    {validation.email.message}
+                  </div>
+                  }
             </FormControl>
             <FormControl fullWidth className="m-0" sx={{
               '&.MuiFormControl-root': {
@@ -169,6 +250,7 @@ export default function Join() {
               <label htmlFor="username" className="mb-2">Username</label>
               {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
               <OutlinedInput
+                  error={validation.userName.error}
                 value={createForm.userName}
                 name="userName"
                 onChange={handleChange}
@@ -179,6 +261,11 @@ export default function Join() {
                   }
                 }}
                 id="userName" aria-describedby="userName" />
+                                  {
+                  validation.userName.error && <div style={{color: '#e25c3d'}}>
+                    {validation.userName.message}
+                  </div>
+                  }
             </FormControl>
             <FormControl fullWidth sx={{
               '&.MuiFormControl-root': {
@@ -193,6 +280,7 @@ export default function Join() {
                 </FormHelperText>
               </div>
               <OutlinedInput
+                  error={validation.password.error}
                 value={createForm.password}
                 name="password"
                 type="password"
@@ -203,7 +291,13 @@ export default function Join() {
                     border: '1px solid #111'
                   }
                 }}
-                id="password" aria-describedby="password" />
+                id="password" aria-describedby="password"
+                maxlength="8" />
+                                  {
+                  validation.password.error && <div style={{color: '#e25c3d'}}>
+                    {validation.password.message}
+                  </div>
+                  }
 
             </FormControl>
             <LoginBtn onClick={submit}>Join</LoginBtn>
