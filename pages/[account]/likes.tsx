@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import PhotoList from '@/components/photoList'
 import MakeSomethingAwesome from '@/components/makeSomethingAwesome'
 import { useSelector } from 'react-redux';
+import Layout from '@/components/layout'
 
 export default function Account() {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
