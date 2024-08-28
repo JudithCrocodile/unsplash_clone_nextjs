@@ -207,6 +207,9 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                         <li className={"item"} key={index}>
                                             {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
                                                 <div className={'item__container mx-auto w-full'}>
+                                                    <div className="item__context md:hidden">
+                                                     <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
+                                                    </div>
                                                     <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
                                                         <img src={item.path} alt="" />
                                                     </div>
@@ -218,7 +221,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                                                 </OperationLine>
                                                             </div>
                                                         </div>
-                                                        <div className="item__bottom">
+                                                        <div className="item__bottom hidden md:block">
                                                             <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
                                                         </div>
 
