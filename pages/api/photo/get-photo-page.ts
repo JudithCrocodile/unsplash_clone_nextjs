@@ -12,7 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const pageSize = parseInt(body.ppageSizeage) || 10;
   const tabId = body.tabId;
   const category = body.category;
-  const authorId = body.authorId;
+  let userName = body.userName || '';
+
+  if(userName.startsWith('@')){
+    userName = userName.substring(1);
+  }
 
   try {
     const filter = {};
@@ -37,8 +41,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ...(category ? [{
           $match: {'tags.name': category}
         }] : []),
-        ...(authorId ? [{
-          $match: {'author': new mongoose.Types.ObjectId(authorId)}
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'author',
+            foreignField: '_id',
+            as: 'authorDetail'
+          }
+        },
+        ...(userName ? [{
+          $match: {'authorDetail.userName': userName}
         }] : []),
         {
           $facet: {

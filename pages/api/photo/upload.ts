@@ -22,10 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // verify Bear token empty
     const token = req.headers.authorization?.split(' ')[1];
+    console.log('token', token)
     if (!token) return res.status(401).json({error: 'No token provided'});
 
     // verify token
     const user = await getUserByToken(token);
+    console.log('user', user)
     if(!user) return res.status(401).json({error: 'Invalid token'})
 
     if(req.method === 'POST') {

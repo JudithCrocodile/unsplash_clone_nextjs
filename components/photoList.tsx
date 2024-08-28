@@ -19,7 +19,7 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, authorId = null, fullHeight = true, fullWidth = false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, authorId: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = null, fullHeight = true, fullWidth = false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, userName: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
@@ -31,7 +31,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     })
 
     useEffect(() => {
-        getPhotoList(1)
+        // getPhotoList(1)
         function handleResize() {
             setWindowSize({
                 width: window.innerWidth,
@@ -47,7 +47,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     useEffect(() => {
         getPhotoList(1)
-    }, [propTabName])
+    }, [propTabName, userName])
 
     useEffect(() => {
         function handleResize() {
@@ -81,8 +81,11 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             page,
             tabId: propTabId || currentTab?._id,
             category: propTabName,
-            authorId,
+            userName,
         })
+
+        console.log('params', params)
+
         setLoading(true)
         fetcher('/photo/get-photo-page', {
             method: 'POST',
@@ -201,10 +204,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                             (
                                 <div key={columnIndex} className={'flex flex-col gap-y-6'}>
                                     {column.map((item: TypePhoto, index: number) => (
-                                        <li className={"item cursor-pointer"} key={index}>
+                                        <li className={"item"} key={index}>
                                             {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
                                                 <div className={'item__container mx-auto w-full'}>
-                                                    <div className={"item__img w-full"} style={{ height: 'auto' }}>
+                                                    <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
                                                         <img src={item.path} alt="" />
                                                     </div>
                                                     <div className={"item__context text-left text-xl"}>

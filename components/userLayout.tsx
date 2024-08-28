@@ -13,6 +13,7 @@ import Divider from '@mui/material/Divider';
 import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux';
 import Link from 'next/link'
+import { StyledTabs, CustomerTab } from '@/components/tab'
 
 export default function UserLayout({ children }: {children: ReactNode}) {
     const [currentTabName, setCurrentTabName] = useState<string>('0')
@@ -102,18 +103,18 @@ export default function UserLayout({ children }: {children: ReactNode}) {
             </div>
 
             <div className="tab__container px-5">
-                <Tabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleTabChange} aria-label="category tabs" variant="scrollable"
+                <StyledTabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleTabChange} aria-label="category tabs" variant="scrollable"
                     scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
-                    <Tab sx={{
+                    <CustomerTab sx={{
                         '&$selected': {
                             backgroundColor: 'unset',
                         },
                         paddingLeft: 0, paddingRight: 0, minWidth: 'unset'
                     }} value="0" icon={<ImageIcon />} iconPosition="start" label='Photos' />
-                    <Tab value="1" icon={<FavoriteIcon />} iconPosition="start" label='Likes' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
+                    <CustomerTab value="1" icon={<FavoriteIcon />} iconPosition="start" label='Likes' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     {/* <Tab value="2" icon={<FolderCopyIcon />} iconPosition="start" label='Collections' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                     <Tab value="3" icon={<EqualizerIcon />} iconPosition="start" label='Stats' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} /> */}
-                </Tabs>
+                </StyledTabs>
             </div>
             <Divider></Divider>
             <main>{children}</main>

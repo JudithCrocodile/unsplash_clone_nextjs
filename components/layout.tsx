@@ -15,14 +15,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import AvatarComponent from '@/components/avatar'
-import {logout} from '@/store/auth'
-import {removeUserInfo} from '@/store/user'
-import {useDispatch} from 'react-redux'
+import { logout } from '@/store/auth'
+import { removeUserInfo } from '@/store/user'
+import { useDispatch } from 'react-redux'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
-export default function Layout({ children, inAccountPage=false }: {children: ReactNode, inAccountPage?: boolean}) {
+export default function Layout({ children, inAccountPage = false }: { children: ReactNode, inAccountPage?: boolean }) {
     const dispatch = useDispatch();
     const token = useSelector((state: RootState) => state.auth.token)
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
@@ -32,17 +32,29 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
     const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    console.log('anchorEl', anchorEl)
+    const [anchorMenuEl, setaAnchorMenuEl] = React.useState<null | HTMLElement>(null);
     const isUserMenuOpen = Boolean(anchorEl);
+    const isMenuOpen = Boolean(anchorMenuEl);
+    console.log('isUserMenuOpen', isUserMenuOpen)
+
     const handleUserMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
         setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        setaAnchorMenuEl(event.currentTarget);
     };
     const handleUserMenuClose = () => {
         setAnchorEl(null);
     };
+    const handleMenuClose = () => {
+        setaAnchorMenuEl(null);
+    };
 
     const openUploadDialog = () => {
-        // console.log('openUploadDialog')
-        if(token) {
+        if (!token) {
             setIsOpenUploadDialog(true);
 
         } else {
@@ -62,11 +74,11 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                 setIsShowSnackbar(true)
                 router.push(`/`)
 
-                setTimeout(()=>{
+                setTimeout(() => {
                     setIsShowSnackbar(false)
                 }, 2000)
             }
-          })
+        })
 
 
     }
@@ -103,7 +115,7 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                 <div className={'header flex justify-between p-4 gap-4 items-center'}>
                     <div className={'icon'}>
                         <Link href={`/`}>
-                        <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{flexShrink: '0'}}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
+                            <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{ flexShrink: '0' }}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
                         </Link>
                     </div>
                     {!inAccountPage && <div className={'filter-container flex-1'}>
@@ -147,7 +159,7 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
 
 
                         <Menu
-                            id="basic-menu"
+                            id="user-menu"
                             anchorEl={anchorEl}
                             open={isUserMenuOpen}
                             onClose={handleUserMenuClose}
@@ -170,18 +182,55 @@ export default function Layout({ children, inAccountPage=false }: {children: Rea
                         </Menu>
                     </div>}
 
-                    {/* todo menu */}
-                    {/* {!inAccountPage && <div className={'menu'}>
-                        <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ '&:hover': 'text.primary' }}></MenuIcon>
-                    </div>} */}
+                    {!inAccountPage && <div className={'menu'}>
 
-                </div>                
+                        <div aria-controls={isMenuOpen ? 'menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={isMenuOpen ? 'true' : undefined}
+                            onClick={handleMenuClick}
+                            className="cursor-pointer">
+                            {/* <AvatarComponent size='32px'></AvatarComponent> */}
+                            <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ '&:hover': 'text.primary' }}></MenuIcon>
+
+                        </div>
+
+                        <Menu
+                            id="menu"
+                            anchorEl={anchorMenuEl}
+                            open={isMenuOpen}
+                            onClose={handleMenuClose}
+                            MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                            }}
+                            sx={{
+                                marginTop: '20px'
+                            }}
+                        >
+
+                            <Divider />
+                            <div className="flex">
+                                <div className='md:hidden block'>
+                                    <MenuItem onClick={handleMenuClose}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
+                                </div>
+                                {token && <MenuItem onClick={handleLogout} sx={{
+                                    marginLeft: '-1rem'
+                                }}>
+                                    <Link href={`/login`}>
+                                        <OperationBtn className="whitespace-nowrap" line>Log in</OperationBtn>
+                                    </Link>
+                                </MenuItem>}
+                            </div>
+
+                        </Menu>
+                    </div>}
+
+                </div>
             </header>
 
             <main>{children}</main>
 
             <UploadDialog open={isOpenUploadDialog} handleClose={closeUploadDialog}></UploadDialog>
-        
+
             <Snackbar
                 open={isShowSnackbar}
                 autoHideDuration={2000}

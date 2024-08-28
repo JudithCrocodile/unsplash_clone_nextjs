@@ -12,6 +12,11 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DialogActions from '@mui/material/DialogActions';
+import PlaceIcon from '@mui/icons-material/Place';
+import { useRouter } from 'next/router'
+import {logout} from '@/store/auth'
+import {useDispatch} from 'react-redux'
+import {removeUserInfo} from '@/store/user'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +26,9 @@ interface props {
 }
 
 export default function UploadDialog({ open, handleClose }: props) {
+    const router = useRouter()
     const token = useSelector((state: RootState) => state.auth.token)
+    const dispatch = useDispatch();
 
     const onClose = () => {
         handleClose();
@@ -41,6 +48,7 @@ export default function UploadDialog({ open, handleClose }: props) {
     const [selectedFile, setSelectedFile] = useState<File[] | []>([]);
     const [message, setMessage] = useState<string>('');
     const [selectedFileDetail, setSelectedFileDetail] = useState<fileDetailType[]>([]);
+    const [newTabValue, setNewTabValue] = useState<string>('')
     const maxImageLength = 10;
 
     // 0: upload, 1: serImageDetail
@@ -52,18 +60,18 @@ export default function UploadDialog({ open, handleClose }: props) {
             const newSelectedFile = [...selectedFile, ...e.target.files]
             // setSelectedFile([...selectedFile, ...e.target.files]);
 
-            if(newSelectedFile.length > maxImageLength){
+            if (newSelectedFile.length > maxImageLength) {
                 newSelectedFile.splice(maxImageLength)
             }
 
             setSelectedFile(newSelectedFile)
 
             for (let i: number = 0; i < newSelectedFile.length; i++) {
-                if(!selectedFileDetail[i]){
+                if (!selectedFileDetail[i]) {
                     const reader = new FileReader();
 
                     reader.onload = function (file) {
-                        setSelectedFileDetail((oldArray: string[]): string[] => [...oldArray, { photoUrl: file.target.result, tabs: [''], location: '', originalFile: e.target.files[i], description: '' }])
+                        setSelectedFileDetail((oldArray: string[]): string[] => [...oldArray, { photoUrl: file.target.result, tabs: [], location: '', originalFile: e.target.files[i], description: '' }])
                     }
                     reader.readAsDataURL(newSelectedFile[i])
                 }
@@ -74,11 +82,24 @@ export default function UploadDialog({ open, handleClose }: props) {
         }
     };
 
+    const removePhoto = (photoIndex: number) => {
+        const newPhotoValues = [...selectedFileDetail]
+        newPhotoValues.splice(photoIndex, 1)
+
+        setSelectedFileDetail(newPhotoValues)
+
+        const newSelectedFile = [...selectedFile]
+        newSelectedFile.splice(photoIndex, 1)
+
+        setSelectedFile(newSelectedFile)
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!selectedFileDetail) {
             setMessage('Please select a file first.');
+            setIsShowSnackbar(true)
             return;
         }
 
@@ -105,23 +126,43 @@ export default function UploadDialog({ open, handleClose }: props) {
                 const result = await res.json();
                 // setMessage(`File uploaded successfully: ${result.file.filename}`);
                 onClose();
+                setMessage('Upload successfully')
+                setIsShowSnackbar(true)
+            }else if(res.status === 401) {
+                dispatch(logout())
+                dispatch(removeUserInfo())
+                onClose();
+                router.push(`/login`)
+                setMessage('Please login');
                 setIsShowSnackbar(true)
             } else {
                 setMessage('Failed to upload file');
+                setIsShowSnackbar(true)
             }
         } catch (error) {
             setMessage('Error uploading file');
+            setIsShowSnackbar(true)
         }
     };
+
+    useEffect(()=>{
+setTimeout(()=>{
+    setIsShowSnackbar(false)
+}, 2000)
+    }, [message])
 
 
     const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
 
-    const handleTabInputChange = (photoIndex: number, tabIndex: number, newValue: string) => {
+    const handleLocationInputChange = (photoIndex: number, newValue: string) => {
         const newPhotoValues = [...selectedFileDetail]
-        newPhotoValues[photoIndex].tabs[tabIndex] = newValue
+        newPhotoValues[photoIndex].location = newValue
 
         setSelectedFileDetail(newPhotoValues)
+    }
+
+    const handleTabInputChange = (newValue: string) => {
+        setNewTabValue(newValue)
     }
 
     const handleDescriptionInputChange = (photoIndex: number, newValue: string) => {
@@ -146,9 +187,12 @@ export default function UploadDialog({ open, handleClose }: props) {
     // keydown on Enter and create a new tab
     const keyDownTab = (photoIndex: number, key: string) => {
         if (key === 'Enter') {
+
             const newPhotoValues = [...selectedFileDetail]
-            newPhotoValues[photoIndex].tabs.push('')
+            newPhotoValues[photoIndex].tabs.push(newTabValue)
+
             setSelectedFileDetail(newPhotoValues)
+            setNewTabValue('')
         }
     }
 
@@ -207,7 +251,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                         <div className='flex flex-col items-center mt-auto cursor-pointer'>
 
                                             <Button
-                                                sx={{boxShadow: 'unset'}}
+                                                sx={{ boxShadow: 'unset' }}
                                                 component="label"
                                                 role={undefined}
                                                 variant="contained"
@@ -247,7 +291,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
                                     <div style={{ 'width': '300px' }} className='text-center cursor-pointer py-8'>
                                         <Button
-                                            sx={{boxShadow: 'unset'}}
+                                            sx={{ boxShadow: 'unset' }}
                                             component="label"
                                             role={undefined}
                                             variant="contained"
@@ -255,7 +299,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                             className='flex flex-col items-center mt-auto cursor-pointer'
                                         >
                                             <AddCircleIcon color="info" sx={{ 'width': '60px', height: '60px' }}></AddCircleIcon>
-                                            <p className='pt-4 text-gray-500'>Add up to {maxImageLength - selectedFile.length} more images</p>
+                                            <p className='pt-4 text-gray-500'>Add up to {maxImageLength - selectedFileDetail.length} more images</p>
                                             <UploadInput></UploadInput>
 
                                         </Button>
@@ -265,14 +309,38 @@ export default function UploadDialog({ open, handleClose }: props) {
                                         {selectedFileDetail.map((detail, photoIndex) =>
                                             <div className={`photo `} key={photoIndex} style={{ width: '300px' }}>
                                                 <div>
-                                                    <img src={detail.photoUrl} alt="prev-image" width="100%" className={'photo__img flex-1'} />
+                                                    <div className="photo__img-container cursor-pointer relative">
+                                                        <img src={detail.photoUrl} alt="prev-image" width="100%" className={'photo__img flex-1'} />
+                                                        <div className="photo__img-detail-container absolute top-0 right-0 w-full h-full text-white">
+                                                            <div className="photo__remove-btn-container top-2 right-2 absolute w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
+                                                                <CloseIcon color="primary" className="cursor-pointer" fontSize="medium" sx={{ "width": '17px', '&:hover': 'text.primary' }} onClick={() => removePhoto(photoIndex)}></CloseIcon>
+                                                            </div>
+                                                            <div className="photo_location-container absolute bottom-2 left-2 bg-black/70 rounded-full px-2 py-1 text-xs">
+                                                                <PlaceIcon className="top-0 right-0 mt-[-0.5rem]"></PlaceIcon>
+                                                                <Input className="text-white ml-2" placeholder="Add location" sx={{
+                                                                    "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' }, 
+                                                                    input: {
+                                                                        '&::placeholder': {color: 'white'},
+                                                                        color: 'white'
+                                                                    }
+                                                                    
+                                                                }} value={detail.location} onChange={(e) => handleLocationInputChange(photoIndex, e.target.value)} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                     <div className={`photo__container border border-gray-300 py-1 px-4`}>
 
                                                         {detail.tabs.map((tab, tabIndex) =>
-                                                            <span key={tabIndex} className="whitespace-nowrap">
-                                                                <Input sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={tab} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(photoIndex, tabIndex, e.target.value)} />
-                                                                <CloseIcon className="cursor-pointer" fontSize="medium" sx={{ "width": '17px', 'color': 'text.secondary', '&:hover': 'text.primary' }} onClick={() => removeTab(photoIndex, tabIndex)}></CloseIcon>
+                                                            <span key={tabIndex} className="whitespace-nowrap mx-1">
+                                                                <span>{tab}</span>
+                                                                <CloseIcon className="cursor-pointer ml-2 mt-[-0.2rem]" fontSize="medium" sx={{ "width": '17px', 'color': 'text.secondary', '&:hover': 'text.primary' }} onClick={() => removeTab(photoIndex, tabIndex)}></CloseIcon>
                                                             </span>)}
+                                                        <span className="px-2">
+
+
+                                                            <Input placeholder="Add a tag" sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={newTabValue} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(e.target.value)} />
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -299,7 +367,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                             <OperationBtn line onClick={onClose}>Cancel</OperationBtn>
                             <OperationBtn line onClick={handleSubmit}>Submit to Unsplash</OperationBtn>
 
-                        </div>                        
+                        </div>
                     </div>
 
                 </DialogActions>
@@ -310,7 +378,7 @@ export default function UploadDialog({ open, handleClose }: props) {
             <Snackbar
                 open={isShowSnackbar}
                 autoHideDuration={6000}
-                message="Upload successfully"
+                message={message}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             />
 
