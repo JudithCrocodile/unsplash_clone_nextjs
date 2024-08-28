@@ -12,7 +12,7 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import { useRouter } from 'next/router'
 import { logout } from '@/store/auth'
 import { useDispatch } from 'react-redux'
-import { removeUserInfo, updateAvatar } from '@/store/user'
+import { removeUserInfo, setUserInfo, updateAvatar } from '@/store/user'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -91,12 +91,48 @@ export default function Account({ }) {
         }
     };
 
+    const submit = () => {
+        console.log('submit')
+        fetcher('/user/update-user', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({userInfo: userInfoForm}),
+        }).then(res => {
+            setAvatarLoading(false)
+            if (res.status === 200) {
+                dispatch(setUserInfo(res.data))
+
+                setMessage('Profile updated')
+                setIsShowSnackbar(true)
+            } else if (res.status === 401) {
+                dispatch(logout())
+                dispatch(removeUserInfo())
+                router.push(`/login`)
+                setMessage('Please login');
+                setIsShowSnackbar(true)
+            } else {
+                setMessage('Failed to update profile');
+                setIsShowSnackbar(true)
+            }
+        })
+    }
+
     return (
         <div className="account">
             <div className="info flex gap-8">
-                <div className="info__avatar cursor-pointer px-3 w-2/6 flex justify-start flex-col items-center">
+                <div className="info__avatar cursor-pointer px-3 w-2/6 flex justify-start flex-col items-center text-gray-400 hover:text-gray-600">
                     <Button
-                        sx={{ boxShadow: 'unset' }}
+                        sx={{ 
+                            boxShadow: 'unset',
+                            color: 'inherit',
+                            '&:hover': {
+                                textDecoration: 'none',
+                                backgroundColor: 'unset', 
+                                boxShadow: 'unset'
+                            }
+                         }}
                         component="label"
                         role={undefined}
                         variant="contained"
@@ -105,10 +141,8 @@ export default function Account({ }) {
                     >
                         <AvatarComponent size={'128px'}></AvatarComponent>
 
-                        {!avatarLoading ? <p className="underline my-4 text-xs text-slate-400">Change profile image</p>
-                            : <p className="underline my-4 text-xs text-slate-400">Uploadig</p>}
-                        {/* <AddCircleIcon color="info" sx={{ 'width': '60px', height: '60px' }}></AddCircleIcon>
-                                            <p className='pt-4 text-gray-500'>Add up to {maxImageLength - selectedFileDetail.length} more images</p> */}
+                        {!avatarLoading ? <p className="underline my-4 text-xs">Change profile image</p>
+                            : <p className="underline my-4 text-xs">Uploadig</p>}
                         <UploadInput></UploadInput>
 
                     </Button>
@@ -223,7 +257,7 @@ export default function Account({ }) {
             <div className="donation"></div>
             <div className="message"></div> */}
             <div className="submit my-8">
-                <SubmitBtn>Update account</SubmitBtn>
+                <SubmitBtn onClick={submit}>Update account</SubmitBtn>
 
             </div>
 

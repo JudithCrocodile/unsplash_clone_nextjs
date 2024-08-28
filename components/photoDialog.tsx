@@ -128,7 +128,7 @@ export default function Photo({ photoId }: Props) {
 
                 </div>
 
-                <div className="detail__info info text-slate-400 my-6 flex flex-col gap-4">
+                <div className="detail__info info text-gray-400 my-6 flex flex-col gap-4">
                   {itemDetail.location && <div className="info__location gap-2">
                     <span><LocationOnIcon></LocationOnIcon></span>
                     {itemDetail.location}

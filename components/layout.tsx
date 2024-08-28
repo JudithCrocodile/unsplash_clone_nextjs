@@ -54,7 +54,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
     };
 
     const openUploadDialog = () => {
-        if (!token) {
+        if (token) {
             setIsOpenUploadDialog(true);
 
         } else {
@@ -119,7 +119,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                         </Link>
                     </div>
                     {!inAccountPage && <div className={'filter-container flex-1'}>
-                        <div className={'filter flex gap-4 bg-slate-100 px-4 py-2 rounded-full'}>
+                        <div className={'filter flex gap-4 bg-gray-100 px-4 py-2 rounded-full'}>
                             <div className={'filter__prefix'}>
                                 <SearchIcon></SearchIcon>
                             </div>
@@ -224,7 +224,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                                     </MenuItem>}
                                 </div>
 
-                                {!token && <div className='block text-sm text-slate-500 text-center mt-3'>
+                                {!token && <div className='block text-sm text-gray-500 text-center mt-3'>
                                     New to Unsplash? <Link href={`/join`} className="underline">Sign up for free</Link>
                                 </div>}
                             </div>

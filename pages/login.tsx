@@ -130,7 +130,7 @@ export default function Login() {
                             <div className="flex justify-between">
                                 <label htmlFor="password" className="mb-2">Password</label>
                                 <FormHelperText id="forget-password-text" className="mr-0">
-                                    <button><span className="underline text-slate-500 hover:text-slate-900 text-base">Forgot your password?</span>
+                                    <button><span className="underline text-gray-500 hover:text-gray-900 text-base">Forgot your password?</span>
                                     </button>
                                 </FormHelperText>
                             </div>
@@ -157,10 +157,10 @@ export default function Login() {
 
 
             <div className="create-account">
-                <div className="creat-account create-account__block py-10 border-slate-300 border border-solid flex items-center justify-center">
+                <div className="creat-account create-account__block py-10 border-gray-300 border border-solid flex items-center justify-center">
                     <p>Don’t have an account?</p>&nbsp;
                     <span>
-                        <Link className="underline text-slate-500 hover:text-slate-900" href={`/join`}>
+                        <Link className="underline text-gray-500 hover:text-gray-900" href={`/join`}>
                             Join
                         </Link>
                     </span>

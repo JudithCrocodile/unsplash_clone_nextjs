@@ -39,13 +39,13 @@ export default function AccountLayout({ children }: {children: ReactNode}) {
             label: 'Change password',
             title: 'Change password',
         },
-        {
-            value: '3',
-            path: '/account/close',
-            active: false,
-            label: 'Close account',
-            title: 'Close account',
-        },
+        // {
+        //     value: '3',
+        //     path: '/account/close',
+        //     active: false,
+        //     label: 'Close account',
+        //     title: 'Close account',
+        // },
     ])
 
 
@@ -72,7 +72,7 @@ export default function AccountLayout({ children }: {children: ReactNode}) {
                     <ul className="flex flex-col gap-4">
                         {
                             pathData.map(path => (
-                                <li key={path.path}><Link className={`${path.active ? 'cursor-default' : 'text-slate-500 underline cursor-pointer'}`} href={path.path}>{path.label}</Link></li>
+                                <li key={path.path}><Link className={`${path.active ? 'cursor-default' : 'text-gray-500 underline cursor-pointer'}`} href={path.path}>{path.label}</Link></li>
                             ))
                         }
                     </ul>

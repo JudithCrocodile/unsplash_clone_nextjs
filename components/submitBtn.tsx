@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
 import React, { ReactNode } from 'react'
 
-export default function SubmitBtn({ children }: {children: ReactNode}) {
+export default function SubmitBtn({ children, onClick }: {children: ReactNode, onClick?: () => void}) {
     const Btn = styled(ButtonBase)(({ theme }) => ({
         background: 'linear-gradient(to top, #0000 50%, #ffffff1a 100%), #111',
         color: '#fff',
@@ -21,6 +21,6 @@ export default function SubmitBtn({ children }: {children: ReactNode}) {
         }
     }));    
 
-    return <Btn>{children}</Btn>
+    return <Btn onClick={onClick}>{children}</Btn>
 }
 
