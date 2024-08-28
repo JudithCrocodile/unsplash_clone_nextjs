@@ -38,8 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           $match: {'tags.name': category}
         }] : []),
         ...(authorId ? [{
-          $match: {'author': new mongoose.Types.ObjectId('66c00449b67201b35e63f40a')}
-          // $match: {'author': new mongoose.Types.ObjectId(authorId)}
+          $match: {'author': new mongoose.Types.ObjectId(authorId)}
         }] : []),
         {
           $facet: {
