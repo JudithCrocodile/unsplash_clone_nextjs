@@ -6,20 +6,14 @@ import User from '../models/User'
 import connectToDatabase from "@/lib/mongoose";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // const client = await connectToDatabase();
-    // const userCollections = client.db('unsplash').collection('users')
-    // await connectToDatabase()
     await connectToDatabase()
-    const saltRounds = 10;
 
     const {email, password } = JSON.parse(req.body);
 
-    // todo password validation
-    // const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // password validation
     const user = await User.findOne({email});
 
-    if(user) {
-    // if(user && bcrypt.compareSync(hashedPassword, user.password)) {
+    if(user && bcrypt.compareSync(password, user.password)) {
       const user = await User.findOne({email});
       if(user) {
         const payload = {
