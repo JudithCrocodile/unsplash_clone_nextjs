@@ -8,7 +8,7 @@ import type { ReactElement, ChangeEvent } from 'react'
 import React, { useState, } from 'react';
 import { useRouter } from 'next/router'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
-import { validateEmail } from '@/util';
+import { validateEmail, validateUserName } from '@/util';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -25,8 +25,8 @@ export default function Join() {
 
   const [validation, setValidation] = useState({
     email: {error: false, message: 'Email is invalid'},
-    password: {error: false, message: 'Username must have at least one letter and contain only letters, digits, or underscores (no spaces)'},
-    userName: {error: false, message: ''},
+    userName: {error: false, message: 'Username must have at least one letter and contain only letters, digits, or underscores (no spaces)'},
+    password: {error: false, message: ''},
     firstName: {error: false, message: ''},
     lastName: {error: false, message: ''},
   })
@@ -67,8 +67,15 @@ export default function Join() {
           } else {
             newValidation[key].error = false
           }
-      }
-       else {
+      } else if(key === 'userName') {
+        if(!validateUserName(createForm[key])){
+          error = true
+          newValidation[key].error = true
+        } else {
+          newValidation[key].error = false
+        }
+
+      } else {
         newValidation[key].error = false
       }
 
@@ -249,7 +256,7 @@ export default function Join() {
               <label htmlFor="username" className="mb-2">Username</label>
               {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
               <OutlinedInput
-                  error={validation.userName.error}
+                error={validation.userName.error}
                 value={createForm.userName}
                 name="userName"
                 onChange={handleChange}
