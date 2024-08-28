@@ -98,7 +98,7 @@ export default function Join() {
     ).then(res => {
       if (res.status === 200) {
         // localStorage.setItem('token', res.token);
-        router.push(`/`, undefined, { shallow: true })
+        router.push(`/login`, undefined, { shallow: true })
       } else {
         setShowErrorMessage(true);
       }
@@ -154,7 +154,7 @@ export default function Join() {
               color: '#e25c3d',
         }}
         className='px-4 py-3 mb-8'>
-        We couldn't create your account, kindly address the issues outlined below.
+        We couldn&apos;t create your account, kindly address the issues outlined below.
       </div>}
 
 
