@@ -35,11 +35,16 @@ const userSlice = createSlice({
         setUserInfo(state, action: PayloadAction<object>){
             state.userInfo = action.payload
         },
+        updateAvatar(state, action: PayloadAction<object>){
+            console.log('action.payload', action.payload)
+            state.userInfo.avatarPath = action.payload
+            console.log('state.userInfo', state.userInfo)
+        },
         removeUserInfo(state) {
             state.userInfo =  initialState
         }
     }
 })
 
-export const {setUserInfo, removeUserInfo} = userSlice.actions;
+export const {setUserInfo, removeUserInfo, updateAvatar} = userSlice.actions;
 export default userSlice.reducer;

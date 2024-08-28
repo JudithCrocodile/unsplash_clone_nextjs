@@ -214,7 +214,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                                     <div className='block'>
                                         <MenuItem onClick={handleMenuClose} sx={{ padding: 0, minHeight: 0 }}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
                                     </div>
-                                    {!token && <MenuItem onClick={handleLogout} sx={{
+                                    {!token && <MenuItem onClick={handleMenuClose} sx={{
                                         padding: 0,
                                         minHeight: 0
                                     }}>

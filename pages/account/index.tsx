@@ -1,6 +1,5 @@
 
 import AccountLayout from '@/components/accountLayout';
-// import { useSelector } from 'react-redux';
 import type { ReactElement, ChangeEvent } from 'react'
 import Layout from '@/components/layout'
 import AvatarComponent from "@/components/avatar";
@@ -8,8 +7,19 @@ import { FormControl, Input, InputLabel, FormHelperText, Box, OutlinedInput } fr
 import React, { useState, } from 'react';
 import { useSelector } from 'react-redux';
 import SubmitBtn from '@/components/submitBtn';
+import Button from '@mui/material/Button';
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import { useRouter } from 'next/router'
+import { logout } from '@/store/auth'
+import { useDispatch } from 'react-redux'
+import { removeUserInfo, updateAvatar } from '@/store/user'
+
+const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
 export default function Account({ }) {
+    const router = useRouter()
+    const token = useSelector((state: RootState) => state.auth.token)
+    const dispatch = useDispatch();
 
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
 
@@ -19,6 +29,9 @@ export default function Account({ }) {
         firstName: userInfo.firstName,
         lastName: userInfo.lastName,
     })
+    const [avatarLoading, setAvatarLoading] = useState(false)
+    const [message, setMessage] = useState<string>('');
+    const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -28,13 +41,79 @@ export default function Account({ }) {
         }))
     };
 
+    const UploadInput = () => {
+        return <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" accept="image/png, image/jpeg, image/jpg" />
+    }
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+
+            setSelectedFile(e.target.files[0])
+
+
+            const formData = new FormData();
+            formData.append(`image`, e.target.files[0]);
+
+            try {
+                setAvatarLoading(true)
+
+                fetcher('/user/upload-avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData,
+                }).then(res => {
+                    setAvatarLoading(false)
+                    if (res.status === 200) {
+                        dispatch(updateAvatar(res.data))
+
+                        setMessage('Profile image updated')
+                        setIsShowSnackbar(true)
+                    } else if (res.status === 401) {
+                        dispatch(logout())
+                        dispatch(removeUserInfo())
+                        router.push(`/login`)
+                        setMessage('Please login');
+                        setIsShowSnackbar(true)
+                    } else {
+                        setMessage('Failed to upload file');
+                        setIsShowSnackbar(true)
+                    }
+                })
+
+            } catch (error) {
+                setMessage('Error uploading file');
+                setIsShowSnackbar(true)
+            }
+        }
+    };
+
     return (
         <div className="account">
             <div className="info flex gap-8">
                 <div className="info__avatar cursor-pointer px-3 w-2/6 flex justify-start flex-col items-center">
-                    <AvatarComponent size={'128px'}></AvatarComponent>
+                    <Button
+                        sx={{ boxShadow: 'unset' }}
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        className='flex flex-col items-center mt-auto cursor-pointer'
+                    >
+                        <AvatarComponent size={'128px'}></AvatarComponent>
 
-                    <p className="underline my-4 text-xs text-slate-400">Change profile image</p>
+                        {!avatarLoading ? <p className="underline my-4 text-xs text-slate-400">Change profile image</p>
+                            : <p className="underline my-4 text-xs text-slate-400">Uploadig</p>}
+                        {/* <AddCircleIcon color="info" sx={{ 'width': '60px', height: '60px' }}></AddCircleIcon>
+                                            <p className='pt-4 text-gray-500'>Add up to {maxImageLength - selectedFileDetail.length} more images</p> */}
+                        <UploadInput></UploadInput>
+
+                    </Button>
+
+
 
                 </div>
                 <div className="info__info flex-1 w-4/6">
@@ -147,6 +226,13 @@ export default function Account({ }) {
                 <SubmitBtn>Update account</SubmitBtn>
 
             </div>
+
+            <Snackbar
+                open={isShowSnackbar}
+                autoHideDuration={6000}
+                message={message}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            />
         </div>
     )
 }
