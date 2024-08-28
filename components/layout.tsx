@@ -188,7 +188,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                             aria-haspopup="true"
                             aria-expanded={isMenuOpen ? 'true' : undefined}
                             onClick={handleMenuClick}
-                            className="cursor-pointer">
+                            className="cursor-pointer md:hidden">
                             {/* <AvatarComponent size='32px'></AvatarComponent> */}
                             <MenuIcon className="cursor-pointer" fontSize="medium" sx={{ '&:hover': 'text.primary' }}></MenuIcon>
 
@@ -207,19 +207,28 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                             }}
                         >
 
-                            <Divider />
-                            <div className="flex">
-                                <div className='md:hidden block'>
-                                    <MenuItem onClick={handleMenuClose}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
+                            {/* todo */}
+                            {/* <Divider className='md:hidden block' /> */}
+                            <div className="py-4 px-6 md:hidden">
+                                <div className="flex gap-6">
+                                    <div className='block'>
+                                        <MenuItem onClick={handleMenuClose} sx={{ padding: 0, minHeight: 0 }}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
+                                    </div>
+                                    {!token && <MenuItem onClick={handleLogout} sx={{
+                                        padding: 0,
+                                        minHeight: 0
+                                    }}>
+                                        <Link href={`/login`}>
+                                            <OperationBtn className="whitespace-nowrap" line>Log in</OperationBtn>
+                                        </Link>
+                                    </MenuItem>}
                                 </div>
-                                {token && <MenuItem onClick={handleLogout} sx={{
-                                    marginLeft: '-1rem'
-                                }}>
-                                    <Link href={`/login`}>
-                                        <OperationBtn className="whitespace-nowrap" line>Log in</OperationBtn>
-                                    </Link>
-                                </MenuItem>}
+
+                                {!token && <div className='block text-sm text-slate-500 text-center mt-3'>
+                                    New to Unsplash? <Link href={`/join`} className="underline">Sign up for free</Link>
+                                </div>}
                             </div>
+
 
                         </Menu>
                     </div>}
