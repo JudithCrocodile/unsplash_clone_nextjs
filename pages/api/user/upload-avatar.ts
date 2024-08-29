@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const busboy = Busboy({headers: req.headers})
         
         busboy.on('file', (fieldname, file, filename) => {
-            const filePath = `/avatars/${ new Date() + '-' + filename.filename}`
+            const filePath = `/uploads/avatars/${ new Date() + '-' + filename.filename}`
             const saveTo = `./public${filePath}`;
             // photos.push({file, filePath: filePath})
             avatar = {...file, filePath: filePath}
