@@ -9,6 +9,7 @@ export type TypePhoto = {
     createTime: string,
     photo_tags: TypeTag[],
     fileId: string,
+    liked: boolean
 
 }
 

@@ -10,6 +10,7 @@ interface IUserInfo {
     lastName:  string,
     avatarPath:  string,
     fileId:  string,
+    _id: string
 }
 
 interface AuthState {
@@ -27,6 +28,7 @@ const initialState: AuthState = {
         lastName: '',
         avatarPath: '',
         fileId: '',
+        _id: ''
     }
 }
 

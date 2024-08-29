@@ -4,6 +4,7 @@ import Photo from '../models/Photo'
 import Tab from '../models/Tab'
 import connectToDatabase from "@/lib/mongoose";
 import mongoose from "mongoose";
+import getUserByToken from '../util/getUserByToken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
@@ -12,11 +13,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const pageSize = parseInt(body.ppageSizeage) || 10;
   const tabId = body.tabId;
   const category = body.category;
+  const onlyShowLiked = body.onlyShowLiked;
   let userName = body.userName || '';
+  let user = {}
+
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log('token', token)
+  if (token) {
+    user = await getUserByToken(token);
+  }
+  console.log('user', user)
 
   if(userName.startsWith('@')){
     userName = userName.substring(1);
-  }
+  }  
 
   try {
     const filter = {};
@@ -51,6 +61,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         ...(userName ? [{
           $match: {'author.userName': userName}
+        }] : []),
+        {
+          $lookup: {
+            from: 'likes',
+            localField: '_id', // photoId
+            foreignField: 'photoId',
+            as: 'likes'
+          }
+        },
+        ...(user ?[{
+          $addFields: {
+            liked: {
+              $in: [new mongoose.Types.ObjectId(user._id), '$likes.userId']
+            }
+          }
+        }] :[]),
+        ...(onlyShowLiked ? [{
+          $match: {
+            liked: true
+          }
         }] : []),
         {
           $facet: {

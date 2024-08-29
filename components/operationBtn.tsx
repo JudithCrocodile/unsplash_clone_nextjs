@@ -9,8 +9,8 @@ import Typography from '@mui/material/Typography';
 
 
 
-export default function OperationBtn({ onClick, children, className, line=false  }: {
-    children?: ReactNode, className: string, line?: boolean,  onClick?: () => void
+export default function OperationBtn({ onClick, children, className, line=false, activeLike=false  }: {
+    children?: ReactNode, className: string, line?: boolean,  onClick?: () => void, activeLike: boolean
 }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
@@ -32,7 +32,19 @@ export default function OperationBtn({ onClick, children, className, line=false 
         '& .MuiSvgIcon-root': {
             width: '20px',
             height: '20px',
-        }
+        },
+        ...(activeLike ? 
+            {
+                backgroundColor: '#f15151',
+                color: 'white',
+                border: 'unset', 
+                '&:hover': {
+                    color: 'white',
+                    backgroundColor: '#e04c4c',
+                },
+            }
+            : {}
+        )
     }));
 
   return (

@@ -13,6 +13,7 @@ import { useRouter } from 'next/router'
 import { logout } from '@/store/auth'
 import { useDispatch } from 'react-redux'
 import { removeUserInfo, setUserInfo, updateAvatar } from '@/store/user'
+import type { RootState } from '@/store'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 

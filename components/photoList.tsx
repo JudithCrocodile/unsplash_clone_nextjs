@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import OperationLine from '../components/operationLine'
+import LikeBtn from '../components/likeBtn'
 import AuthorInfo from '../components/authorInfo'
 import useSWR from 'swr';
 import { TypePhoto } from '@/types'
@@ -12,6 +12,8 @@ import Divider from '@mui/material/Divider';
 import { StyledTabs, CustomerTab } from '@/components/tab'
 import Skeleton from '@mui/material/Skeleton';
 import PhotoComponent from '@/components/photoComponent'
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store'
 
 interface StyledTabsProps {
     label: string;
@@ -20,11 +22,12 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = null, fullHeight = true, fullWidth = false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, userName: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = null, fullHeight = true, fullWidth = false, onlyShowLiked=false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, userName: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean, onlyShowLiked: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
     const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
+    const token = useSelector((state: RootState) => state.auth.token)
 
     const [windowSize, setWindowSize] = useState({
         width: 0,
@@ -83,14 +86,16 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             tabId: propTabId || currentTab?._id,
             category: propTabName,
             userName,
+            onlyShowLiked,
         })
-
-        console.log('params', params)
 
         setLoading(true)
         fetcher('/photo/get-photo-page', {
             method: 'POST',
-            body: params
+            body: params,            
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
         }).then(res => {
             if (res.status === 200) {
                 if (page === 1) {
@@ -221,8 +226,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                                 <div className={"item__context text-left text-xl"}>
                                                     <div className="item__top">
                                                         <div className="ml-auto w-fit">
-                                                            <OperationLine>
-                                                            </OperationLine>
+                                                            <LikeBtn photoId={item._id}  liked={item.liked}>
+                                                            </LikeBtn>
                                                         </div>
                                                     </div>
                                                     <div className="item__bottom hidden md:block">

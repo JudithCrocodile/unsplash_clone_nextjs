@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { useRouter } from 'next/router'
 import AuthorInfo from './authorInfo'
-import OperationLine from './operationLine'
+import LikeBtn from './likeBtn'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhotoList from './photoList'
@@ -16,8 +16,10 @@ import TagList from '@/components/tagList'
 import Tag from '@/components/tag'
 import PhotoComponent from '@/components/photoComponent'
 import Skeleton from '@mui/material/Skeleton';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store'
 
-const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
+const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
 type Props = {
@@ -25,7 +27,9 @@ type Props = {
 };
 
 export default function Photo({ photoId }: Props) {
-  const [photosData, setPhotosData] = useState([]);
+const token = useSelector((state: RootState) => state.auth.token)
+
+  const [photosData, setPhotosData] = useState<TypePhoto>({});
   const [loading, setLoading] = useState(false);
 
 
@@ -35,7 +39,12 @@ export default function Photo({ photoId }: Props) {
 
   const getPhotoData = (): void => {
     setLoading(true)
-    fetcher(`/photo/get-photo/${photoId}`).then(res => {
+    fetcher(`/photo/get-photo/${photoId}`, {
+      method: 'POST',
+      headers: {
+          'Authorization': `Bearer ${token}`
+      },
+  }).then(res => {
       if (res.status === 200) {
         setPhotosData(res.data)
         setLoading(false)
@@ -64,15 +73,12 @@ export default function Photo({ photoId }: Props) {
     // Your code here
   }, []);
 
-
-  const itemDetail: TypePhoto = photosData
-
   const CreatedTimeHtml = ()=>{
     if(typeof window !== "undefined") {
       // import DayJS from 'react-dayjs';
       // const DayJS = require('react-dayjs')
       const DayJS = dynamic(() => import('react-dayjs'), { ssr: false });
-      return <span>Published on <DayJS format="MMMM d, YYYY">{ itemDetail.createTime }</DayJS></span>
+      return <span>Published on <DayJS format="MMMM d, YYYY">{ photosData.createTime }</DayJS></span>
     } 
       return <span></span>
     
@@ -114,31 +120,29 @@ export default function Photo({ photoId }: Props) {
               <div className="detail">
 
                 <div className="flex justify-between">
-                  <AuthorInfo loding={loading} authorAavatar={itemDetail.authorAavatar} author={itemDetail.author} inDetailPage={true}></AuthorInfo>
+                  <AuthorInfo loding={loading} authorAavatar={photosData.authorAavatar} author={photosData.author} inDetailPage={true}></AuthorInfo>
 
                   <div className={'my-4'}>
-                    <OperationLine></OperationLine>
+                    <LikeBtn photoId={photosData._id} liked={photosData.liked}></LikeBtn>
                   </div>                  
                 </div>
 
 
                 <div className="detail__photo max-w-xl w-full mx-auto">
                   {!loading ?
-                    <PhotoComponent photo={itemDetail} />
-
-                    // <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
+                    <PhotoComponent photo={photosData} />
                   : <Skeleton variant="rectangular" width={'100%'} height={500} />}
 
                 </div>
 
                 <div className="detail_description my-8">
-                  <p>{itemDetail.description}</p>
+                  <p>{photosData.description}</p>
                 </div>
 
                 <div className="detail__info info text-gray-400 my-6 flex flex-col gap-4">
-                  {itemDetail.location && <div className="info__location gap-2">
+                  {photosData.location && <div className="info__location gap-2">
                     <span><LocationOnIcon></LocationOnIcon></span>
-                    {itemDetail.location}
+                    {photosData.location}
                   </div>}
                   {(typeof window !== "undefined") && <div className="info__create-date flex items-center gap-2">
                     <span><CalendarTodayIcon></CalendarTodayIcon></span>
