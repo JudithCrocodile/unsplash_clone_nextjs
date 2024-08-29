@@ -201,46 +201,48 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                 {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
                 {photosList.length > 0 ? <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
                     {
-                            (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
-                            (
-                                <div key={columnIndex} className={'flex flex-col gap-y-6'}>
-                                    {column.map((item: TypePhoto, index: number) => (
-                                        <li className={"item"} key={index}>
-                                            {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
-                                                <div className={'item__container mx-auto w-full'}>
-                                                    <div className="item__context md:hidden">
-                                                     <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
+                        (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
+                        (
+                            <div key={columnIndex} className={'flex flex-col gap-y-6'}>
+                                {column.map((item: TypePhoto, index: number) => (
+                                    <li className={"item"} key={index}>
+                                        {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
+                                            <div className={'item__container mx-auto w-full'}>
+                                                <div className="md:hidden">
+                                                    <div className="item__context">
+                                                        <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
                                                     </div>
-                                                    <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
-                                                        <PhotoComponent photo={item} />
-                                                        {/* <img src={item.path} alt="" /> */}
-                                                    </div>
-                                                    <div className={"item__context text-left text-xl"}>
-                                                        <div className="item__top">
-                                                            <div className="ml-auto w-fit">
-                                                                {/* {item.liked} */}
-                                                                <OperationLine>
-                                                                </OperationLine>
-                                                            </div>
-                                                        </div>
-                                                        <div className="item__bottom hidden md:block">
-                                                            <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
-                                                        </div>
+                                                </div>
 
+                                                <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
+                                                    <PhotoComponent photo={item} />
+                                                    {/* <img src={item.path} alt="" /> */}
+                                                </div>
+                                                <div className={"item__context text-left text-xl"}>
+                                                    <div className="item__top">
+                                                        <div className="ml-auto w-fit">
+                                                            <OperationLine>
+                                                            </OperationLine>
+                                                        </div>
+                                                    </div>
+                                                    <div className="item__bottom hidden md:block">
+                                                        <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
                                                     </div>
 
                                                 </div>
+
                                             </div>
-                                                : <Skeleton variant="rectangular" width={'100%'} height={300} />}
+                                        </div>
+                                            : <Skeleton variant="rectangular" width={'100%'} height={300} />}
 
 
 
-                                        </li>)
-                                    )}
-                                </div>
-                            )
+                                    </li>)
+                                )}
+                            </div>
+                        )
 
-                            ))
+                        ))
                     }
                 </ul>
                     :
