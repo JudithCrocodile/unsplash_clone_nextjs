@@ -6,8 +6,14 @@ This is a unsplash clone project for practing React.js and Next.js.
 ## DEMO url
 https://unsplash-clone-nextjs-8199dugft-judithcrocodiles-projects.vercel.app/
 
+## Features
+- Create an account
+- Upload photos with tags, location, and description
+- Like photos
+- Change ypur avatar
+
 ## ToDo List
-* Like❤️
-* Collection
-* facebook login
+- [x] Like❤️
+- [ ] Collection
+- [ ] facebook login
 
