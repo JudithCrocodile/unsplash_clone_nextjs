@@ -15,6 +15,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import AvatarComponent from '@/components/avatar'
+import Search from '@/components/search'
 import { logout } from '@/store/auth'
 import { removeUserInfo } from '@/store/user'
 import { useDispatch } from 'react-redux'
@@ -92,23 +93,6 @@ export default function Layout({ children, inAccountPage = false }: { children: 
         // refresh photo list
     };
 
-
-
-    const [searchInputValue, setSearchInputValue] = useState<string>('')
-
-    const keyDownSearchInput = (key: string) => {
-        if (key === 'Enter') {
-            // const newPhotoValues = [...selectedFileDetail]
-            // newPhotoValues[photoIndex].tabs.push('')
-            // setSelectedFileDetail(newPhotoValues)
-            router.push(`/s/photos/${searchInputValue}`)
-        }
-    }
-    const handleSearchInputChange = (newValue: string) => {
-        setSearchInputValue(newValue)
-    }
-
-
     return (
         <div>
             <header className='sticky top-0 bg-white z-50'>
@@ -118,18 +102,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                             <svg className="UX25f" width="32" height="32" viewBox="0 0 32 32" version="1.1" aria-labelledby="unsplash-home" aria-hidden="false" style={{ flexShrink: '0' }}><desc lang="en-US">Unsplash logo</desc><title id="unsplash-home">Unsplash Home</title><path d="M 10 9 V 0 h 12 v 9 H 10 Z m 12 5 h 10 v 18 H 0 V 14 h 10 v 9 h 12 v -9 Z"></path></svg>
                         </Link>
                     </div>
-                    {!inAccountPage && <div className={'filter-container flex-1'}>
-                        <div className={'filter flex gap-4 bg-gray-100 px-4 py-2 rounded-full'}>
-                            <div className={'filter__prefix'}>
-                                <SearchIcon></SearchIcon>
-                            </div>
-                            <Input value={searchInputValue} onChange={(e) => handleSearchInputChange(e.target.value)} onKeyDown={((e) => { keyDownSearchInput(e.key) })} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
-                            {/* <div className={'filter__sufix'}>
-                                <CenterFocusWeakIcon></CenterFocusWeakIcon>
-                            </div> */}
-                        </div>
-
-                    </div>}
+                    {!inAccountPage && <Search></Search>}
 
                     {!token && <div className={'new-img  hidden md:block'}>
                         <Link href={`/login`}>
