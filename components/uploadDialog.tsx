@@ -48,7 +48,7 @@ export default function UploadDialog({ open, handleClose }: props) {
     const [selectedFile, setSelectedFile] = useState<File[] | []>([]);
     const [message, setMessage] = useState<string>('');
     const [selectedFileDetail, setSelectedFileDetail] = useState<fileDetailType[]>([]);
-    const [newTabValue, setNewTabValue] = useState<string>('')
+
     const maxImageLength = 10;
 
     // 0: upload, 1: serImageDetail
@@ -71,7 +71,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                     const reader = new FileReader();
 
                     reader.onload = function (file) {
-                        setSelectedFileDetail((oldArray: string[]): string[] => [...oldArray, { photoUrl: file.target.result, tabs: [], location: '', originalFile: e.target.files[i], description: '' }])
+                        setSelectedFileDetail((oldArray: string[]): string[] => [...oldArray, { photoUrl: file.target.result, tabs: [], location: '', originalFile: e.target.files[i], description: '', newTagInputValue: '' }])
                     }
                     reader.readAsDataURL(newSelectedFile[i])
                 }
@@ -123,11 +123,10 @@ export default function UploadDialog({ open, handleClose }: props) {
             });
 
             if (res.status === 200) {
-                const result = await res.json();
-                // setMessage(`File uploaded successfully: ${result.file.filename}`);
                 onClose();
                 setMessage('Upload successfully')
                 setIsShowSnackbar(true)
+                window.location.href = '/';
             }else if(res.status === 401) {
                 dispatch(logout())
                 dispatch(removeUserInfo())
@@ -161,8 +160,11 @@ setTimeout(()=>{
         setSelectedFileDetail(newPhotoValues)
     }
 
-    const handleTabInputChange = (newValue: string) => {
-        setNewTabValue(newValue)
+    const handleTabInputChange = (newValue: string, photoIndex: number) => {
+        const newPhotoValues = [...selectedFileDetail]
+        newPhotoValues[photoIndex].newTagInputValue = newValue
+
+        setSelectedFileDetail(newPhotoValues)
     }
 
     const handleDescriptionInputChange = (photoIndex: number, newValue: string) => {
@@ -189,10 +191,10 @@ setTimeout(()=>{
         if (key === 'Enter') {
 
             const newPhotoValues = [...selectedFileDetail]
-            newPhotoValues[photoIndex].tabs.push(newTabValue)
+            newPhotoValues[photoIndex].tabs.push(newPhotoValues[photoIndex].newTagInputValue)
+            newPhotoValues[photoIndex].newTagInputValue = ''
 
             setSelectedFileDetail(newPhotoValues)
-            setNewTabValue('')
         }
     }
 
@@ -339,7 +341,7 @@ setTimeout(()=>{
                                                         <span className="px-2">
 
 
-                                                            <Input placeholder="Add a tag" sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={newTabValue} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(e.target.value)} />
+                                                            <Input placeholder="Add a tag" sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.newTagInputValue} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(e.target.value, photoIndex)} />
                                                         </span>
                                                     </div>
                                                 </div>
