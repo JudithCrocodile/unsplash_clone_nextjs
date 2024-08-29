@@ -14,6 +14,7 @@ import { TypePhoto } from '@/types'
 import dynamic from 'next/dynamic';
 import TagList from '@/components/tagList'
 import Tag from '@/components/tag'
+import PhotoComponent from '@/components/photoComponent'
 import Skeleton from '@mui/material/Skeleton';
 
 const fetcher = (url: string) => fetch(`api${url}`).then((res => res.json()))
@@ -123,7 +124,9 @@ export default function Photo({ photoId }: Props) {
 
                 <div className="detail__photo max-w-xl w-full mx-auto">
                   {!loading ?
-                    <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
+                    <PhotoComponent photo={itemDetail} />
+
+                    // <Image alt={itemDetail.title} src={itemDetail.path} width="100" height="100" style={{ width: '100%' }}></Image>
                   : <Skeleton variant="rectangular" width={'100%'} height={500} />}
 
                 </div>

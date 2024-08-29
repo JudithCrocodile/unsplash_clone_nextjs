@@ -8,6 +8,7 @@ export type TypePhoto = {
     location: string,
     createTime: string,
     photo_tags: TypeTag[],
+    fileId: string,
 
 }
 
@@ -27,4 +28,5 @@ export type TypeUser = {
     firstName: string,
     lastName: string,
     avatarPath: string,
+    fileId: string,
 }

@@ -4,14 +4,14 @@ import {TypeUser} from "@/types"
 import Skeleton from '@mui/material/Skeleton';
 import Link from 'next/link'
 
-export default function AuthorInfo( {authorAavatar,author, inDetailPage, loading }: {authorAavatar: string,author: TypeUser, inDetailPage: boolean, loading: boolean } ) {
+export default function AuthorInfo( {author, inDetailPage, loading }: {author: TypeUser, inDetailPage: boolean, loading: boolean } ) {
     const category = 0;
 
     return (
         <div className={"item__author flex text-left items-center cursor-pointer"}>
         {!loading ? <Link  href={`@${author?.userName}`}>
           <span>
-            <AvatarComponent avatarPath={author?.avatarPath} type="author"></AvatarComponent>
+            <AvatarComponent fileId={author?.fileId} type="author"></AvatarComponent>
           </span>
         
         </Link>

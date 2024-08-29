@@ -9,7 +9,8 @@ const photoSchema = new mongoose.Schema({
     authorAavatar: {type: String},
     location: {type: String},
     createTime: {type: String, required: true},
-    photo_tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tab'}]
+    photo_tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tab'}],
+    fileId: {type: mongoose.Schema.Types.ObjectId, required: true},
 })
 
 export default mongoose.models.Photo || mongoose.model('Photo', photoSchema)

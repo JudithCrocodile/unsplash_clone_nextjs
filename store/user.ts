@@ -9,6 +9,7 @@ interface IUserInfo {
     firstName:  string,
     lastName:  string,
     avatarPath:  string,
+    fileId:  string,
 }
 
 interface AuthState {
@@ -25,6 +26,7 @@ const initialState: AuthState = {
         firstName: '',
         lastName: '',
         avatarPath: '',
+        fileId: '',
     }
 }
 
@@ -36,9 +38,7 @@ const userSlice = createSlice({
             state.userInfo = action.payload
         },
         updateAvatar(state, action: PayloadAction<object>){
-            console.log('action.payload', action.payload)
-            state.userInfo.avatarPath = action.payload
-            console.log('state.userInfo', state.userInfo)
+            state.userInfo.fileId = action.payload
         },
         removeUserInfo(state) {
             state.userInfo =  initialState

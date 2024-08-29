@@ -46,11 +46,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             from: 'users',
             localField: 'author',
             foreignField: '_id',
-            as: 'authorDetail'
+            as: 'author'
           }
         },
         ...(userName ? [{
-          $match: {'authorDetail.userName': userName}
+          $match: {'author.userName': userName}
         }] : []),
         {
           $facet: {

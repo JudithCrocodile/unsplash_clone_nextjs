@@ -11,6 +11,7 @@ import { Input, Tabs, Tab, Button } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { StyledTabs, CustomerTab } from '@/components/tab'
 import Skeleton from '@mui/material/Skeleton';
+import PhotoComponent from '@/components/photoComponent'
 
 interface StyledTabsProps {
     label: string;
@@ -211,7 +212,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                                      <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
                                                     </div>
                                                     <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
-                                                        <img src={item.path} alt="" />
+                                                        <PhotoComponent photo={item} />
+                                                        {/* <img src={item.path} alt="" /> */}
                                                     </div>
                                                     <div className={"item__context text-left text-xl"}>
                                                         <div className="item__top">

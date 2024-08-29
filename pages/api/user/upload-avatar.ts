@@ -4,6 +4,8 @@ import fs from 'fs'
 import User from '../models/User'
 import connectToDatabase from "@/lib/mongoose";
 import getUserByToken from '../util/getUserByToken';
+import Grid from 'gridfs-stream'
+import mongoose from 'mongoose'
 
 export const config = {
     api: {
@@ -14,12 +16,30 @@ export const config = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await connectToDatabase()
 
+    const conn = mongoose.connection;
+
+    if (conn.readyState !== 1) {
+        return res.status(500).json({ error: 'Database connection not established' });
+    }
+
+    let gfs, gridfsBucket;
+
+    try {
+        gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: 'uploads' });
+        gfs = Grid(conn.db, mongoose.mongo);
+        gfs.collection('uploads');
+        console.log('GridFS setup complete');
+    } catch (error) {
+        console.error('Error setting up GridFS:', error);
+        return res.status(500).json({ error: 'Failed to set up GridFS' });
+    }
+
     let avatar: {
         filePath: string,
-        file: any
+        fileId: any
     } = {
         filePath: '', 
-        file: null
+        fileId: ''
     }
 
     // verify Bear token empty
@@ -34,11 +54,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const busboy = Busboy({headers: req.headers})
         
         busboy.on('file', (fieldname, file, filename) => {
-            const filePath = `/uploads/avatars/${ new Date() + '-' + filename.filename}`
-            const saveTo = `./public${filePath}`;
-            // photos.push({file, filePath: filePath})
-            avatar = {...file, filePath: filePath}
-            file.pipe(fs.createWriteStream(saveTo))
+            // const filePath = `/uploads/avatars/${ new Date() + '-' + filename.filename}`
+            // const saveTo = `./public${filePath}`;
+            // // photos.push({file, filePath: filePath})
+            // avatar = {...file, filePath: filePath}
+            // file.pipe(fs.createWriteStream(saveTo))
+
+            const filePath = new Date().toISOString() + '-' + filename.filename
+
+            const writestream = gridfsBucket.openUploadStream(filePath)
+
+            avatar = { fileId: writestream.id, filePath }
+
+            file.pipe(writestream)
         })
 
 
@@ -46,14 +74,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
                 const updatedUser = await User.findByIdAndUpdate(
                     user._id,
-                    {'avatarPath': avatar.filePath},
+                    {
+                        'avatarPath': avatar.filePath,
+                        'fileId': avatar.fileId
+                    },
                 )
 
                 if(!updatedUser) {
                     res.status(404).json({error: 'User not found'})
                 }
 
-                res.status(200).json({status:200, data: avatar.filePath})
+                console.log('fileId', avatar.fileId)
+                console.log('updatedUser', updatedUser)
+
+                res.status(200).json({status:200, data: avatar.fileId})
             } catch (error) {
                 console.error(error)
                 res.status(500).json({error: 'Failed to upload photos'})

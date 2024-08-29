@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     avatarPath: {type: String, required: true},
+    fileId: {type: mongoose.Schema.Types.ObjectId, required: true},
 })
 
 export default mongoose.models.User || mongoose.model('User', userSchema)
