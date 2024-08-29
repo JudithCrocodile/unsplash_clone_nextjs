@@ -196,7 +196,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                 </div>
 
             }
-            {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-2px' }}></Divider>}
+            {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-1px' }}></Divider>}
             <div className={`mt-14 pb-12 ${fullWidth ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
                 {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
                 {photosList.length > 0 ? <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
