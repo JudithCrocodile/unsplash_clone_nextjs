@@ -10,7 +10,8 @@ export default function AvatarComponent({ size = '24px', fileId, type='user' }: 
 
     return (
         <div className="avatar" style={{ width: size, height: size }}>
-            <PhotoComponent photo={{fileId: id}} className='rounded-full' />
+            {id ? <PhotoComponent photo={{fileId: id}} className='rounded-full' />
+            : <img src="/img_default-avatar.jpg" />}
             {/* <Avatar alt={'userName'} src={path || '/img_default-avatar.jpg'} sx={{ width: size, height: size }} /> */}
         </div>
     )
