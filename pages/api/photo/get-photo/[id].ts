@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           from: 'tabs',
           localField: 'photo_tags',
           foreignField: '_id',
-          as: 'tags'
+          as: 'photo_tags'
         }
       },
       {
