@@ -121,14 +121,15 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const listPhotoByColumn = () => {
         const allPhotoList = [...photosList]
         const columnData = []
-        for (let i = 0; i < columns; i++) {
-            const size = photosList.length / columns
-            const columnPhoto = allPhotoList.splice(i * size, ((i + 1) * size))
+        const size = Math.ceil(photosList.length / columns) // size of each column
 
+        for (let i = 0; i < columns; i++) {
+            const columnPhoto = allPhotoList.splice(0, size)
             columnData[i] = columnPhoto
         }
 
         columnData[columnData.length - 1] = [...columnData[columnData.length - 1], ...allPhotoList] // remainder
+
         setColumnsPhotos(columnData)
     }
 
@@ -160,6 +161,19 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         getAllTabs()
     }, [])
 
+    useEffect(() => {
+        const tagName: string = router.query.category as string
+        const tag: TypeTag | undefined = allTabs.find(e=>e.name === tagName)
+
+        if(tag) {
+            setCurrentTab(tag)
+            setCurrentTabName(tagName)
+        } else {
+            setCurrentTab(null)
+            setCurrentTabName('Photos')
+        }
+    }, [allTabs])
+
 
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
 
@@ -168,9 +182,12 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             setCurrentTab(newTab)
             setCurrentTabName(newTab.name)
 
+            router.push(`/s/photos/${newTab.name}`)
+
         } else {
             setCurrentTab(null)
             setCurrentTabName('Photos')
+            router.push(`/`)
         }
         getPhotoList(1);
 
