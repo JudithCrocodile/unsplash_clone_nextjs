@@ -14,8 +14,10 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "target": "es2015",
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types"],
   "exclude": ["node_modules"]
 }

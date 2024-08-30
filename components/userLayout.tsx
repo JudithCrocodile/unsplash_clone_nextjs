@@ -14,6 +14,7 @@ import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux';
 import Link from 'next/link'
 import { StyledTabs, CustomerTab } from '@/components/tab'
+import type { RootState } from '@/store'
 
 export default function UserLayout({ children }: {children: ReactNode}) {
     const [currentTabName, setCurrentTabName] = useState<string>('0')
@@ -21,7 +22,12 @@ export default function UserLayout({ children }: {children: ReactNode}) {
     const router = useRouter()
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
 
-    const pathData: object[] = [
+    type pathType = {
+                    value: string,
+            path: string
+    }
+
+    const pathData: pathType[] = [
         {   
             value: '0',
             path: '/'
@@ -57,7 +63,10 @@ export default function UserLayout({ children }: {children: ReactNode}) {
         router.push(`/${userInfo.userName}${path?.path}`)
     }
 
-    const [tags, setTags] = useState<object[]>([{ name: 'nature' }, { name: 'tree' }])
+    type tagType = {
+        name: string
+    }
+    const [tags, setTags] = useState<tagType[]>([{ name: 'nature' }, { name: 'tree' }])
 
     return (
         <div>

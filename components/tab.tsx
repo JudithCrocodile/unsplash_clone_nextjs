@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
 import { styled } from '@mui/material/styles';
-import {Tab, Tabs} from '@mui/material';
+import {Tab, Tabs, TabProps} from '@mui/material';
 
 const StyledTabs = styled(Tabs)({
     borderBottom: "1px solid #e8e8e8",
@@ -10,8 +10,11 @@ const StyledTabs = styled(Tabs)({
   });
 
 
-interface StyledTabsProps {
+interface StyledTabsProps extends TabProps {
     label: string;
+    // iconPosition: string;
+    value: string | number;
+    icon?: any,
   }
 
   const CustomerTab = styled((props: StyledTabsProps) => <Tab disableRipple {...props} />)(
@@ -32,18 +35,3 @@ interface StyledTabsProps {
   );
 
   export  {StyledTabs, CustomerTab}
-
-// export function StyledTabs( props: StyledTabsProps ) {
-
-//     return (
-//         <Tabs label={props.label + 'aaa'} value={props.label} ></Tabs>
-//         // <CustomerTab label={props.label + 'aaa'} value={props.label} ></CustomerTab>
-//     )
-// }
-// export function StyledTab( props: StyledTabsProps ) {
-
-//     return (
-//         <Tab label={props.label + 'aaa'} value={props.label} ></Tab>
-//         // <CustomerTab label={props.label + 'aaa'} value={props.label} ></CustomerTab>
-//     )
-// }

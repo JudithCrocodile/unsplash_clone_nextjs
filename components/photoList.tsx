@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import { useRouter } from 'next/router'
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import LikeBtn from '../components/likeBtn'
+import LikeBtn from '@/components/likeBtn'
 import AuthorInfo from '../components/authorInfo'
 import useSWR from 'swr';
 import { TypePhoto } from '@/types'
@@ -22,9 +22,9 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = null, fullHeight = true, fullWidth = false, onlyShowLiked=false }: { propTabId: string[], showCategoryBar: boolean, showTitle: boolean, category: string | null, userName: string | null, propTabName: string | null, fullHeight: boolean, fullWidth: boolean, onlyShowLiked: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, fullWidth = false, onlyShowLiked=false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, fullWidth?: boolean, onlyShowLiked?: boolean }) {
     const [columns, setColumns] = useState(3);
-    const [columnsPhotos, setColumnsPhotos] = useState([[]]);
+    const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
     const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
@@ -137,7 +137,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     const photoId = searchParams.get('photoId')
 
-    const goToPhotoPage = (e: Event, item: TypePhoto) => { e.stopPropagation(); router.push(`/?photoId=${item._id}`, undefined, { shallow: true }) }
+    const goToPhotoPage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, item: TypePhoto) => { e.stopPropagation(); router.push(`/?photoId=${item._id}`, undefined, { shallow: true }) }
 
     const [allTabs, setAllTabs] = React.useState<TypeTag[]>([]);
     const [getTabLoading, setGetTabLoading] = React.useState(false)
@@ -163,7 +163,6 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
 
-        console.log('handleCategoryChange')
         const newTab: TypeTag | undefined = allTabs.find(t => t.name === newValue)
         if (newTab) {
             setCurrentTab(newTab)
@@ -211,11 +210,11 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                             <div key={columnIndex} className={'flex flex-col gap-y-6'}>
                                 {column.map((item: TypePhoto, index: number) => (
                                     <li className={"item"} key={index}>
-                                        {item.path ? <div onClick={(event) => goToPhotoPage(event, item)}>
+                                        {item.path ? <div onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => goToPhotoPage(event, item)}>
                                             <div className={'item__container mx-auto w-full'}>
                                                 <div className="md:hidden">
                                                     <div className="item__context">
-                                                        <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
+                                                        <AuthorInfo author={item.author}></AuthorInfo>
                                                     </div>
                                                 </div>
 
@@ -231,7 +230,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                                         </div>
                                                     </div>
                                                     <div className="item__bottom hidden md:block">
-                                                        <AuthorInfo authorAavatar={item.authorAavatar} author={item.author}></AuthorInfo>
+                                                        <AuthorInfo author={item.author}></AuthorInfo>
                                                     </div>
 
                                                 </div>

@@ -5,27 +5,22 @@ import Photo from '../../models/Photo'
 import getUserByToken from '../../util/getUserByToken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // const client = await connectToDatabase();
-  // const photoCollections = client.db('unsplash').collection('photos')
 
   await connectToDatabase()
 
-  const id = req.query.id
-  let user = {}
+  const id: string | undefined = <string>req.query.id
+  let user: {
+      _id: string
+    } = { _id: ''}
 
   const token = req.headers.authorization?.split(' ')[1];
 
-  console.log('token', token)
   if (token) {
     user = await getUserByToken(token);
   }
-  console.log('user', user)
 
   if(id) {
     mongoose.set('debug', true);
-    // const photo = await Photo.findById(id)
-    //   .populate('photo_tags')
-    //   .exec();
 
     const photo = await Photo.aggregate([
       {
@@ -57,8 +52,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       }] :[]),
     ])
-
-    console.log('photo', photo)
 
       const photosWithAuthor = await Photo.populate(photo, {path: 'author'})
 

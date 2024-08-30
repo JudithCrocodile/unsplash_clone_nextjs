@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 
 
 export default function OperationBtn({ onClick, children, className, line=false, activeLike=false  }: {
-    children?: ReactNode, className: string, line?: boolean,  onClick?: () => void, activeLike: boolean
+    children?: ReactNode, className?: string, line?: boolean,  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void, activeLike?: boolean
 }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({

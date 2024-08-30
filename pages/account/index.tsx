@@ -93,7 +93,6 @@ export default function Account({ }) {
     };
 
     const submit = () => {
-        console.log('submit')
         fetcher('/user/update-user', {
             method: 'POST',
             headers: {

@@ -17,6 +17,7 @@ import { useRouter } from 'next/router'
 import {logout} from '@/store/auth'
 import {useDispatch} from 'react-redux'
 import {removeUserInfo} from '@/store/user'
+import type { RootState } from '@/store'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,11 +39,12 @@ export default function UploadDialog({ open, handleClose }: props) {
     }
 
     type fileDetailType = {
-        photoUrl: string,
+        photoUrl: string | ArrayBuffer | null | undefined,
         tabs: string[],
         location: string,
-        originalFile: File,
-        description: string
+        originalFile: string | File | Blob | undefined,
+        description: string,
+        newTagInputValue: string
     }
 
     const [selectedFile, setSelectedFile] = useState<File[] | []>([]);
@@ -71,7 +73,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                     const reader = new FileReader();
 
                     reader.onload = function (file) {
-                        setSelectedFileDetail((oldArray: string[]): string[] => [...oldArray, { photoUrl: file.target.result, tabs: [], location: '', originalFile: e.target.files[i], description: '', newTagInputValue: '' }])
+                        setSelectedFileDetail((oldArray: fileDetailType[]): fileDetailType[] => [...oldArray, { photoUrl: file?.target?.result, tabs: [], location: '', originalFile: e.target.files ? e?.target?.files[i] : undefined, description: '', newTagInputValue: '' }])
                     }
                     reader.readAsDataURL(newSelectedFile[i])
                 }
@@ -105,12 +107,16 @@ export default function UploadDialog({ open, handleClose }: props) {
 
         const formData = new FormData();
         for (let i: number = 0; i < selectedFileDetail.length; i++) {
-            formData.append(`image_${i}`, selectedFileDetail[i].originalFile);
-            formData.append(`photoDetails_${i}`, JSON.stringify({
-                tabs: selectedFileDetail[i].tabs,
-                location: selectedFileDetail[i].location,
-                description: selectedFileDetail[i].description,
-            }));
+            const file = selectedFileDetail[i].originalFile
+            if(file){
+                formData.append(`image_${i}`, file);
+                formData.append(`photoDetails_${i}`, JSON.stringify({
+                    tabs: selectedFileDetail[i].tabs,
+                    location: selectedFileDetail[i].location,
+                    description: selectedFileDetail[i].description,
+                }));                
+            }
+
         }
 
         try {
@@ -312,7 +318,7 @@ setTimeout(()=>{
                                             <div className={`photo `} key={photoIndex} style={{ width: '300px' }}>
                                                 <div>
                                                     <div className="photo__img-container cursor-pointer relative">
-                                                        <img src={detail.photoUrl} alt="prev-image" width="100%" className={'photo__img flex-1'} />
+                                                        <img src={detail.photoUrl as string} alt="prev-image" width="100%" className={'photo__img flex-1'} />
                                                         <div className="photo__img-detail-container absolute top-0 right-0 w-full h-full text-white">
                                                             <div className="photo__remove-btn-container top-2 right-2 absolute w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
                                                                 <CloseIcon color="primary" className="cursor-pointer" fontSize="medium" sx={{ "width": '17px', '&:hover': 'text.primary' }} onClick={() => removePhoto(photoIndex)}></CloseIcon>

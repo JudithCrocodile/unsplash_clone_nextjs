@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home({ }) {
   const searchParams = useSearchParams()
  
-  const photoId: string = searchParams.get('photoId')
+  const photoId: string | null = searchParams.get('photoId')
 
   return (
     <main

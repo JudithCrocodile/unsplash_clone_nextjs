@@ -40,7 +40,6 @@ export default function Login() {
                 body: JSON.stringify(loginForm)
             }
         ).then(res=>{
-            console.log(res)
             if (res.status === 200) {
                 dispatch(setToken(res.token))
                 dispatch(setUserInfo(res.userInfo))

@@ -25,30 +25,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ error: 'Database connection not established' });
     }
 
-
+    // Ensure `conn.db` is defined
+    const db = conn.db;
+    if (!db) {
+        return res.status(500).json({ error: 'Database object is not available' });
+    }
     let gfs, gridfsBucket;
 
     try {
-        gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: 'uploads' });
+        gridfsBucket = new mongoose.mongo.GridFSBucket(db, { bucketName: 'uploads' });
         gfs = Grid(conn.db, mongoose.mongo);
         gfs.collection('uploads');
-        console.log('GridFS setup complete');
     } catch (error) {
         console.error('Error setting up GridFS:', error);
         return res.status(500).json({ error: 'Failed to set up GridFS' });
     }
 
-    const photos = [];
-    const photoDetails = []
+    const photos: {
+        fileId: any, 
+        filePath: string
+    }[] = [];
+    const photoDetails:{ tabs: string[], location: string, description: string }[] = []
 
     // verify Bear token empty
     const token = req.headers.authorization?.split(' ')[1];
-    console.log('token', token)
     if (!token) return res.status(401).json({ error: 'No token provided' });
 
     // verify token
     const user = await getUserByToken(token);
-    console.log('user', user)
     if (!user) return res.status(401).json({ error: 'Invalid token' })
 
     if (req.method === 'POST') {
@@ -68,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // photo detail
         busboy.on('field', (fieldname, value) => {
             const [key, index] = fieldname.split('_');
-            photoDetails[index] = JSON.parse(value)
+            photoDetails[Number(index)] = JSON.parse(value)
         })
 
         busboy.on('finish', async () => {
@@ -101,8 +105,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         author: user._id,
                         createTime: new Date(),
                     })
-
-                    console.log('newPhoto', newPhoto)
 
                     await newPhoto.save();
                 }

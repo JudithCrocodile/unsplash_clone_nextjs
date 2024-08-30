@@ -5,14 +5,12 @@ import PhotoList from '@/components/photoList'
 import MakeSomethingAwesome from '@/components/makeSomethingAwesome'
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router'
+import type { RootState } from '@/store'
 
 export default function Account() {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
     const router = useRouter()
-    const userName:string = router.query.userName
-
-    console.log('router', router)
-    console.log('userName', userName)
+    const userName: string = router.query.userName as string
 
     return (
         <div>

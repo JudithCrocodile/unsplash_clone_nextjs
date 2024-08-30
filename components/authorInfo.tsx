@@ -4,7 +4,7 @@ import {TypeUser} from "@/types"
 import Skeleton from '@mui/material/Skeleton';
 import Link from 'next/link'
 
-export default function AuthorInfo( {author, inDetailPage, loading }: {author: TypeUser, inDetailPage: boolean, loading: boolean } ) {
+export default function AuthorInfo( {author, inDetailPage, loading }: {author: TypeUser, inDetailPage?: boolean, loading?: boolean } ) {
     const category = 0;
 
     return (

@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { store, persistor } from '@/store'
 import { PersistGate } from 'redux-persist/integration/react'
 import Head from 'next/head';
+import type { Page } from '@/types/page.d.ts'
 
 const theme = createTheme({
   palette: {
@@ -18,25 +19,17 @@ const theme = createTheme({
   },
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+type Props = AppProps & {
+  Component: Page
+}
 
-  const getLayout = Component.getLayout ?? ((page) => <Layout>
+export default function App({ Component, pageProps }: Props) {
+
+  const getLayout = Component.getLayout ?? (() => <Layout>
 
     <Component {...pageProps} />;
 
   </Layout>)
-
-
-
-  // return <ThemeProvider theme={theme}>
-
-  //     <Layout>
-
-  //       <Component {...pageProps} />;
-
-  //     </Layout>    
-
-  //   </ThemeProvider>
 
   return (
     <>

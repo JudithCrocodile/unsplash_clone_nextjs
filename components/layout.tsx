@@ -33,11 +33,10 @@ export default function Layout({ children, inAccountPage = false }: { children: 
     const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    console.log('anchorEl', anchorEl)
+
     const [anchorMenuEl, setaAnchorMenuEl] = React.useState<null | HTMLElement>(null);
     const isUserMenuOpen = Boolean(anchorEl);
     const isMenuOpen = Boolean(anchorMenuEl);
-    console.log('isUserMenuOpen', isUserMenuOpen)
 
     const handleUserMenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
@@ -64,7 +63,6 @@ export default function Layout({ children, inAccountPage = false }: { children: 
     }
 
     const handleLogout = () => {
-        console.log('handleLogout')
         handleUserMenuClose();
 
         fetcher(`/user/logout`, {}).then(res => {

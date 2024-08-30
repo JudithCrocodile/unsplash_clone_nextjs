@@ -19,7 +19,7 @@ export default function LikeBtn({photoId, liked=false}: {photoId: string, liked:
     setIsLiked(liked)
   }, [liked])
 
-  const handleBtnClick = (e) => {
+  const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     e.stopPropagation()
     fetcher('/like', {
       method: 'POST',
@@ -46,7 +46,7 @@ export default function LikeBtn({photoId, liked=false}: {photoId: string, liked:
 
   return (
     <div className={""}>
-      <OperationBtn activeLike={isLiked} line className={"item__favorite-btn "} onClick={(e)=>handleBtnClick(e)}>
+      <OperationBtn activeLike={isLiked} line className={"item__favorite-btn "} onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>):void=>handleBtnClick(e)}>
         <FavoriteIcon />
       </OperationBtn>
 

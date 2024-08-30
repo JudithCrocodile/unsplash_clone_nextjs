@@ -16,6 +16,7 @@
     "@mui/material": "^5.16.4",
     "@mui/material-nextjs": "^5.16.4",
     "@reduxjs/toolkit": "^2.2.7",
+    "@types/mongodb": "^4.0.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "busboy": "^1.6.0",
@@ -37,6 +38,11 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/busboy": "^1.5.4",
+    "@types/gridfs-stream": "^0.5.39",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

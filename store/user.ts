@@ -36,14 +36,14 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        setUserInfo(state, action: PayloadAction<object>){
+        setUserInfo(state, action: PayloadAction<IUserInfo>){
             state.userInfo = action.payload
         },
-        updateAvatar(state, action: PayloadAction<object>){
+        updateAvatar(state, action: PayloadAction<string>){
             state.userInfo.fileId = action.payload
         },
         removeUserInfo(state) {
-            state.userInfo =  initialState
+            state.userInfo =  initialState.userInfo
         }
     }
 })

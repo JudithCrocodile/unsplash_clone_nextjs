@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI: string = process.env.MONGODB_URI;
+const MONGODB_URI: string | undefined = process.env.MONGODB_URI;
 
 if(!MONGODB_URI) {
 throw new Error('Please define the MONGODB_URI enviroment variable inside.env')
 }
 
-let cached = global.mongoose;
+const globalAny = global as any;
+let cached: any = globalAny.mongoose;
 
 if(!cached) {
-cached = global.mongoose = {conn: null, promise: null}
+cached = globalAny.mongoose = {conn: null, promise: null}
 }
 
 async function connectToDatabase() {
@@ -24,7 +25,7 @@ async function connectToDatabase() {
             useUnifiedTopology: true,
         }
 
-        cached.promise = (await mongoose.connect(MONGODB_URI, opts)).isObjectIdOrHexString((mongoose) => {
+        cached.promise = (await mongoose.connect(<string>MONGODB_URI, opts)).isObjectIdOrHexString((mongoose: any) => {
             return mongoose;
         })
     }

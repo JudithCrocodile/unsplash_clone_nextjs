@@ -6,11 +6,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { useRouter } from 'next/router'
 import AuthorInfo from './authorInfo'
-import LikeBtn from './likeBtn'
+import LikeBtn from '@/components/likeBtn'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhotoList from './photoList'
-import { TypePhoto } from '@/types'
+import { TypePhoto, TypeUser } from '@/types'
 import dynamic from 'next/dynamic';
 import TagList from '@/components/tagList'
 import Tag from '@/components/tag'
@@ -29,7 +29,31 @@ type Props = {
 export default function Photo({ photoId }: Props) {
 const token = useSelector((state: RootState) => state.auth.token)
 
-  const [photosData, setPhotosData] = useState<TypePhoto>({});
+  const [photosData, setPhotosData] = useState<TypePhoto>({
+    _id: '',
+    path: '',
+    title: '',
+    descriptio: '',
+    author: {
+      _id: '',
+      userName: '',
+      email: '',
+      password: '',
+      created_at: '',
+      updated_at: '',
+      firstName: '',
+      lastName: '',
+      avatarPath: '',
+      fileId: '',
+    },
+    authorAavatar: '',
+    location: '',
+    createTime: '',
+    photo_tags: [],
+    fileId: '',
+    liked: false,
+    description: '',
+  });
   const [loading, setLoading] = useState(false);
 
 
@@ -120,7 +144,7 @@ const token = useSelector((state: RootState) => state.auth.token)
               <div className="detail">
 
                 <div className="flex justify-between">
-                  <AuthorInfo loding={loading} authorAavatar={photosData.authorAavatar} author={photosData.author} inDetailPage={true}></AuthorInfo>
+                  <AuthorInfo loading={loading} author={photosData.author} inDetailPage={true}></AuthorInfo>
 
                   <div className={'my-4'}>
                     <LikeBtn photoId={photosData._id} liked={photosData.liked}></LikeBtn>

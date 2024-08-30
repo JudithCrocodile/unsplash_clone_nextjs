@@ -15,7 +15,15 @@ const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then
 export default function Join() {
   const router = useRouter()
 
-  const [createForm, setCreateForm] = useState({
+  interface CreateForm {
+    email: string;
+    password: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+  }
+
+  const [createForm, setCreateForm] = useState<CreateForm>({
     email: '',
     password: '',
     userName: '',
@@ -57,7 +65,7 @@ export default function Join() {
 
       let error: boolean = false
     for (let key in createForm) {
-      if(!createForm[key]){
+      if(createForm[key as keyof CreateForm] === ''){
         error = true
         newValidation[key].error = true
       } else if(key === 'email'){
