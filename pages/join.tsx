@@ -54,6 +54,10 @@ export default function Join() {
         const newValidation = {...validation}
         newValidation[name].error = true
         setValidation(newValidation)
+      } else {
+        const newValidation = {...validation}
+        newValidation[name].error = false
+        setValidation(newValidation)
       }
 
     }
@@ -83,7 +87,12 @@ export default function Join() {
           newValidation[key].error = false
         }
 
-      } else {
+      } else if(key === 'password') {
+        if(validation.password.error){
+          error = true
+        }
+
+      }else {
         newValidation[key].error = false
       }
 
