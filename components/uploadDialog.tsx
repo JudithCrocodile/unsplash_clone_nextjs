@@ -259,12 +259,18 @@ setTimeout(()=>{
                                         <div className='flex flex-col items-center mt-auto cursor-pointer'>
 
                                             <Button
-                                                sx={{ boxShadow: 'unset' }}
                                                 component="label"
                                                 role={undefined}
                                                 variant="contained"
                                                 tabIndex={-1}
                                                 className='flex flex-col items-center mt-auto cursor-pointer'
+                                                sx={{
+                                                    boxShadow: 'unset',
+                                                    ':hover': {
+                                                        backgroundColor: 'unset',
+                                                    boxShadow: 'unset',
+                                                    }
+                                                }}
                                             >
                                                 <Image width="130" height="96" alt="upload-img" src="/empty-illustration-1x.avif"></Image>
                                                 <div >Drag and drop up to 10 photos or <span >browse</span> to choose a file</div>
