@@ -80,7 +80,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const updatedUser = await User.findByIdAndUpdate(
                     user._id,
                     {
-                        'avatarPath': avatar.filePath,
                         'fileId': avatar.fileId
                     },
                 )

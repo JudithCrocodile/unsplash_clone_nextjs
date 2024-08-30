@@ -44,7 +44,6 @@ const token = useSelector((state: RootState) => state.auth.token)
       updated_at: '',
       firstName: '',
       lastName: '',
-      avatarPath: '',
       fileId: '',
     },
     authorAavatar: '',

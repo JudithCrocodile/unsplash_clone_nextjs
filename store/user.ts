@@ -8,7 +8,6 @@ interface IUserInfo {
     updated_at:  string,
     firstName:  string,
     lastName:  string,
-    avatarPath:  string,
     fileId:  string,
     _id: string
 }
@@ -26,7 +25,6 @@ const initialState: AuthState = {
         updated_at: '',
         firstName: '',
         lastName: '',
-        avatarPath: '',
         fileId: '',
         _id: ''
     }

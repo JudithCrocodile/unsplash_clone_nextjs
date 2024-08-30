@@ -28,6 +28,5 @@ export type TypeUser = {
     updated_at: string,
     firstName: string,
     lastName: string,
-    avatarPath: string,
     fileId: string,
 }

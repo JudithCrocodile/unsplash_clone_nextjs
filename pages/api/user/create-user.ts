@@ -6,8 +6,6 @@ import connectToDatabase from "@/lib/mongoose";
 import User from '../models/User'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    // const client = await connectToDatabase();
-    // const userCollections = client.db('unsplash').collection('users')
     await connectToDatabase()
 
     const {email, password, userName, firstName, lastName} = JSON.parse(req.body);
@@ -23,8 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             lastName,
             created_at: new Date(),
             updated_at: new Date(),
+            fileId: undefined,
         })
-        newUser.save();
+        await newUser.save();
         res.status(200).send({status: 200, message: 'User registered successfully'});
     } catch (error) {
         console.log('error', error)
