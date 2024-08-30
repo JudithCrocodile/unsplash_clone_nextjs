@@ -281,7 +281,7 @@ setTimeout(()=>{
                                         </div>
                                         <div className="mt-auto flex text-xs justify-between">
                                             <ul>
-                                                <li>High quality images (for photos, at least 5MP)</li>
+                                                <li>High quality images</li>
                                                 <li>Images are clear & original</li>
 
                                             </ul>
