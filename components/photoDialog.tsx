@@ -18,6 +18,7 @@ import PhotoComponent from '@/components/photoComponent'
 import Skeleton from '@mui/material/Skeleton';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
+import Link from 'next/link'
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -176,7 +177,7 @@ const token = useSelector((state: RootState) => state.auth.token)
                 </div>
                 <TagList>
                   {
-                    photosData?.photo_tags ? photosData.photo_tags.map(t=><Tag key={t.name} name={t.name} ></Tag>)
+                    photosData?.photo_tags ? photosData.photo_tags.map(t=><Link key={t.name} href={ `/s/photos/${t.name}`}><Tag name={t.name} ></Tag></Link>)
                     : <Skeleton variant="rectangular" width={100} height={30} />
                   }
                 </TagList>
