@@ -9,8 +9,8 @@ import Typography from '@mui/material/Typography';
 
 
 
-export default function OperationBtn({ onClick, children, className, line=false, activeLike=false  }: {
-    children?: ReactNode, className?: string, line?: boolean,  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void, activeLike?: boolean
+export default function OperationBtn({ onClick, children, className, line=false, activeLike=false, disabled=false  }: {
+    children?: ReactNode, className?: string, line?: boolean,  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void, activeLike?: boolean, disabled?:boolean
 }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
@@ -23,11 +23,13 @@ export default function OperationBtn({ onClick, children, className, line=false,
         height: '32px',
         transition: 'all 0.2s',
         fontSize: '14px',
-        backgroundColor: 'white',
+        backgroundColor: !disabled ? 'white' : '#eee',
+        borderColor: disabled ? 'transparent': 'inherit',
         '&:hover': {
             zIndex: 1,
             border: line ? '1px solid #111' : '',
             color: '#111',
+            borderColor: disabled ? 'transparent': 'inherit',
         },
         '& .MuiSvgIcon-root': {
             width: '20px',
@@ -52,6 +54,7 @@ export default function OperationBtn({ onClick, children, className, line=false,
         focusRipple
         className={`${className}`}
         onClick={onClick}
+        disabled={disabled}
     >
         <main>{children}</main>
     </OperationBtn>
