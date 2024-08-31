@@ -14,10 +14,11 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DialogActions from '@mui/material/DialogActions';
 import PlaceIcon from '@mui/icons-material/Place';
 import { useRouter } from 'next/router'
-import {logout} from '@/store/auth'
-import {useDispatch} from 'react-redux'
-import {removeUserInfo} from '@/store/user'
+import { logout } from '@/store/auth'
+import { useDispatch } from 'react-redux'
+import { removeUserInfo } from '@/store/user'
 import type { RootState } from '@/store'
+import ImageIcon from '@mui/icons-material/Image';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,11 +32,14 @@ export default function UploadDialog({ open, handleClose }: props) {
     const token = useSelector((state: RootState) => state.auth.token)
     const dispatch = useDispatch();
 
+    const photoMaxSize = 50 * 1024 * 1024; // 50MB
+
     const onClose = () => {
         handleClose();
         setSelectedFile([])
         setSelectedFileDetail([])
         setUploadStep(0)
+        setErrorPhotos([])
     }
 
     type fileDetailType = {
@@ -46,10 +50,15 @@ export default function UploadDialog({ open, handleClose }: props) {
         description: string,
         newTagInputValue: string
     }
+    type errorPhotosType = {
+        photoUrl: string | ArrayBuffer | null | undefined,
+        originalFile: File | undefined,
+    }
 
     const [selectedFile, setSelectedFile] = useState<File[] | []>([]);
     const [message, setMessage] = useState<string>('');
     const [selectedFileDetail, setSelectedFileDetail] = useState<fileDetailType[]>([]);
+    const [errorPhotos, setErrorPhotos] = useState<errorPhotosType[]>([]);
 
     const maxImageLength = 10;
 
@@ -63,17 +72,24 @@ export default function UploadDialog({ open, handleClose }: props) {
             // setSelectedFile([...selectedFile, ...e.target.files]);
 
             if (newSelectedFile.length > maxImageLength) {
-                newSelectedFile.splice(maxImageLength)
+                newSelectedFile.splice(maxImageLength - errorPhotos.length)
             }
 
             setSelectedFile(newSelectedFile)
 
             for (let i: number = 0; i < newSelectedFile.length; i++) {
+
                 if (!selectedFileDetail[i]) {
                     const reader = new FileReader();
 
                     reader.onload = function (file) {
-                        setSelectedFileDetail((oldArray: fileDetailType[]): fileDetailType[] => [...oldArray, { photoUrl: file?.target?.result, tabs: [], location: '', originalFile: e.target.files ? e?.target?.files[i] : undefined, description: '', newTagInputValue: '' }])
+                        if (newSelectedFile[i].size < photoMaxSize) {
+                            const newErrorPhotos = [...errorPhotos, { originalFile: newSelectedFile[i], photoUrl: file?.target?.result }]
+
+                            setErrorPhotos(newErrorPhotos)
+                        } else {
+                            setSelectedFileDetail((oldArray: fileDetailType[]): fileDetailType[] => [...oldArray, { photoUrl: file?.target?.result, tabs: [], location: '', originalFile: e.target.files ? e?.target?.files[i] : undefined, description: '', newTagInputValue: '' }])
+                        }
                     }
                     reader.readAsDataURL(newSelectedFile[i])
                 }
@@ -108,13 +124,13 @@ export default function UploadDialog({ open, handleClose }: props) {
         const formData = new FormData();
         for (let i: number = 0; i < selectedFileDetail.length; i++) {
             const file = selectedFileDetail[i].originalFile
-            if(file){
+            if (file) {
                 formData.append(`image_${i}`, file);
                 formData.append(`photoDetails_${i}`, JSON.stringify({
                     tabs: selectedFileDetail[i].tabs,
                     location: selectedFileDetail[i].location,
                     description: selectedFileDetail[i].description,
-                }));                
+                }));
             }
 
         }
@@ -133,7 +149,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                 setMessage('Upload successfully')
                 setIsShowSnackbar(true)
                 window.location.href = '/';
-            }else if(res.status === 401) {
+            } else if (res.status === 401) {
                 dispatch(logout())
                 dispatch(removeUserInfo())
                 onClose();
@@ -150,10 +166,10 @@ export default function UploadDialog({ open, handleClose }: props) {
         }
     };
 
-    useEffect(()=>{
-setTimeout(()=>{
-    setIsShowSnackbar(false)
-}, 2000)
+    useEffect(() => {
+        setTimeout(() => {
+            setIsShowSnackbar(false)
+        }, 2000)
     }, [message])
 
 
@@ -208,6 +224,13 @@ setTimeout(()=>{
         return <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" multiple accept="image/png, image/jpeg, image/jpg" />
     }
 
+    const handleRemoveErrorPhotos = () => {
+        setErrorPhotos([])
+        if (selectedFileDetail.length === 0) {
+            setUploadStep(0)
+        }
+    }
+
     return (
         <main
             className={``}
@@ -230,7 +253,7 @@ setTimeout(()=>{
                             },
                             height: {
                                 xs: "100%",
-                                sm: "70vh",
+                                sm: "90vh",
                                 maxWidth: "unset",
 
                             },
@@ -245,7 +268,9 @@ setTimeout(()=>{
                 }}
             >
 
-                <DialogTitle>Submit to Unsplash</DialogTitle>
+                <DialogTitle sx={{
+                    fontSize: '15px'
+                }}>Submit to Unsplash</DialogTitle>
 
 
 
@@ -255,7 +280,7 @@ setTimeout(()=>{
                         {
                             uploadStep === 0 ?
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
-                                    <div className="p-4 border-2 rounded-sm border-dashed flex flex-col h-full">
+                                    <div className="py-6 px-8 border-2 rounded-sm border-dashed flex flex-col h-full">
                                         <div className='flex flex-col items-center mt-auto cursor-pointer'>
 
                                             <Button
@@ -268,28 +293,31 @@ setTimeout(()=>{
                                                     boxShadow: 'unset',
                                                     ':hover': {
                                                         backgroundColor: 'unset',
-                                                    boxShadow: 'unset',
+                                                        boxShadow: 'unset',
                                                     }
                                                 }}
                                             >
                                                 <Image width="130" height="96" alt="upload-img" src="/empty-illustration-1x.avif"></Image>
-                                                <div >Drag and drop up to 10 photos or <span >browse</span> to choose a file</div>
-                                                <div>JPEG only • Max 50 MB</div>
-                                                {/* <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" multiple /> */}
+                                                <h3 className="md:text-3xl md:font-bold normal-case mb-4 mt-6">Upload a photo <span className="border border-black/12 shadow-[0_1px_2px_0_rgba(0,0,0,0.1)] text-[#767676] p-[2px_8px] sm:rounded-lg sm:text-lg sm:leading-7 rounded-md text-sm">JPEG</span></h3>
+                                                <div className="normal-case text-center text-lg font-normal hidden md:block">
+                                                    <p >Drag and drop up to 10 photos or <br /><span className="text-[#007fff]">browse</span> to choose a file</p>
+                                                    <p className="text-[#767676] text-sm mt-4">Max 50 MB</p>
+                                                </div>
+
                                                 <UploadInput></UploadInput>
                                             </Button>
                                         </div>
-                                        <div className="mt-auto flex text-xs justify-between">
-                                            <ul>
-                                                <li>High quality images</li>
-                                                <li>Images are clear & original</li>
+                                        <div className="mt-auto flex text-sm justify-between text-[#767676] gap-4 w-11/12 ml-auto mr-auto">
+                                            <ul className="list-disc">
+                                                <li><span className="font-bold">High quality</span> images (for photos, at least 5MP)</li>
+                                                <li>Images are <span className="font-bold">clear & original</span></li>
 
                                             </ul>
-                                            <ul>
-                                                <li>Only upload images you own the rights to</li>
+                                            <ul className="list-disc">
+                                                <li>Only upload images you <span className="font-bold">own the rights to</span></li>
                                                 <li>Zero tolerance for nudity, violence or hate</li>
                                             </ul>
-                                            <ul>
+                                            <ul className="list-disc">
                                                 <li>Respect the intellectual property of others</li>
                                                 {/* <li>Read the Unsplash Terms</li> */}
                                             </ul>
@@ -303,25 +331,56 @@ setTimeout(()=>{
                                 :
                                 // set image detail
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
-                                    <div style={{ 'width': '300px' }} className='text-center cursor-pointer py-8'>
+                                    <div className="bg-[#fceeeb] rounded-[2px] flex flex-col p-4 gap-4 text-[15px]" style={{ 'width': '356px' }}>
+                                        <p className="font-semibold">Unfortunately we had trouble uploading the following files:</p>
+                                        <div className="flex gap-[10px]">
+                                            <span className="text-[#e25c3d]"><ImageIcon sx={{ width: '16px', height: '16px' }}></ImageIcon></span>
+                                            <div>
+                                                <p>{errorPhotos.length} file did not meet the minimum size</p>
+                                                <p className="text-[#767676] text-xs leading-[1.33]">Please upload images over 5MP</p>
+                                                <div className="flex gap-1 mt-[10px]">
+                                                    {errorPhotos.map((photo, photoIndex) =>
+                                                        <div key={photoIndex} className="w-20 flex gap-1 flex-col">
+                                                            <img src={photo.photoUrl as string} alt="" className="object-cover h-[53.33333px]" />
+                                                            <div className="overflow-hidden text-ellipsis whitespace-nowrap">{photo.originalFile?.name}</div>
+
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div className="font-semibold">You may re-upload them or proceed to publishing without these images.</div>
+                                        <OperationBtn line onClick={handleRemoveErrorPhotos}>OK, got it</OperationBtn>
+
+                                    </div>
+                                    <div style={{ 'width': '356px' }} className='text-center cursor-pointer py-6 px-4 border-dashed border-2 border-gray-300 mt-4'>
                                         <Button
-                                            sx={{ boxShadow: 'unset' }}
                                             component="label"
                                             role={undefined}
                                             variant="contained"
                                             tabIndex={-1}
                                             className='flex flex-col items-center mt-auto cursor-pointer'
+                                            sx={{
+                                                padding: 0,
+                                                boxShadow: 'unset',
+                                                ':hover': {
+                                                    backgroundColor: 'unset',
+                                                    boxShadow: 'unset',
+                                                }
+                                            }}
                                         >
                                             <AddCircleIcon color="info" sx={{ 'width': '60px', height: '60px' }}></AddCircleIcon>
-                                            <p className='pt-4 text-gray-500'>Add up to {maxImageLength - selectedFileDetail.length} more images</p>
+                                            <p className='pt-2 text-gray-500 font-normal'>Add up to {maxImageLength - selectedFileDetail.length - errorPhotos.length} more images</p>
                                             <UploadInput></UploadInput>
 
                                         </Button>
 
                                     </div>
-                                    <div className={`flex-1 flex gap-4 flex-wrap`}>
+                                    <div className={`flex-1 flex gap-8 flex-wrap`}>
                                         {selectedFileDetail.map((detail, photoIndex) =>
-                                            <div className={`photo `} key={photoIndex} style={{ width: '300px' }}>
+                                            <div className={`photo `} key={photoIndex} style={{ width: '356px' }}>
                                                 <div>
                                                     <div className="photo__img-container cursor-pointer relative">
                                                         <img src={detail.photoUrl as string} alt="prev-image" width="100%" className={'photo__img flex-1'} />
@@ -332,12 +391,12 @@ setTimeout(()=>{
                                                             <div className="photo_location-container absolute bottom-2 left-2 bg-black/70 rounded-full px-2 py-1 text-xs">
                                                                 <PlaceIcon className="top-0 right-0 mt-[-0.5rem]"></PlaceIcon>
                                                                 <Input className="text-white ml-2" placeholder="Add location" sx={{
-                                                                    "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' }, 
+                                                                    "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' },
                                                                     input: {
-                                                                        '&::placeholder': {color: 'white'},
+                                                                        '&::placeholder': { color: 'white' },
                                                                         color: 'white'
                                                                     }
-                                                                    
+
                                                                 }} value={detail.location} onChange={(e) => handleLocationInputChange(photoIndex, e.target.value)} />
                                                             </div>
                                                         </div>
@@ -379,7 +438,14 @@ setTimeout(()=>{
                     <div className='w-full'>
                         <div className={`upload-dialog__footer border-t rounded-sm border-solid flex justify-end py-2 px-4 gap-4`}>
                             <OperationBtn line onClick={onClose}>Cancel</OperationBtn>
-                            <OperationBtn line onClick={handleSubmit}>Submit to Unsplash</OperationBtn>
+                            {
+                                uploadStep === 0 ?
+                                    <OperationBtn line onClick={handleSubmit} disabled={uploadStep === 0}>Submit to Unsplash</OperationBtn>
+                                    :
+                                    <OperationBtn line onClick={handleSubmit} disabled={selectedFileDetail.length === 0}>Submit {selectedFileDetail.length}</OperationBtn>
+                            }
+
+
 
                         </div>
                     </div>
