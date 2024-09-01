@@ -33,6 +33,7 @@ export default function UploadDialog({ open, handleClose }: props) {
     const dispatch = useDispatch();
 
     const photoMaxSize = 50 * 1024 * 1024; // 50MB
+    const minSizeLimitation = false;
 
     const onClose = () => {
         handleClose();
@@ -83,7 +84,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                     const reader = new FileReader();
 
                     reader.onload = function (file) {
-                        if (newSelectedFile[i].size < photoMaxSize) {
+                        if (minSizeLimitation && (newSelectedFile[i].size < photoMaxSize)) {
                             const newErrorPhotos = [...errorPhotos, { originalFile: newSelectedFile[i], photoUrl: file?.target?.result }]
 
                             setErrorPhotos(newErrorPhotos)
@@ -231,10 +232,43 @@ export default function UploadDialog({ open, handleClose }: props) {
         }
     }
 
+    const [files, setFiles] = React.useState([]);
+
+//   const onDropHandler = (ev) => {
+//     console.log('onDropHandler' )
+//     ev.preventDefault();
+
+//     let file = "";
+//     if (ev.dataTransfer.items) {
+//       // Use DataTransferItemList interface to access the file(s)
+//       file =
+//         [...ev.dataTransfer.items]
+//           .find((item: any) => item.kind === "file")
+//           .getAsFile() ;
+//     } else {
+//       // Use DataTransfer interface to access the file(s)
+//       file = ev.dataTransfer.files[0];
+//     }
+//     setFiles([...files, file]);
+
+//     console.log('ev.dataTransfer.items',ev.dataTransfer.items)
+//     console.log('file',file)
+//   };
+
+//   const onDragOver = (ev) => ev.preventDefault();
+
     return (
         <main
             className={``}
+            
         >
+
+        {/* <div id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver} className="w-screen h-screen fixed ">
+           <div> Selected files: </div>
+        {files.map((file) => (
+          <div key={file.name} style={{color: "green",fontWeight: "bold" }}>{file.name}</div>
+        ))} 
+        </div> */}
 
             <Dialog
                 className={`upload-dialog`}
@@ -276,7 +310,8 @@ export default function UploadDialog({ open, handleClose }: props) {
 
                 <DialogContent sx={{ paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
 
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full" id="drop_zone">
+                    {/* <div className="flex flex-col h-full" id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver}> */}
                         {
                             uploadStep === 0 ?
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
@@ -331,7 +366,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                 :
                                 // set image detail
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
-                                    <div className="bg-[#fceeeb] rounded-[2px] flex flex-col p-4 gap-4 text-[15px]" style={{ 'width': '356px' }}>
+                                    {errorPhotos.length && <div className="bg-[#fceeeb] rounded-[2px] flex flex-col p-4 gap-4 text-[15px]" style={{ 'width': '356px' }}>
                                         <p className="font-semibold">Unfortunately we had trouble uploading the following files:</p>
                                         <div className="flex gap-[10px]">
                                             <span className="text-[#e25c3d]"><ImageIcon sx={{ width: '16px', height: '16px' }}></ImageIcon></span>
@@ -354,7 +389,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                         <div className="font-semibold">You may re-upload them or proceed to publishing without these images.</div>
                                         <OperationBtn line onClick={handleRemoveErrorPhotos}>OK, got it</OperationBtn>
 
-                                    </div>
+                                    </div>}
                                     <div style={{ 'width': '356px' }} className='text-center cursor-pointer py-6 px-4 border-dashed border-2 border-gray-300 mt-4'>
                                         <Button
                                             component="label"
