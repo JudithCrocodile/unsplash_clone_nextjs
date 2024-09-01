@@ -234,28 +234,28 @@ export default function UploadDialog({ open, handleClose }: props) {
 
     const [files, setFiles] = React.useState([]);
 
-  const onDropHandler = (ev) => {
-    console.log('onDropHandler' )
-    ev.preventDefault();
+//   const onDropHandler = (ev) => {
+//     console.log('onDropHandler' )
+//     ev.preventDefault();
 
-    let file = "";
-    if (ev.dataTransfer.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      file =
-        [...ev.dataTransfer.items]
-          .find((item: any) => item.kind === "file")
-          .getAsFile() ;
-    } else {
-      // Use DataTransfer interface to access the file(s)
-      file = ev.dataTransfer.files[0];
-    }
-    setFiles([...files, file]);
+//     let file = "";
+//     if (ev.dataTransfer.items) {
+//       // Use DataTransferItemList interface to access the file(s)
+//       file =
+//         [...ev.dataTransfer.items]
+//           .find((item: any) => item.kind === "file")
+//           .getAsFile() ;
+//     } else {
+//       // Use DataTransfer interface to access the file(s)
+//       file = ev.dataTransfer.files[0];
+//     }
+//     setFiles([...files, file]);
 
-    console.log('ev.dataTransfer.items',ev.dataTransfer.items)
-    console.log('file',file)
-  };
+//     console.log('ev.dataTransfer.items',ev.dataTransfer.items)
+//     console.log('file',file)
+//   };
 
-  const onDragOver = (ev) => ev.preventDefault();
+//   const onDragOver = (ev) => ev.preventDefault();
 
     return (
         <main
@@ -310,7 +310,8 @@ export default function UploadDialog({ open, handleClose }: props) {
 
                 <DialogContent sx={{ paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
 
-                    <div className="flex flex-col h-full" id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver}>
+                    <div className="flex flex-col h-full" id="drop_zone">
+                    {/* <div className="flex flex-col h-full" id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver}> */}
                         {
                             uploadStep === 0 ?
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
