@@ -159,7 +159,7 @@ const token = useSelector((state: RootState) => state.auth.token)
 
                 </div>
 
-                <div className="detail_description my-8">
+                <div className="detail_description my-8 whitespace-pre">
                   <p>{photosData.description}</p>
                 </div>
 
