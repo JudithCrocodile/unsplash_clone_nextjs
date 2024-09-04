@@ -1,4 +1,4 @@
-import Image from "next/image";
+import NextImage from "next/image";
 import { Inter } from "next/font/google";
 import React, { useState, useEffect } from 'react'
 import Dialog from '@mui/material/Dialog';
@@ -19,8 +19,8 @@ import { useDispatch } from 'react-redux'
 import { removeUserInfo } from '@/store/user'
 import type { RootState } from '@/store'
 import ImageIcon from '@mui/icons-material/Image';
-
-const inter = Inter({ subsets: ["latin"] });
+import CircularProgress from '@mui/material/CircularProgress';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 interface props {
     open: boolean,
@@ -33,14 +33,15 @@ export default function UploadDialog({ open, handleClose }: props) {
     const dispatch = useDispatch();
 
     const photoMaxSize = 50 * 1024 * 1024; // 50MB
-    const minSizeLimitation = false;
+    const photoMinSize = 5000000; // 5MP
+    const sizeLimitation = true;
 
     const onClose = () => {
         handleClose();
-        setSelectedFile([])
         setSelectedFileDetail([])
         setUploadStep(0)
-        setErrorPhotos([])
+        setErrorPhotos({ errorMaxSize: [], errorMinSize: [], errorFileType: [] })
+        setShowDropOverlay(false)
     }
 
     type fileDetailType = {
@@ -52,69 +53,128 @@ export default function UploadDialog({ open, handleClose }: props) {
         newTagInputValue: string
     }
     type errorPhotosType = {
-        photoUrl: string | ArrayBuffer | null | undefined,
-        originalFile: File | undefined,
+        photoUrl: string,
+        fileName: string,
+    }
+    type errorPhotosListType = {
+        errorMaxSize: errorPhotosType[],
+        errorMinSize: errorPhotosType[],
+        errorFileType: errorPhotosType[],
     }
 
-    const [selectedFile, setSelectedFile] = useState<File[] | []>([]);
+
     const [message, setMessage] = useState<string>('');
     const [selectedFileDetail, setSelectedFileDetail] = useState<fileDetailType[]>([]);
-    const [errorPhotos, setErrorPhotos] = useState<errorPhotosType[]>([]);
+    const [errorPhotos, setErrorPhotos] = useState<errorPhotosListType>({ errorMaxSize: [], errorMinSize: [], errorFileType: [] });
+    const [errorPhotosLength, setErrorPhotosLength] = useState<number>(0);
+    const [showDropOverlay, setShowDropOverlay] = useState<boolean>(false);
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+
+
 
     const maxImageLength = 10;
 
     // 0: upload, 1: serImageDetail
     const [uploadStep, setUploadStep] = useState<number>(0);
 
+    useEffect(() => {
+        const errorLength = errorPhotos.errorMaxSize.length + errorPhotos.errorMinSize.length + errorPhotos.errorFileType.length
+        setErrorPhotosLength(errorLength)
+
+    }, [errorPhotos])
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            const newSelectedFile = [...selectedFile, ...e.target.files]
-            // setSelectedFile([...selectedFile, ...e.target.files]);
 
-            if (newSelectedFile.length > maxImageLength) {
-                newSelectedFile.splice(maxImageLength - errorPhotos.length)
-            }
+            handleNewFile(e.target.files)
 
-            setSelectedFile(newSelectedFile)
+        }
+    };
 
-            for (let i: number = 0; i < newSelectedFile.length; i++) {
+    const handleNewFile = (files: File[] | File | FileList) => {
+        let newFiles: File[];
 
-                if (!selectedFileDetail[i]) {
-                    const reader = new FileReader();
+        if (files instanceof FileList) {
+            newFiles = Array.from(files); // 将 FileList 转换为数组
+        } else if (files instanceof File) {
+            newFiles = [files]; // 将单个 File 包裹在数组中
+        } else {
+            newFiles = files; // 已经是 File[] 类型
+        }
 
-                    reader.onload = function (file) {
-                        if (minSizeLimitation && (newSelectedFile[i].size < photoMaxSize)) {
-                            const newErrorPhotos = [...errorPhotos, { originalFile: newSelectedFile[i], photoUrl: file?.target?.result }]
+        const newSelectedFile = [...newFiles]
+
+        if (newSelectedFile.length > maxImageLength) {
+            newSelectedFile.splice(maxImageLength - errorPhotosLength)
+        }
+
+        const newErrorPhotos = { ...errorPhotos }
+
+
+        for (let i: number = 0; i < newSelectedFile.length; i++) {
+
+            if (!selectedFileDetail[i]) {
+                const reader = new FileReader();
+
+                reader.onload = function (file) {
+                    const img = new Image();
+
+                    img.onload = function () {
+                        const width = img.width;
+                        const height = img.height;
+                        const pixelCount = width * height;
+
+                        const fileTypeError = !newSelectedFile[i].type.includes('jpg') && !newSelectedFile[i].type.includes('jpeg')
+
+
+                        if (sizeLimitation && ((pixelCount < photoMinSize) || newSelectedFile[i].size > photoMaxSize || fileTypeError)) {
+
+                            if (pixelCount < photoMinSize) { // too small
+
+                                newErrorPhotos.errorMinSize = [...newErrorPhotos.errorMinSize, { photoUrl: file?.target?.result as string, fileName: newSelectedFile[i]?.name }]
+
+                            } else if (newSelectedFile[i].size > photoMaxSize) { // too large
+
+                                newErrorPhotos.errorMaxSize = [...newErrorPhotos.errorMaxSize, { photoUrl: file?.target?.result as string, fileName: newSelectedFile[i]?.name }]
+                            } else if (fileTypeError) { // file type error
+
+                                newErrorPhotos.errorFileType = [...newErrorPhotos.errorMaxSize, { photoUrl: file?.target?.result as string, fileName: newSelectedFile[i]?.name }]
+                            }
+
 
                             setErrorPhotos(newErrorPhotos)
                         } else {
-                            setSelectedFileDetail((oldArray: fileDetailType[]): fileDetailType[] => [...oldArray, { photoUrl: file?.target?.result, tabs: [], location: '', originalFile: e.target.files ? e?.target?.files[i] : undefined, description: '', newTagInputValue: '' }])
+
+                            setSelectedFileDetail((oldArray: fileDetailType[]): fileDetailType[] => [...oldArray, { photoUrl: file?.target?.result, tabs: [], location: '', originalFile: newSelectedFile[i], description: '', newTagInputValue: '' }])
                         }
                     }
-                    reader.readAsDataURL(newSelectedFile[i])
-                }
 
+
+
+                    img.src = file?.target?.result as string;
+                }
+                reader.readAsDataURL(newSelectedFile[i])
             }
 
-            setUploadStep(1)
         }
-    };
+
+        setUploadStep(1)
+
+    }
+
+
 
     const removePhoto = (photoIndex: number) => {
         const newPhotoValues = [...selectedFileDetail]
         newPhotoValues.splice(photoIndex, 1)
 
         setSelectedFileDetail(newPhotoValues)
-
-        const newSelectedFile = [...selectedFile]
-        newSelectedFile.splice(photoIndex, 1)
-
-        setSelectedFile(newSelectedFile)
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitLoading(true)
 
         if (!selectedFileDetail) {
             setMessage('Please select a file first.');
@@ -144,6 +204,9 @@ export default function UploadDialog({ open, handleClose }: props) {
                 },
                 body: formData,
             });
+
+
+            setSubmitLoading(false)
 
             if (res.status === 200) {
                 onClose();
@@ -226,49 +289,43 @@ export default function UploadDialog({ open, handleClose }: props) {
     }
 
     const handleRemoveErrorPhotos = () => {
-        setErrorPhotos([])
+        setErrorPhotos({ errorMaxSize: [], errorMinSize: [], errorFileType: [] })
         if (selectedFileDetail.length === 0) {
             setUploadStep(0)
         }
     }
 
-    const [files, setFiles] = React.useState([]);
+    const onDropHandler = (ev: React.DragEvent<HTMLDivElement>) => {
+        ev.preventDefault();
+        setShowDropOverlay(false)
 
-//   const onDropHandler = (ev) => {
-//     console.log('onDropHandler' )
-//     ev.preventDefault();
+        let file: File[] = []
 
-//     let file = "";
-//     if (ev.dataTransfer.items) {
-//       // Use DataTransferItemList interface to access the file(s)
-//       file =
-//         [...ev.dataTransfer.items]
-//           .find((item: any) => item.kind === "file")
-//           .getAsFile() ;
-//     } else {
-//       // Use DataTransfer interface to access the file(s)
-//       file = ev.dataTransfer.files[0];
-//     }
-//     setFiles([...files, file]);
+        if (ev.dataTransfer?.items && ev.dataTransfer?.items) {
+            // Use DataTransferItemList interface to access the file(s)
+            file = [...ev.dataTransfer.items].map(e => e.getAsFile()).filter(e => e !== null)
 
-//     console.log('ev.dataTransfer.items',ev.dataTransfer.items)
-//     console.log('file',file)
-//   };
+        } else {
+            // Use DataTransfer interface to access the file(s)
+            file = [ev.dataTransfer.files[0]];
+        }
+        handleNewFile(file)
+    };
 
-//   const onDragOver = (ev) => ev.preventDefault();
+    const onDragOver = (ev: React.DragEvent<HTMLDivElement>) => {
+        ev.preventDefault();
+        setShowDropOverlay(true)
+    }
 
     return (
         <main
             className={``}
-            
+
         >
 
-        {/* <div id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver} className="w-screen h-screen fixed ">
-           <div> Selected files: </div>
-        {files.map((file) => (
-          <div key={file.name} style={{color: "green",fontWeight: "bold" }}>{file.name}</div>
-        ))} 
-        </div> */}
+            {(open && showDropOverlay) && <div className="w-screen h-screen fixed bg-black/50 top-0 left-0 z-[99999]" onDrop={onDropHandler} onDragOver={onDragOver}>
+                <p className="absolute w-full text-center text-white text-5xl font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Drop your image here.</p>
+            </div>}
 
             <Dialog
                 className={`upload-dialog`}
@@ -310,8 +367,8 @@ export default function UploadDialog({ open, handleClose }: props) {
 
                 <DialogContent sx={{ paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
 
-                    <div className="flex flex-col h-full" id="drop_zone">
-                    {/* <div className="flex flex-col h-full" id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver}> */}
+                    {/* <div className="flex flex-col h-full" id="drop_zone"> */}
+                    <div className="flex flex-col h-full" id="drop_zone" onDrop={onDropHandler} onDragOver={onDragOver}>
                         {
                             uploadStep === 0 ?
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
@@ -332,7 +389,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                                     }
                                                 }}
                                             >
-                                                <Image width="130" height="96" alt="upload-img" src="/empty-illustration-1x.avif"></Image>
+                                                <NextImage width="130" height="96" alt="upload-img" src="/empty-illustration-1x.avif"></NextImage>
                                                 <h3 className="md:text-3xl md:font-bold normal-case mb-4 mt-6">Upload a photo <span className="border border-black/12 shadow-[0_1px_2px_0_rgba(0,0,0,0.1)] text-[#767676] p-[2px_8px] sm:rounded-lg sm:text-lg sm:leading-7 rounded-md text-sm">JPEG</span></h3>
                                                 <div className="normal-case text-center text-lg font-normal hidden md:block">
                                                     <p >Drag and drop up to 10 photos or <br /><span className="text-[#007fff]">browse</span> to choose a file</p>
@@ -366,22 +423,77 @@ export default function UploadDialog({ open, handleClose }: props) {
                                 :
                                 // set image detail
                                 <div className={`upload-dialog__body flex-1 px-4 pb-4`}>
-                                    {errorPhotos.length && <div className="bg-[#fceeeb] rounded-[2px] flex flex-col p-4 gap-4 text-[15px]" style={{ 'width': '356px' }}>
+                                    {errorPhotosLength > 0 && <div className="bg-[#fceeeb] rounded-[2px] flex flex-col p-4 gap-4 text-[15px]" style={{ 'width': '356px' }}>
                                         <p className="font-semibold">Unfortunately we had trouble uploading the following files:</p>
-                                        <div className="flex gap-[10px]">
-                                            <span className="text-[#e25c3d]"><ImageIcon sx={{ width: '16px', height: '16px' }}></ImageIcon></span>
-                                            <div>
-                                                <p>{errorPhotos.length} file did not meet the minimum size</p>
-                                                <p className="text-[#767676] text-xs leading-[1.33]">Please upload images over 5MP</p>
-                                                <div className="flex gap-1 mt-[10px]">
-                                                    {errorPhotos.map((photo, photoIndex) =>
-                                                        <div key={photoIndex} className="w-20 flex gap-1 flex-col">
-                                                            <img src={photo.photoUrl as string} alt="" className="object-cover h-[53.33333px]" />
-                                                            <div className="overflow-hidden text-ellipsis whitespace-nowrap">{photo.originalFile?.name}</div>
+                                        <div>
 
+
+                                            <div>
+
+                                                {errorPhotos.errorMaxSize.length > 0 &&
+                                                    <div className="flex gap-[10px]">
+                                                        <span className="text-[#e25c3d]"><ImageIcon sx={{ width: '16px', height: '16px' }}></ImageIcon></span>
+                                                        <div>
+                                                            <p>{errorPhotos.errorMaxSize.length} file did not meet the minimum size</p>
+                                                            <p className="text-[#767676] text-xs leading-[1.33]">Please upload images under 50 MB</p>
+
+                                                            <div className="flex gap-1 mt-[10px] flex-wrap">
+                                                                {errorPhotos.errorMaxSize.map((photo, photoIndex) =>
+                                                                    <div key={photoIndex} className="w-20 flex gap-1 flex-col">
+                                                                        <img src={photo.photoUrl as string} alt="" className="object-cover h-[53.33333px]" />
+                                                                        <div className="overflow-hidden text-ellipsis whitespace-nowrap">{photo.fileName}</div>
+
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                </div>
+                                                    </div>
+
+                                                }
+                                                {errorPhotos.errorMinSize.length > 0 &&
+                                                    <div className="flex gap-[10px]">
+                                                        <span className="text-[#e25c3d]"><ImageIcon sx={{ width: '16px', height: '16px' }}></ImageIcon></span>
+                                                        <div>
+                                                            <p>{errorPhotos.errorMinSize.length} file did not meet the minimum size</p>
+                                                            <p className="text-[#767676] text-xs leading-[1.33]">Please upload images over 5MP</p>
+
+                                                            <div className="flex gap-1 mt-[10px] flex-wrap">
+                                                                {errorPhotos.errorMinSize.map((photo, photoIndex) =>
+                                                                    <div key={photoIndex} className="w-20 flex gap-1 flex-col">
+                                                                        <img src={photo.photoUrl as string} alt="" className="object-cover h-[53.33333px]" />
+                                                                        <div className="overflow-hidden text-ellipsis whitespace-nowrap">{photo.fileName}</div>
+
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                }
+                                                {errorPhotos.errorFileType.length > 0 &&
+                                                    <div className="flex gap-[10px]">
+                                                        <span className="text-[#e25c3d]"><AttachFileIcon sx={{ width: '16px', height: '16px' }}></AttachFileIcon></span>
+                                                        <div>
+                                                            <p>{errorPhotos.errorFileType.length} file had a wrong file type</p>
+                                                            <p className="text-[#767676] text-xs leading-[1.33]">Upload only image files (jpeg, jpg)</p>
+
+                                                            <div className="flex gap-1 mt-[10px] flex-wrap">
+                                                                {errorPhotos.errorFileType.map((photo, photoIndex) =>
+                                                                    <div key={photoIndex} className="w-20 flex gap-1 flex-col">
+                                                                        <img src={photo.photoUrl as string} alt="" className="object-cover h-[53.33333px]" />
+                                                                        <div className="overflow-hidden text-ellipsis whitespace-nowrap">{photo.fileName}</div>
+
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                }
                                             </div>
                                         </div>
 
@@ -390,7 +502,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                         <OperationBtn line onClick={handleRemoveErrorPhotos}>OK, got it</OperationBtn>
 
                                     </div>}
-                                    <div style={{ 'width': '356px' }} className='text-center cursor-pointer py-6 px-4 border-dashed border-2 border-gray-300 mt-4'>
+                                    <div style={{ 'width': '356px' }} className='text-center cursor-pointer py-6 px-4 border-dashed border-2 border-gray-300 my-4'>
                                         <Button
                                             component="label"
                                             role={undefined}
@@ -407,7 +519,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                             }}
                                         >
                                             <AddCircleIcon color="info" sx={{ 'width': '60px', height: '60px' }}></AddCircleIcon>
-                                            <p className='pt-2 text-gray-500 font-normal'>Add up to {maxImageLength - selectedFileDetail.length - errorPhotos.length} more images</p>
+                                            <p className='pt-2 text-gray-500 font-normal'>Add up to {maxImageLength - selectedFileDetail.length - errorPhotosLength} more images</p>
                                             <UploadInput></UploadInput>
 
                                         </Button>
@@ -452,8 +564,8 @@ export default function UploadDialog({ open, handleClose }: props) {
                                                     </div>
                                                 </div>
 
-                                                <div className={`photo__description py-1 px-4`}>
-                                                    <Input multiline placeholder="Add a description (optional)" sx={{ "width": '100%', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.description} onChange={(e) => handleDescriptionInputChange(photoIndex, e.target.value)} />
+                                                <div className={`photo__description py-1 px-4  border border-gray-300 mt-[-1px]`}>
+                                                    <Input multiline rows="3" placeholder="Add a description (optional)" sx={{ "width": '100%', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.description} onChange={(e) => handleDescriptionInputChange(photoIndex, e.target.value)} />
                                                 </div>
                                             </div>
 
@@ -477,7 +589,12 @@ export default function UploadDialog({ open, handleClose }: props) {
                                 uploadStep === 0 ?
                                     <OperationBtn line onClick={handleSubmit} disabled={uploadStep === 0}>Submit to Unsplash</OperationBtn>
                                     :
-                                    <OperationBtn line onClick={handleSubmit} disabled={selectedFileDetail.length === 0}>Submit {selectedFileDetail.length}</OperationBtn>
+                                    <OperationBtn line onClick={handleSubmit} disabled={selectedFileDetail.length === 0 || submitLoading}>
+                                        <div className="flex items-center">
+                                            {submitLoading && <CircularProgress size="20px" color="inherit" />}<span className="ml-2">Submit {selectedFileDetail.length}</span>
+                                        </div>
+
+                                    </OperationBtn>
                             }
 
 
