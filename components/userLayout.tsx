@@ -77,7 +77,7 @@ export default function UserLayout({ children }: {children: ReactNode}) {
                     </div>
                     <div className="user__info-container col-span-8">
                         <div className="user_name-container mb-4 flex gap-6">
-                            <h2 className="text-4xl font-bold leading-5">username</h2>
+                            <h2 className="text-4xl font-bold leading-5">{userInfo.userName}</h2>
                             <div>
                                 <OperationBtn line>
                                     <Link href="/account">

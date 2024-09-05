@@ -14,6 +14,7 @@ import { logout } from '@/store/auth'
 import { useDispatch } from 'react-redux'
 import { removeUserInfo, setUserInfo, updateAvatar } from '@/store/user'
 import type { RootState } from '@/store'
+import Head from 'next/head';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -98,7 +99,7 @@ export default function Account({ }) {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({userInfo: userInfoForm}),
+            body: JSON.stringify({ userInfo: userInfoForm }),
         }).then(res => {
             setAvatarLoading(false)
             if (res.status === 200) {
@@ -120,154 +121,160 @@ export default function Account({ }) {
     }
 
     return (
-        <div className="account">
-            <div className="info flex gap-8">
-                <div className="info__avatar cursor-pointer px-3 w-2/6 flex justify-start flex-col items-center text-gray-400 hover:text-gray-600">
-                    <Button
-                        sx={{ 
-                            boxShadow: 'unset',
-                            color: 'inherit',
-                            '&:hover': {
-                                textDecoration: 'none',
-                                backgroundColor: 'unset', 
-                                boxShadow: 'unset'
-                            }
-                         }}
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        className='flex flex-col items-center mt-auto cursor-pointer'
-                    >
-                        <AvatarComponent size={'128px'}></AvatarComponent>
+        <>
+            <Head>
+                <title>Edit profile | Unsplash</title>
+            </Head>
+            <div className="account">
+                <div className="info flex gap-8">
+                    <div className="info__avatar cursor-pointer px-3 w-2/6 flex justify-start flex-col items-center text-gray-400 hover:text-gray-600">
+                        <Button
+                            sx={{
+                                boxShadow: 'unset',
+                                color: 'inherit',
+                                '&:hover': {
+                                    textDecoration: 'none',
+                                    backgroundColor: 'unset',
+                                    boxShadow: 'unset'
+                                }
+                            }}
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            className='flex flex-col items-center mt-auto cursor-pointer'
+                        >
+                            <AvatarComponent size={'128px'}></AvatarComponent>
 
-                        {!avatarLoading ? <p className="underline my-4 text-xs">Change profile image</p>
-                            : <p className="underline my-4 text-xs">Uploadig</p>}
-                        <UploadInput></UploadInput>
+                            {!avatarLoading ? <p className="underline my-4 text-xs">Change profile image</p>
+                                : <p className="underline my-4 text-xs">Uploadig</p>}
+                            <UploadInput></UploadInput>
 
-                    </Button>
+                        </Button>
 
 
 
-                </div>
-                <div className="info__info flex-1 w-4/6">
-                    <div className='flex gap-8'>
-                        <FormControl fullWidth className="m-0" sx={{
-                            '&.MuiFormControl-root': {
-                                margin: '0',
-                                marginBottom: '24px'
-                            }
-                        }} >
-                            <label htmlFor="First name" className="mb-2">Last name</label>
-                            <OutlinedInput
-                                value={userInfoForm.firstName}
-                                name="firstName"
-                                onChange={handleChange}
-                                sx={{
-                                    height: '40px',
-                                    '&.Mui-focused': {
-                                        border: '1px solid #111'
-                                    }
-                                }}
-                                id="firstName" aria-describedby="firstName" />
-                        </FormControl>
-                        <FormControl fullWidth className="m-0" sx={{
-                            '&.MuiFormControl-root': {
-                                margin: '0',
-                                marginBottom: '24px'
-                            }
-                        }} >
-                            <label htmlFor="Last name" className="mb-2">Last name</label>
-                            <OutlinedInput
-                                value={userInfoForm.lastName}
-                                name="lastName"
-                                onChange={handleChange}
-                                sx={{
-                                    height: '40px',
-                                    '&.Mui-focused': {
-                                        border: '1px solid #111'
-                                    }
-                                }}
-                                id="lastName" aria-describedby="lastName" />
-                        </FormControl>
                     </div>
+                    <div className="info__info flex-1 w-4/6">
+                        <div className='flex gap-8'>
+                            <FormControl fullWidth className="m-0" sx={{
+                                '&.MuiFormControl-root': {
+                                    margin: '0',
+                                    marginBottom: '24px'
+                                }
+                            }} >
+                                <label htmlFor="First name" className="mb-2">Last name</label>
+                                <OutlinedInput
+                                    value={userInfoForm.firstName}
+                                    name="firstName"
+                                    onChange={handleChange}
+                                    sx={{
+                                        height: '40px',
+                                        '&.Mui-focused': {
+                                            border: '1px solid #111'
+                                        }
+                                    }}
+                                    id="firstName" aria-describedby="firstName" />
+                            </FormControl>
+                            <FormControl fullWidth className="m-0" sx={{
+                                '&.MuiFormControl-root': {
+                                    margin: '0',
+                                    marginBottom: '24px'
+                                }
+                            }} >
+                                <label htmlFor="Last name" className="mb-2">Last name</label>
+                                <OutlinedInput
+                                    value={userInfoForm.lastName}
+                                    name="lastName"
+                                    onChange={handleChange}
+                                    sx={{
+                                        height: '40px',
+                                        '&.Mui-focused': {
+                                            border: '1px solid #111'
+                                        }
+                                    }}
+                                    id="lastName" aria-describedby="lastName" />
+                            </FormControl>
+                        </div>
 
-                    <div>
-                        <FormControl fullWidth className="m-0" sx={{
-                            '&.MuiFormControl-root': {
-                                margin: '0',
-                                marginBottom: '24px'
-                            }
-                        }} >
+                        <div>
+                            <FormControl fullWidth className="m-0" sx={{
+                                '&.MuiFormControl-root': {
+                                    margin: '0',
+                                    marginBottom: '24px'
+                                }
+                            }} >
 
-                            <label htmlFor="Email" className="mb-2">Email</label>
-                            <OutlinedInput
-                                value={userInfoForm.email}
-                                name="email"
-                                onChange={handleChange}
-                                sx={{
-                                    height: '40px',
-                                    '&.Mui-focused': {
-                                        border: '1px solid #111'
-                                    }
-                                }}
-                                id="email" aria-describedby="email" />
-                        </FormControl>
-                    </div>
-                    <div>
-                        <FormControl fullWidth className="m-0" sx={{
-                            '&.MuiFormControl-root': {
-                                margin: '0',
-                                marginBottom: '24px'
-                            }
-                        }} >
-                            <div>
-                                <div className="flex">
-                                    <label htmlFor="Username" className="mb-2">Username</label>
-                                    <FormHelperText id="forget-password-text" className="mr-0">
-                                        <span>(only letters, numbers and underscores)</span>
-                                    </FormHelperText>
+                                <label htmlFor="Email" className="mb-2">Email</label>
+                                <OutlinedInput
+                                    value={userInfoForm.email}
+                                    name="email"
+                                    onChange={handleChange}
+                                    sx={{
+                                        height: '40px',
+                                        '&.Mui-focused': {
+                                            border: '1px solid #111'
+                                        }
+                                    }}
+                                    id="email" aria-describedby="email" />
+                            </FormControl>
+                        </div>
+                        <div>
+                            <FormControl fullWidth className="m-0" sx={{
+                                '&.MuiFormControl-root': {
+                                    margin: '0',
+                                    marginBottom: '24px'
+                                }
+                            }} >
+                                <div>
+                                    <div className="flex">
+                                        <label htmlFor="Username" className="mb-2">Username</label>
+                                        <FormHelperText id="forget-password-text" className="mr-0">
+                                            <span>(only letters, numbers and underscores)</span>
+                                        </FormHelperText>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <OutlinedInput
-                                value={userInfoForm.userName}
-                                name="userName"
-                                onChange={handleChange}
-                                sx={{
-                                    height: '40px',
-                                    '&.Mui-focused': {
-                                        border: '1px solid #111'
-                                    }
-                                }}
-                                id="userName" aria-describedby="userName" />
-                            <div>
-                                <p>https://unsplash.com/@{userInfoForm.userName}</p>
-                            </div>
-                        </FormControl>
+                                <OutlinedInput
+                                    value={userInfoForm.userName}
+                                    name="userName"
+                                    onChange={handleChange}
+                                    sx={{
+                                        height: '40px',
+                                        '&.Mui-focused': {
+                                            border: '1px solid #111'
+                                        }
+                                    }}
+                                    id="userName" aria-describedby="userName" />
+                                <div>
+                                    <p>https://unsplash.com/@{userInfoForm.userName}</p>
+                                </div>
+                            </FormControl>
+                        </div>
+
+
                     </div>
 
 
                 </div>
-
-
-            </div>
-            {/* <div className="about"></div>
+                {/* <div className="about"></div>
             <div className="social"></div>
             <div className="donation"></div>
             <div className="message"></div> */}
-            <div className="submit my-8">
-                <SubmitBtn onClick={submit}>Update account</SubmitBtn>
+                <div className="submit my-8">
+                    <SubmitBtn onClick={submit}>Update account</SubmitBtn>
 
+                </div>
+
+                <Snackbar
+                    open={isShowSnackbar}
+                    autoHideDuration={6000}
+                    message={message}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                />
             </div>
+        </>
 
-            <Snackbar
-                open={isShowSnackbar}
-                autoHideDuration={6000}
-                message={message}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            />
-        </div>
     )
 }
 

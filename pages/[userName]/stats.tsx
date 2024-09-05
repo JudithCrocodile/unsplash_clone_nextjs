@@ -1,11 +1,22 @@
 import Layout from '@/components/layout'
 import UserLayout from '@/components/userLayout'
 import type { ReactElement } from 'react'
+import Head from 'next/head';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store'
 
 export default function Stats() {
+    const userInfo = useSelector((state: RootState) => state.user.userInfo)
     return (
-        <div>
-        </div>
+        <>
+            <Head>
+                <title>{userInfo.firstName} {userInfo.lastName}&apos;s Collections (@{userInfo.userName}) | Unsplash Photo Community</title>
+            </Head>
+            <div>
+            </div>
+
+        </>
+
 
     )
 }

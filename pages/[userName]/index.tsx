@@ -6,6 +6,7 @@ import MakeSomethingAwesome from '@/components/makeSomethingAwesome'
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router'
 import type { RootState } from '@/store'
+import Head from 'next/head';
 
 export default function Account() {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
@@ -13,12 +14,18 @@ export default function Account() {
     const userName: string = router.query.userName as string
 
     return (
-        <div>
-            <PhotoList showCategoryBar={false} showTitle={false} userName={userName} fullHeight={false}></PhotoList>
+        <>
+            <Head>
+                <title>{userInfo.firstName} {userInfo.lastName} (@{userInfo.userName}) | Unsplash Photo Community</title>
+            </Head>
+            <div>
+                <PhotoList showCategoryBar={false} showTitle={false} userName={userName} fullHeight={false}></PhotoList>
 
 
-            <MakeSomethingAwesome></MakeSomethingAwesome>
-        </div>
+                <MakeSomethingAwesome></MakeSomethingAwesome>
+            </div>
+        </>
+
 
     )
 }

@@ -5,6 +5,7 @@ import Layout from '@/components/layout'
 import { FormControl, Input, InputLabel, FormHelperText, Box, OutlinedInput } from '@mui/material';
 import React, { useState, } from 'react';
 import SubmitBtn from '@/components/submitBtn';
+import Head from 'next/head';
 
 export default function Close({ }) {
 
@@ -21,43 +22,50 @@ export default function Close({ }) {
     };
 
     return (
-        <div className="account">
-            <div className="info flex gap-8">
-                <div className="info__info flex-1 w-full">
+        <>
+            <Head>
+                <title>Edit profile | Unsplash</title>
+            </Head>
 
-                    <div>
-                        <FormControl fullWidth className="m-0" sx={{
-                            '&.MuiFormControl-root': {
-                                margin: '0',
-                                marginBottom: '24px'
-                            }
-                        }} >
+            <div className="account">
+                <div className="info flex gap-8">
+                    <div className="info__info flex-1 w-full">
 
-                            <label htmlFor="Current password" className="mb-2">Current password</label>
-                            <OutlinedInput
-                                value={userInfoForm.currentPassword}
-                                name="currentPassword"
-                                onChange={handleChange}
-                                sx={{
-                                    height: '40px',
-                                    '&.Mui-focused': {
-                                        border: '1px solid #111'
-                                    }
-                                }}
-                                id="currentPassword" aria-describedby="currentPassword" />
-                        </FormControl>
+                        <div>
+                            <FormControl fullWidth className="m-0" sx={{
+                                '&.MuiFormControl-root': {
+                                    margin: '0',
+                                    marginBottom: '24px'
+                                }
+                            }} >
+
+                                <label htmlFor="Current password" className="mb-2">Current password</label>
+                                <OutlinedInput
+                                    value={userInfoForm.currentPassword}
+                                    name="currentPassword"
+                                    onChange={handleChange}
+                                    sx={{
+                                        height: '40px',
+                                        '&.Mui-focused': {
+                                            border: '1px solid #111'
+                                        }
+                                    }}
+                                    id="currentPassword" aria-describedby="currentPassword" />
+                            </FormControl>
+                        </div>
+
                     </div>
+
 
                 </div>
 
+                <div className="submit my-8">
+                    <SubmitBtn>Delete account</SubmitBtn>
 
+                </div>
             </div>
+        </>
 
-            <div className="submit my-8">
-                <SubmitBtn>Delete account</SubmitBtn>
-
-            </div>
-        </div>
     )
 }
 
