@@ -9,6 +9,7 @@ import React, { useState, } from 'react';
 import { useRouter } from 'next/router'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import { validateEmail, validateUserName } from '@/util';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -41,6 +42,7 @@ export default function Join() {
 
   const [showErrorMessage, setShowErrorMessage] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -64,6 +66,7 @@ export default function Join() {
   };
 
   function submit(): void {
+    setLoading(true)
 
     const newValidation = JSON.parse(JSON.stringify(validation))
 
@@ -101,10 +104,10 @@ export default function Join() {
 
     }
       if(error){
+        setLoading(false)
         return;
       } else {
         setShowErrorMessage(false);
-
       }
 
     fetcher('/user/create-user',
@@ -113,6 +116,7 @@ export default function Join() {
         body: JSON.stringify(createForm)
       }
     ).then(res => {
+      setLoading(false)
       if (res.status === 200) {
         // localStorage.setItem('token', res.token);
         router.push(`/login`, undefined, { shallow: true })
@@ -322,7 +326,7 @@ export default function Join() {
                   }
 
             </FormControl>
-            <LoginBtn onClick={submit}>Join</LoginBtn>
+            <LoginBtn onClick={submit} disabled={loading}>{loading && <CircularProgress className="mr-2" size="20px" color="inherit" />}Join</LoginBtn>
             {/* <p>By joining, you agree to the Terms and Privacy Policy.</p> */}
           </Box>
 

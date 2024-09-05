@@ -2,15 +2,15 @@ import React, { ReactNode } from 'react';
 import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
 
 
 
-
-export default function OperationBtn({ onClick, children, className, line=false, activeLike=false, disabled=false  }: {
-    children?: ReactNode, className?: string, line?: boolean,  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void, activeLike?: boolean, disabled?:boolean
+export default function OperationBtn({ onClick, children, className, line=false, activeLike=false, disabled=false, loading=false  }: {
+    children?: ReactNode, className?: string, line?: boolean,  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void, activeLike?: boolean, disabled?:boolean, loading?:boolean
 }) {
 
     const OperationBtn = styled(ButtonBase)(({ theme }) => ({
@@ -54,8 +54,9 @@ export default function OperationBtn({ onClick, children, className, line=false,
         focusRipple
         className={`${className}`}
         onClick={onClick}
-        disabled={disabled}
+        disabled={disabled ||loading}
     >
+        {loading && <CircularProgress className="mr-2" size="20px" color="inherit" />}
         <main>{children}</main>
     </OperationBtn>
   );

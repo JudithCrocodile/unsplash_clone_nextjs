@@ -19,7 +19,6 @@ import { useDispatch } from 'react-redux'
 import { removeUserInfo } from '@/store/user'
 import type { RootState } from '@/store'
 import ImageIcon from '@mui/icons-material/Image';
-import CircularProgress from '@mui/material/CircularProgress';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 interface props {
@@ -589,9 +588,9 @@ export default function UploadDialog({ open, handleClose }: props) {
                                 uploadStep === 0 ?
                                     <OperationBtn line onClick={handleSubmit} disabled={uploadStep === 0}>Submit to Unsplash</OperationBtn>
                                     :
-                                    <OperationBtn line onClick={handleSubmit} disabled={selectedFileDetail.length === 0 || submitLoading}>
+                                    <OperationBtn line onClick={handleSubmit} loading={submitLoading}>
                                         <div className="flex items-center">
-                                            {submitLoading && <CircularProgress size="20px" color="inherit" />}<span className="ml-2">Submit {selectedFileDetail.length}</span>
+                                            <span>Submit {selectedFileDetail.length}</span>
                                         </div>
 
                                     </OperationBtn>

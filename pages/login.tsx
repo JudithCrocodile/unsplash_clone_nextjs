@@ -10,6 +10,7 @@ import {useDispatch} from 'react-redux'
 import {setToken} from '@/store/auth'
 import {setUserInfo} from '@/store/user'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -23,6 +24,7 @@ export default function Login() {
     })
     const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState('');
+    const [loading, setLoading] = React.useState<boolean>(false);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -33,6 +35,7 @@ export default function Login() {
     };
 
     async function login() {
+        setLoading(true)
 
         fetcher('/user/login',
             {
@@ -40,6 +43,7 @@ export default function Login() {
                 body: JSON.stringify(loginForm)
             }
         ).then(res=>{
+            setLoading(false)
             if (res.status === 200) {
                 dispatch(setToken(res.token))
                 dispatch(setUserInfo(res.userInfo))
@@ -147,7 +151,7 @@ export default function Login() {
                                 id="password" aria-describedby="password" />
 
                         </FormControl>
-                        <LoginBtn onClick={login}>Login</LoginBtn>
+                        <LoginBtn onClick={login} disabled={loading}>{loading && <CircularProgress className="mr-2" size="20px" color="inherit" />}Login</LoginBtn>
                     </Box>
 
 
