@@ -203,10 +203,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                     <StyledTabs value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         <CustomerTab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-                    </StyledTabs>
-                    <div style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}></div>
-                    <StyledTabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
-                        scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
+                        <div className="self-center" style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}></div>
                         {
                             allTabs.map((tab: TypeTag, tabIndex: number) =>
                                 (<CustomerTab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
