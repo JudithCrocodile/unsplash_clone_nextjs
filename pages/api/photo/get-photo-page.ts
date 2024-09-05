@@ -109,7 +109,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           photos: photosWithAuthor,
           currentPage: page,
           totalPhotos,
-          totalPages
+          totalPages,
+          isLast: totalPages <= page
         }
       })
   } catch (error){

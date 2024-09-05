@@ -14,6 +14,7 @@ import Skeleton from '@mui/material/Skeleton';
 import PhotoComponent from '@/components/photoComponent'
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface StyledTabsProps {
     label: string;
@@ -22,12 +23,16 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, fullWidth = false, onlyShowLiked=false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, fullWidth?: boolean, onlyShowLiked?: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, fullWidth = false, onlyShowLiked = false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, fullWidth?: boolean, onlyShowLiked?: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
     const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
+    const [photosList, setPhotosList] = useState([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
+    const [loading, setLoading] = useState(false);
+    const [isLast, setIsLast] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [windowSize, setWindowSize] = useState({
         width: 0,
@@ -50,7 +55,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     }, [])
 
     useEffect(() => {
-        getPhotoList(1)
+        setCurrentPage(1)
+        // getPhotoList()
     }, [propTabName, userName])
 
     useEffect(() => {
@@ -76,13 +82,25 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     }, [])
 
 
+    const loadMore = () => {
+        if (!isLast && !loading) {
 
-    const [photosList, setPhotosList] = useState([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
-    const [loading, setLoading] = useState(false);
+            setCurrentPage(currentPage + 1)
+        }
 
-    const getPhotoList = (page: number): void => {
+    }
+
+    useEffect(() => {
+        getPhotoList()
+    }, [currentPage])
+
+
+    const getPhotoList = (): void => {
+        if (isLast || loading) {
+            return;
+        }
         const params = JSON.stringify({
-            page,
+            page: currentPage,
             tabId: propTabId || currentTab?._id,
             category: propTabName,
             userName,
@@ -92,13 +110,14 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         setLoading(true)
         fetcher('/photo/get-photo-page', {
             method: 'POST',
-            body: params,            
+            body: params,
             headers: {
                 'Authorization': `Bearer ${token}`
             },
         }).then(res => {
+
             if (res.status === 200) {
-                if (page === 1) {
+                if (currentPage === 1) {
                     setPhotosList([...res.data.photos])
                 } else {
                     const newPhotoList: TypePhoto[] = [...photosList, ...res.data.photos]
@@ -106,6 +125,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
                     setPhotosList(newPhotoList)
                 }
+
+                setIsLast(res.data.isLast)
 
 
                 setLoading(false)
@@ -129,7 +150,6 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         }
 
         columnData[columnData.length - 1] = [...columnData[columnData.length - 1], ...allPhotoList] // remainder
-
         setColumnsPhotos(columnData)
     }
 
@@ -163,9 +183,9 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     useEffect(() => {
         const tagName: string = router.query.category as string
-        const tag: TypeTag | undefined = allTabs.find(e=>e.name === tagName)
+        const tag: TypeTag | undefined = allTabs.find(e => e.name === tagName)
 
-        if(tag) {
+        if (tag) {
             setCurrentTab(tag)
             setCurrentTabName(tagName)
         } else {
@@ -189,7 +209,6 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             setCurrentTabName('Photos')
             router.push(`/`)
         }
-        getPhotoList(1);
 
     }
 
@@ -217,52 +236,69 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-1px' }}></Divider>}
             <div className={`mt-14 pb-12 ${fullWidth ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
                 {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
-                {photosList.length > 0 ? <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
-                    {
-                        (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
-                        (
-                            <div key={columnIndex} className={'flex flex-col gap-y-6'}>
-                                {column.map((item: TypePhoto, index: number) => (
-                                    <li className={"item"} key={index}>
-                                        {item.path ? <div onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => goToPhotoPage(event, item)}>
-                                            <div className={'item__container mx-auto w-full'}>
-                                                <div className="md:hidden">
-                                                    <div className="item__context">
-                                                        <AuthorInfo author={item.author}></AuthorInfo>
-                                                    </div>
-                                                </div>
+                {photosList.length > 0 ?
+                    <InfiniteScroll
+                        dataLength={photosList.length} //This is important field to render the next data
+                        next={loadMore}
+                        hasMore={!isLast}
+                        loader=""
+                    >
+                        <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
 
-                                                <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
-                                                    <PhotoComponent photo={item} />
-                                                    {/* <img src={item.path} alt="" /> */}
-                                                </div>
-                                                <div className={"item__context text-left text-xl"}>
-                                                    <div className="item__top">
-                                                        <div className="ml-auto w-fit">
-                                                            <LikeBtn photoId={item._id}  liked={item.liked}>
-                                                            </LikeBtn>
+                            {
+                                (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
+                                (
+                                    <div key={columnIndex} className={'flex flex-col gap-y-6'}>
+                                        {column.map((item: TypePhoto, index: number) => (
+                                            <li className={"item"} key={index}>
+                                                {item.path ? <div onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => goToPhotoPage(event, item)}>
+                                                    <div className={'item__container mx-auto w-full'}>
+                                                        <div className="md:hidden">
+                                                            <div className="item__context">
+                                                                <AuthorInfo author={item.author}></AuthorInfo>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="item__bottom hidden md:block">
-                                                        <AuthorInfo author={item.author}></AuthorInfo>
-                                                    </div>
 
+                                                        <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
+                                                            {/* <PhotoComponent photo="" /> */}
+                                                            <div className="w-full bg-gray-300 min-h-60">
+                                                                <PhotoComponent photo={item} />
+                                                            </div>
+
+                                                        </div>
+                                                        <div className={"item__context text-left text-xl"}>
+                                                            <div className="item__top">
+                                                                <div className="ml-auto w-fit">
+                                                                    <LikeBtn photoId={item._id} liked={item.liked}>
+                                                                    </LikeBtn>
+                                                                </div>
+                                                            </div>
+                                                            <div className="item__bottom hidden md:block">
+                                                                <AuthorInfo author={item.author}></AuthorInfo>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
                                                 </div>
-
-                                            </div>
-                                        </div>
-                                            : <Skeleton variant="rectangular" width={'100%'} height={300} />}
+                                                    : <Skeleton variant="rectangular" width={'100%'} height={300} />}
 
 
 
-                                    </li>)
-                                )}
-                            </div>
-                        )
+                                            </li>)
+                                        )}
+                                    </div>
+                                )
 
-                        ))
-                    }
-                </ul>
+                                ))
+                            }
+
+
+                        </ul>
+
+                    </InfiniteScroll>
+
+
                     :
                     <div className="flex justify-center">
                         <img src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" />
