@@ -23,16 +23,18 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, fullWidth = false, onlyShowLiked = false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, fullWidth?: boolean, onlyShowLiked?: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
     const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
-    const [photosList, setPhotosList] = useState([{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
+    const [photosList, setPhotosList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isLast, setIsLast] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const emptyItems = [[],[],[],[],[],[],[],[],[],[]]
 
     const [windowSize, setWindowSize] = useState({
         width: 0,
@@ -61,16 +63,23 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     useEffect(() => {
         function handleResize() {
+            console.log('handleResize')
+            console.log('inDetailPage', inDetailPage)
+            console.log('window.innerWidth > 768 || inDetailPage', window.innerWidth > 768 || inDetailPage)
             setWindowSize({
                 width: window.innerWidth,
                 // height: window.innerHeight,
             })
 
             if (window.innerWidth > 1024) { //lg
+                console.log('setColumns(3)', '3')
+
                 setColumns(3)
-            } else if (window.innerWidth > 768) { // md
+            } else if (window.innerWidth > 768 || inDetailPage) { // md or in detail page
+                console.log('setColumns(2)', '2')
                 setColumns(2)
             } else {
+                console.log('setColumns(1)', '1')
                 setColumns(1)
             }
         }
@@ -234,7 +243,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
             }
             {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-1px' }}></Divider>}
-            <div className={`mt-14 pb-12 ${fullWidth ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
+            <div className={`mt-14 pb-12 ${(inDetailPage || columns === 1) ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
                 {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
                 {photosList.length > 0 ?
                     <InfiniteScroll
@@ -243,7 +252,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                         hasMore={!isLast}
                         loader=""
                     >
-                        <ul className={`grid grid-rows-auto lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6`}>
+                        <ul className={`grid grid-rows-auto ${columns === 2 ? 'grid-cols-2' : columns === 3 ? 'grid-cols-3' : 'grid-cols-1'} gap-6`}>
 
                             {
                                 (columnsPhotos.map((column: TypePhoto[], columnIndex: number) =>
@@ -261,7 +270,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
                                                         <div className={"item__img w-full cursor-zoom-in"} style={{ height: 'auto' }}>
                                                             {/* <PhotoComponent photo="" /> */}
-                                                            <div className="w-full bg-gray-300 min-h-60">
+                                                            <div className="w-full bg-gray-300 min-h-auto">
                                                                 <PhotoComponent photo={item} />
                                                             </div>
 
@@ -291,6 +300,11 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                 )
 
                                 ))
+                            }
+
+                            {loading && emptyItems.map((item, index)=>(
+                            <Skeleton key={index} variant="rectangular" width={'100%'} height={300} />
+                            ))
                             }
 
 
