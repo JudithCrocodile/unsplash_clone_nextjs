@@ -29,7 +29,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
     const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
-    const [photosList, setPhotosList] = useState([]);
+    const [photosList, setPhotosList] = useState<TypePhoto[]>([]);
     const [loading, setLoading] = useState(false);
     const [isLast, setIsLast] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
