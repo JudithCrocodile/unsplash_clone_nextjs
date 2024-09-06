@@ -63,23 +63,17 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     useEffect(() => {
         function handleResize() {
-            console.log('handleResize')
-            console.log('inDetailPage', inDetailPage)
-            console.log('window.innerWidth > 768 || inDetailPage', window.innerWidth > 768 || inDetailPage)
             setWindowSize({
                 width: window.innerWidth,
                 // height: window.innerHeight,
             })
 
             if (window.innerWidth > 1024) { //lg
-                console.log('setColumns(3)', '3')
 
                 setColumns(3)
             } else if (window.innerWidth > 768 || inDetailPage) { // md or in detail page
-                console.log('setColumns(2)', '2')
                 setColumns(2)
             } else {
-                console.log('setColumns(1)', '1')
                 setColumns(1)
             }
         }
