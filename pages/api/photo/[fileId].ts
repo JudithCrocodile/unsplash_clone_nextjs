@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const db = mongoose.connection.db;
+        const db = await mongoose.connection.db;
 
         if (!db) {
             throw new Error('Database object is not available');
