@@ -14,6 +14,8 @@ https://unsplash-clone-nextjs-8199dugft-judithcrocodiles-projects.vercel.app/
 
 ## ToDo List
 - [x] Like❤️
+- [ ] Edit user profile
+- [ ] Close account
 - [ ] Collection
-- [ ] facebook login
+- [ ] Facebook login
 
