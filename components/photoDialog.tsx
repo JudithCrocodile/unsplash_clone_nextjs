@@ -165,7 +165,7 @@ export default function Photo({ photoId }: Props) {
                 </div>
 
                 <div className="detail__info info text-gray-400 my-6 flex flex-col gap-4">
-                  {photosData.location && <div className="info__location gap-2 text-sm">
+                  {photosData.location && <div className="info__location flex items-center gap-2 text-sm">
                     <span><LocationOnIcon sx={{width: '12px', height: '12px', marginTop: '-2px'}}></LocationOnIcon></span>
                     {photosData.location}
                   </div>}
