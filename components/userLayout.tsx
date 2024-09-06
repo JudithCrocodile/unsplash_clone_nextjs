@@ -112,7 +112,7 @@ export default function UserLayout({ children }: {children: ReactNode}) {
             </div>
 
             <div className="tab__container px-5">
-                <StyledTabs textColor="secondary" indicatorColor="secondary" value={currentTabName} onChange={handleTabChange} aria-label="category tabs" variant="scrollable"
+                <StyledTabs value={currentTabName} onChange={handleTabChange} aria-label="category tabs" variant="scrollable"
                     scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                     <CustomerTab sx={{
                         '&$selected': {
