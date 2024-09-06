@@ -274,13 +274,23 @@ export default function UploadDialog({ open, handleClose }: props) {
     // keydown on Enter and create a new tab
     const keyDownTab = (photoIndex: number, key: string) => {
         if (key === 'Enter') {
+            addTag(photoIndex)
 
-            const newPhotoValues = [...selectedFileDetail]
-            newPhotoValues[photoIndex].tabs.push(newPhotoValues[photoIndex].newTagInputValue)
-            newPhotoValues[photoIndex].newTagInputValue = ''
 
-            setSelectedFileDetail(newPhotoValues)
         }
+    }
+
+    const handleTabInputBlur = (photoIndex: number) => {
+        addTag(photoIndex)
+
+    }
+
+    const addTag = (photoIndex: number) => {
+        const newPhotoValues = [...selectedFileDetail]
+        newPhotoValues[photoIndex].tabs.push(newPhotoValues[photoIndex].newTagInputValue)
+        newPhotoValues[photoIndex].newTagInputValue = ''
+
+        setSelectedFileDetail(newPhotoValues)
     }
 
     const UploadInput = () => {
@@ -558,13 +568,17 @@ export default function UploadDialog({ open, handleClose }: props) {
                                                         <span className="px-2">
 
 
-                                                            <Input placeholder="Add a tag" sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.newTagInputValue} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(e.target.value, photoIndex)} />
+                                                            <Input placeholder="Add a tag" sx={{ "width": '100px', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.newTagInputValue} onKeyDown={((e) => { keyDownTab(photoIndex, e.key) })} onChange={(e) => handleTabInputChange(e.target.value, photoIndex)} inputProps={{
+                                                                onBlur: (e) => {
+                                                                    handleTabInputBlur(photoIndex)
+                                                                }
+                                                            }} />
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 <div className={`photo__description py-1 px-4  border border-gray-300 mt-[-1px]`}>
-                                                    <Input multiline rows="3" placeholder="Add a description (optional)" sx={{ "width": '100%', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.description} onChange={(e) => handleDescriptionInputChange(photoIndex, e.target.value)} />
+                                                    <Input className="mx-1" multiline rows="3" placeholder="Add a description (optional)" sx={{ "width": '100%', '&:after': { borderBottom: 'unset' }, '&:before': { borderBottom: 'unset !important' } }} value={detail.description} onChange={(e) => handleDescriptionInputChange(photoIndex, e.target.value)} onBlur={(e) => handleDescriptionInputChange(photoIndex, e.target.value)} />
                                                 </div>
                                             </div>
 
