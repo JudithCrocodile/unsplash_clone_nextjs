@@ -20,10 +20,12 @@ import { removeUserInfo } from '@/store/user'
 import type { RootState } from '@/store'
 import ImageIcon from '@mui/icons-material/Image';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 
 interface props {
     open: boolean,
-    handleClose: Function
+    handleClose: () => void
 }
 
 export default function UploadDialog({ open, handleClose }: props) {
@@ -368,11 +370,21 @@ export default function UploadDialog({ open, handleClose }: props) {
                 }}
             >
 
+
+
                 <DialogTitle sx={{
                     fontSize: '15px'
                 }}>Submit to Unsplash</DialogTitle>
 
-
+                <Box sx={{
+                    padding: '0 !important',
+                    display: {
+                        xs: "none",
+                        md: "block",
+                    }
+                }} component="section" onClick={handleClose} className="fixed text-white top-2 left-2 hidden md:block cursor-pointer">
+                    <CloseIcon></CloseIcon>
+                </Box>
 
                 <DialogContent sx={{ paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
 

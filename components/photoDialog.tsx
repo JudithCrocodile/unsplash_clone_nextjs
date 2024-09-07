@@ -19,6 +19,8 @@ import Skeleton from '@mui/material/Skeleton';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import Link from 'next/link'
+import CloseIcon from '@mui/icons-material/Close';
+import Container from '@mui/material/Container';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
@@ -122,22 +124,36 @@ export default function Photo({ photoId }: Props) {
         sx={{
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
+              margin: 0,
               width: {
                 xs: "100%",
-                md: "90vw",
-                maxWidth: "unset",
-
+                md: "calc(100vw - 140px)",
+              },
+              maxWidth: {
+                xs: "unset",
+                md: "calc(100vw - 140px)",
               },
               minWidth: {
                 xs: "unset",
                 md: "500px",
-                maxWidth: "unset",
                 margin: 0,
               },
+              top: "1rem",
+              minHeight: 'calc(100vh - 2rem)'
             },
           },
         }}
       >
+        <Container sx={{
+          padding: '0 !important',
+          display: {
+            xs: "none",
+            md: "block",
+          }
+        }} onClick={handleClose} className="fixed text-white top-2 left-2 hidden md:block cursor-pointer">
+          <CloseIcon></CloseIcon>
+        </Container>
+        
 
         <DialogContent sx={{ padding: '0' }}>
           {
