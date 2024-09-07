@@ -13,9 +13,11 @@ https://unsplash-clone-nextjs-8199dugft-judithcrocodiles-projects.vercel.app/
 - Change ypur avatar
 
 ## ToDo List
-- [x] Like❤️
+
 - [ ] Edit user profile
+- [ ] add X on dialog
 - [ ] Close account
 - [ ] Collection
 - [ ] Facebook login
-
+- [ ] location selector
+- [x] Like❤️
