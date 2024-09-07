@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Input } from '@mui/material';
 
-export default function Search({round='rounded-full'}: {round: string}) {
+export default function Search({round='rounded-full'}: {round?: string}) {
    const router = useRouter()
 const [searchInputValue, setSearchInputValue] = useState<string>('')
 
