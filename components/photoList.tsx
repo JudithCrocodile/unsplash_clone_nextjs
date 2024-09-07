@@ -34,7 +34,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const [isLast, setIsLast] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const emptyItems = [[],[],[],[],[],[],[],[],[],[]]
+    const emptyItems = [[], [], [], [], [], [], [], [], [], []]
 
     const [windowSize, setWindowSize] = useState({
         width: 0,
@@ -58,8 +58,9 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     useEffect(() => {
         setCurrentPage(1)
-        // getPhotoList()
-    }, [propTabName, userName])
+        setIsLast(false)
+        getPhotoList()
+    }, [propTabName, userName, currentTabName])
 
     useEffect(() => {
         function handleResize() {
@@ -228,7 +229,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                         <div className="self-center relative" style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}>
                             <span className="text-[#767676] text-[10px] tracking-[0.1px] absolute top-0 left-4 left-[24px] -translate-y-2.5">Featured</span>
                         </div>
-                        
+
                         {
                             allTabs.map((tab: TypeTag, tabIndex: number) =>
                                 (<CustomerTab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
@@ -300,8 +301,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                 ))
                             }
 
-                            {loading && emptyItems.map((item, index)=>(
-                            <Skeleton key={index} variant="rectangular" width={'100%'} height={300} />
+                            {loading && emptyItems.map((item, index) => (
+                                <Skeleton key={index} variant="rectangular" width={'100%'} height={300} />
                             ))
                             }
 
