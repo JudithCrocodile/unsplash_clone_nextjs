@@ -23,7 +23,7 @@ interface StyledTabsProps {
 const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean }) {
+export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false, pageIntro }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean, pageIntro?: React.ReactNode }) {
     const [columns, setColumns] = useState(3);
     const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
@@ -240,8 +240,9 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
             }
             {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-1px' }}></Divider>}
-            <div className={`mt-14 pb-12 ${(inDetailPage || columns === 1) ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
-                {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>}
+            <div className={`pb-12 ${(inDetailPage || columns === 1) ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
+                {/* {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>} */}
+                {pageIntro}
                 {photosList.length > 0 ?
                     <InfiniteScroll
                         dataLength={photosList.length} //This is important field to render the next data

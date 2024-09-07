@@ -166,11 +166,11 @@ export default function Photo({ photoId }: Props) {
 
                 <div className="detail__info info text-gray-400 my-6 flex flex-col gap-4">
                   {photosData.location && <div className="info__location flex items-center gap-2 text-sm">
-                    <span><LocationOnIcon sx={{width: '12px', height: '12px', marginTop: '-2px'}}></LocationOnIcon></span>
+                    <span><LocationOnIcon sx={{ width: '12px', height: '12px', marginTop: '-2px' }}></LocationOnIcon></span>
                     {photosData.location}
                   </div>}
                   {(typeof window !== "undefined") && <div className="info__create-date flex items-center gap-2 text-sm">
-                    <span><CalendarTodayIcon  sx={{width: '12px', height: '12px', marginTop: '-2px'}}></CalendarTodayIcon></span>
+                    <span><CalendarTodayIcon sx={{ width: '12px', height: '12px', marginTop: '-2px' }}></CalendarTodayIcon></span>
                     <CreatedTimeHtml ></CreatedTimeHtml>
                   </div>}
 
@@ -184,8 +184,8 @@ export default function Photo({ photoId }: Props) {
 
                 <div className="detail__other-photos">
 
-                  <h3 className={'mb-6 text-2xl mt-[72px]'}>Related images</h3>
-                  <div style={{ marginTop: '-3.5rem' }}>
+                  <h3 className={'mb-6 text-2xl my-6 font-semibold'}>Related images</h3>
+                  <div>
                     <PhotoList inDetailPage showCategoryBar={false} showTitle={false} propTabId={photosData?.photo_tags?.map(t => t._id)}></PhotoList>
 
 

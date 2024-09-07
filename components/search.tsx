@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Input } from '@mui/material';
 
-export default function Search( ) {
+export default function Search({round='rounded-full'}: {round: string}) {
    const router = useRouter()
 const [searchInputValue, setSearchInputValue] = useState<string>('')
 
@@ -18,12 +18,12 @@ const handleSearchInputChange = (newValue: string) => {
 
 
     return (
-        <div className={'filter-container flex-1'}>
-        <div className={'filter flex gap-4 bg-gray-100 px-4 py-2 rounded-full'}>
-            <div className={'filter__prefix'}>
-                <SearchIcon></SearchIcon>
+        <div className={'filter-container w-full'}>
+        <div className={`filter flex gap-3 bg-gray-100 px-4 py-2 ${round}`}>
+            <div className={'filter__prefix text-[#767676]'}>
+                <SearchIcon sx={{marginTop: '4px'}}></SearchIcon>
             </div>
-            <Input value={searchInputValue} onChange={(e) => handleSearchInputChange(e.target.value)} onKeyDown={((e) => { keyDownSearchInput(e.key) })} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
+            <Input className='w-full' value={searchInputValue} onChange={(e) => handleSearchInputChange(e.target.value)} onKeyDown={((e) => { keyDownSearchInput(e.key) })} placeholder="Search photos and illustrations" disableUnderline={true} ></Input>
 
         </div>
 
