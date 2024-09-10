@@ -15,6 +15,7 @@ import PhotoComponent from '@/components/photoComponent'
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Image from "next/image";
 
 interface StyledTabsProps {
     label: string;
@@ -314,7 +315,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
                     :
                     <div className="flex justify-center">
-                        <img src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" />
+                        <Image src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" height="225" />
                     </div>
                 }
             </div>
