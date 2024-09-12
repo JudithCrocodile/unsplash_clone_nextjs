@@ -551,7 +551,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                             <div className={`photo `} key={photoIndex} style={{ width: '356px' }}>
                                                 <div>
                                                     <div className="photo__img-container cursor-pointer relative">
-                                                        <NextImage src={detail.photoUrl as string} alt="prev-image" width="100" height="100" className={'photo__img flex-1'} />
+                                                        <NextImage src={detail.photoUrl as string} alt="prev-image" width="100" height="100" className={'photo__img flex-1'} style={{width: '100%'}} />
                                                         <div className="photo__img-detail-container absolute top-0 right-0 w-full h-full text-white">
                                                             <div className="photo__remove-btn-container top-2 right-2 absolute w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
                                                                 <CloseIcon color="primary" className="cursor-pointer" fontSize="medium" sx={{ "width": '17px', '&:hover': 'text.primary' }} onClick={() => removePhoto(photoIndex)}></CloseIcon>
