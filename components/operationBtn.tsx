@@ -27,9 +27,8 @@ export default function OperationBtn({ onClick, children, className, line=false,
         borderColor: disabled ? 'transparent': 'inherit',
         '&:hover': {
             zIndex: 1,
-            border: line ? '1px solid #111' : '',
+            borderColor: disabled ? 'transparent' : line ? '#111' : '',
             color: '#111',
-            borderColor: disabled ? 'transparent': 'inherit',
         },
         '& .MuiSvgIcon-root': {
             width: '20px',

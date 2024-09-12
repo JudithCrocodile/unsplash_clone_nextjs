@@ -181,20 +181,15 @@ export default function Layout({ children, inAccountPage = false }: { children: 
                             {/* todo */}
                             {/* <Divider className='md:hidden block' /> */}
                             <div className="py-4 px-6 md:hidden">
-                                <div className="flex gap-6">
-                                    <div className='block'>
-                                        <MenuItem onClick={handleMenuClose} sx={{ padding: 0, minHeight: 0 }}><OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn></MenuItem>
+                                <div className="flex gap-2 w-fit">
+                                    <div className='block' onClick={handleMenuClose}>
+                                        <OperationBtn onClick={openUploadDialog} line className="whitespace-nowrap">Submit an image</OperationBtn>
                                     </div>
-                                    {!token && <MenuItem onClick={handleMenuClose} sx={{
-                                        padding: 0,
-                                        minHeight: 0
-                                    }}>
-                                        <Link href={`/login`}>
-                                            <OperationBtn className="whitespace-nowrap" line>Log in</OperationBtn>
-                                        </Link>
-                                    </MenuItem>}
+                                    {!token && <OperationBtn className="whitespace-nowrap" line onClick={handleMenuClose}>
+                                        <Link href={`/login`}>Log in</Link>
+                                    </OperationBtn>
+                                    }
                                 </div>
-
                                 {!token && <div className='block text-sm text-gray-500 text-center mt-3'>
                                     New to Unsplash? <Link href={`/join`} className="underline">Sign up for free</Link>
                                 </div>}
