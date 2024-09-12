@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com', 'plus.unsplash.com', 'unsplash-clone-nextjs.vercel.app']
+    domains: ['unsplash-clone-nextjs.vercel.app', 'localhost']
   },
 
 };
