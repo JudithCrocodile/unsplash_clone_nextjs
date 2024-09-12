@@ -302,10 +302,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                 ))
                             }
 
-                            {loading && emptyItems.map((item, index) => (
-                                <Skeleton key={index} variant="rectangular" width={'100%'} height={300} />
-                            ))
-                            }
+
 
 
                         </ul>
@@ -314,9 +311,21 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
 
                     :
-                    <div className="flex justify-center">
-                        <Image src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" height="225" />
-                    </div>
+                    loading ? <ul className={`grid grid-rows-auto ${columns === 2 ? 'grid-cols-2' : columns === 3 ? 'grid-cols-3' : 'grid-cols-1'} gap-6`}>
+                        {(columnsPhotos.map((column: TypePhoto[], columnIndex: number) => (<div key={columnIndex} className={'flex flex-col gap-y-6'}>
+                            {emptyItems.map((item, index) => (
+                                <li className={"item"} key={index}><Skeleton key={index} variant="rectangular" width={'100%'} height={300} /></li>
+                            ))}
+                        </div>)
+                        ))}
+
+                    </ul>
+                        :
+                        <div className="flex justify-center">
+                            <Image src="/img_empty-states.jpg" alt="img_empty-states.jpg" width="300" height="225" />
+                        </div>
+
+
                 }
             </div>
 
