@@ -126,6 +126,7 @@ export default function UserLayout({ children }: {children: ReactNode}) {
                 </StyledTabs>
             </div>
             <Divider></Divider>
+            <div className='mb-14'></div>
             <main>{children}</main>
         </div>
     )
