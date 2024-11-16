@@ -22,7 +22,6 @@ async function connectToDatabase() {
         const opts = {
             bufferCommands: false,
             useNewUrlParser: true,
-            useUnifiedTopology: true,
         }
 
         cached.promise = (await mongoose.connect(<string>MONGODB_URI, opts)).isObjectIdOrHexString((mongoose: any) => {
