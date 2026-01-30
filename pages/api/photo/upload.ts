@@ -52,8 +52,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!token) return res.status(401).json({ error: 'No token provided' });
 
     // verify token
-    const user = await getUserByToken(token);
-    if (!user) return res.status(401).json({ error: 'Invalid token' })
+    const { user, error } = await getUserByToken(token);
+    if(!user) {
+        if(error === 'expired') {
+            return res.status(401).json({error: 'Token expired'});
+        }
+
+        if(error === 'invalid') {
+            return res.status(401).json({error: 'Invalid token'});
+        }
+        return res.status(404).json({error: 'user not found'});
+    }
 
     if (req.method === 'POST') {
         const busboy = Busboy({ headers: req.headers })

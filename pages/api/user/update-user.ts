@@ -13,8 +13,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({error: 'No token provided'});
 
-        // verify token
-        const user = await getUserByToken(token);
+    // verify token
+    const { user, error } = await getUserByToken(token);
+
+    if(!user) {
+        if(error === 'expired') {
+            return res.status(401).json({error: 'Token expired'});
+        }
+
+        if(error === 'invalid') {
+            return res.status(401).json({error: 'Invalid token'});
+        }
+        return res.status(404).json({error: 'user not found'});
+    }
 
     if(user) {
         const updatedUser = await User.findByIdAndUpdate(

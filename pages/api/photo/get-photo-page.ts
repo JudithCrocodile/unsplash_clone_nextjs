@@ -18,10 +18,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let user: {
     _id: string
   } = {_id: ''}
+  let error: 'expired' | 'invalid' | null = null;
 
   const token = req.headers.authorization?.split(' ')[1];
   if (token) {
-    user = await getUserByToken(token);
+    const userSearchResult = await getUserByToken(token);
+    user = userSearchResult.user;
+    error = userSearchResult.error;
+  }
+
+  if(!user) {
+      if(error === 'expired') {
+          return res.status(401).json({error: 'Token expired'});
+      }
+
+      if(error === 'invalid') {
+          return res.status(401).json({error: 'Invalid token'});
+      }
+      return res.status(404).json({error: 'user not found'});
   }
 
   if(userName.startsWith('@')){
