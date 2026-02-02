@@ -133,4 +133,5 @@ The main focus was understanding differences in state management, component desi
 - [ ] Collection
 - [ ] Facebook login
 - [ ] location selector
+- [ ] Forgot password
 - [x] Like ❤️
