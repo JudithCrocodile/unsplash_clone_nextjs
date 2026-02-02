@@ -197,7 +197,7 @@ export default function Join() {
             >
               <div className="flex gap-6" style={{ margin: 0 }}>
                 <FormControl fullWidth className="m-0" >
-                  <label htmlFor="email" className="mb-2">First name</label>
+                  <label htmlFor="firstName" className="mb-2">First name</label>
                   {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                   <OutlinedInput
                     error={validation.firstName.error}
@@ -222,7 +222,7 @@ export default function Join() {
                     margin: '0',
                   }
                 }} >
-                  <label htmlFor="email" className="mb-2">Last name</label>
+                  <label htmlFor="lastName" className="mb-2">Last name</label>
                   {/* <InputLabel htmlFor="email" >Email</InputLabel> */}
                   <OutlinedInput
                     error={validation.lastName.error}
