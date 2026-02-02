@@ -94,6 +94,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     {
                         'fileId': avatar.fileId
                     },
+                    { new: true }
                 )
 
                 if (!updatedUser) {

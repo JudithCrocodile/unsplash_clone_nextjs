@@ -18,13 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if(!user) {
         if(error === 'expired') {
-            return res.status(401).json({error: 'Token expired'});
+            return res.status(401).json({status: 401, error: 'Token expired'});
         }
 
         if(error === 'invalid') {
-            return res.status(401).json({error: 'Invalid token'});
+            return res.status(401).json({status: 401, error: 'Invalid token'});
         }
-        return res.status(404).json({error: 'user not found'});
+        return res.status(404).json({status: 404, error: 'user not found'});
     }
 
     if(user) {
@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 'email': userInfo.email,
                 'userName': userInfo.userName,
             },
+            { new: true }
         )
 
         if(!updatedUser){

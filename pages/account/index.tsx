@@ -4,7 +4,7 @@ import type { ReactElement, ChangeEvent } from 'react'
 import Layout from '@/components/layout'
 import AvatarComponent from "@/components/avatar";
 import { FormControl, Input, InputLabel, FormHelperText, Box, OutlinedInput } from '@mui/material';
-import React, { useState, } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import SubmitBtn from '@/components/submitBtn';
 import Button from '@mui/material/Button';
@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux'
 import { removeUserInfo, setUserInfo, updateAvatar } from '@/store/user'
 import type { RootState } from '@/store'
 import Head from 'next/head';
+import { validateUserName } from '@/util';
 
 const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
 
@@ -31,17 +32,64 @@ export default function Account({ }) {
         firstName: userInfo.firstName,
         lastName: userInfo.lastName,
     })
-    const [avatarLoading, setAvatarLoading] = useState(false)
+    const [avatarLoading, setAvatarLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string>('');
     const [isShowSnackbar, setIsShowSnackbar] = React.useState(false);
 
+    useEffect(() => {
+
+        if (isShowSnackbar === true) {
+            setTimeout(() => {
+                setIsShowSnackbar(false)
+            }, 2000);
+        }
+
+    }, [isShowSnackbar])
+
+    type ValidationField = {
+        error: boolean;
+        message: string;
+        regex?: RegExp;
+    };
+    type ValidationState = {
+        [key: string]: ValidationField;
+    };
+
+    const [validation, setValidation] = useState<ValidationState>({
+        email: { error: false, message: 'Email is invalid', regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+        userName: { error: false, message: 'Username must have at least one letter and contain only letters, digits, or underscores (no spaces)', regex: /^(?=.*[A-Za-z])[A-Za-z0-9_]+$/ },
+        firstName: { error: false, message: '' },
+        lastName: { error: false, message: '' },
+    })
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        setUserInfoForm((prevUser) => ({
-            ...prevUser,
-            [name]: value
-        }))
+        setUserInfoForm((prevUser) => (
+            {
+                ...prevUser,
+                [name]: value
+            }
+        ))
+        handleValidation();
+
     };
+
+    const handleValidation = () => {
+        setValidation((prevValidation) => {
+            const newValidation = { ...prevValidation };
+            for (const [key, value] of Object.entries(newValidation)) {
+                if (newValidation[key].regex) {
+                    const isValid = newValidation[key].regex.test(userInfoForm[key as keyof typeof userInfoForm]);
+                    newValidation[key].error = !isValid;
+                }
+            }
+
+            return {
+                ...newValidation
+            };
+        })
+    }
 
     const UploadInput = () => {
         return <input type="file" style={{ display: 'none' }} onChange={handleFileChange} name="image" accept="image/png, image/jpeg, image/jpg" />
@@ -94,6 +142,15 @@ export default function Account({ }) {
     };
 
     const submit = () => {
+
+        handleValidation();
+
+        if (Object.values(validation).some(field => field.error)) {
+            return;
+        }
+
+        setLoading(true)
+
         fetcher('/user/update-user', {
             method: 'POST',
             headers: {
@@ -104,7 +161,6 @@ export default function Account({ }) {
             setAvatarLoading(false)
             if (res.status === 200) {
                 dispatch(setUserInfo(res.data))
-
                 setMessage('Profile updated')
                 setIsShowSnackbar(true)
             } else if (res.status === 401) {
@@ -117,6 +173,8 @@ export default function Account({ }) {
                 setMessage('Failed to update profile');
                 setIsShowSnackbar(true)
             }
+        }).finally(() => {
+            setLoading(false)
         })
     }
 
@@ -136,6 +194,9 @@ export default function Account({ }) {
                                     textDecoration: 'none',
                                     backgroundColor: 'unset',
                                     boxShadow: 'unset'
+                                },
+                                '&.Mui-disabled': {
+                                    backgroundColor: 'unset',
                                 }
                             }}
                             component="label"
@@ -143,6 +204,7 @@ export default function Account({ }) {
                             variant="contained"
                             tabIndex={-1}
                             className='flex flex-col items-center mt-auto cursor-pointer'
+                            disabled={avatarLoading}
                         >
                             <AvatarComponent size={'128px'}></AvatarComponent>
 
@@ -166,6 +228,7 @@ export default function Account({ }) {
                                 <label htmlFor="First name" className="mb-2">Last name</label>
                                 <OutlinedInput
                                     value={userInfoForm.firstName}
+                                    error={validation.firstName.error}
                                     name="firstName"
                                     onChange={handleChange}
                                     sx={{
@@ -185,6 +248,7 @@ export default function Account({ }) {
                                 <label htmlFor="Last name" className="mb-2">Last name</label>
                                 <OutlinedInput
                                     value={userInfoForm.lastName}
+                                    error={validation.lastName.error}
                                     name="lastName"
                                     onChange={handleChange}
                                     sx={{
@@ -208,6 +272,7 @@ export default function Account({ }) {
                                 <label htmlFor="Email" className="mb-2">Email</label>
                                 <OutlinedInput
                                     value={userInfoForm.email}
+                                    error={validation.email.error}
                                     name="email"
                                     onChange={handleChange}
                                     sx={{
@@ -237,6 +302,7 @@ export default function Account({ }) {
 
                                 <OutlinedInput
                                     value={userInfoForm.userName}
+                                    error={validation.userName.error}
                                     name="userName"
                                     onChange={handleChange}
                                     sx={{
@@ -262,13 +328,13 @@ export default function Account({ }) {
             <div className="donation"></div>
             <div className="message"></div> */}
                 <div className="submit my-8">
-                    <SubmitBtn onClick={submit}>Update account</SubmitBtn>
+                    <SubmitBtn onClick={submit} loading={loading}>Update account</SubmitBtn>
 
                 </div>
 
                 <Snackbar
                     open={isShowSnackbar}
-                    autoHideDuration={6000}
+                    autoHideDuration={1}
                     message={message}
                     anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 />
