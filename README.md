@@ -22,7 +22,6 @@ This project focuses on frontend architecture, API integration, and data flow be
 
 ### Backend
 - Node.js
-- Express
 - MongoDB(Mongoose)
 
 ---
