@@ -142,6 +142,7 @@ export default function Password({ }) {
                                     value={userInfoForm.currentPassword}
                                     error={validation.currentPassword.error}
                                     name="currentPassword"
+                                    type="password"
                                     onChange={handleChange}
                                     sx={{
                                         height: '40px',
@@ -167,6 +168,7 @@ export default function Password({ }) {
                                     value={userInfoForm.password}
                                     error={validation.password.error}
                                     name="password"
+                                    type="password"
                                     onChange={handleChange}
                                     sx={{
                                         height: '40px',
@@ -192,6 +194,7 @@ export default function Password({ }) {
                                     value={userInfoForm.confirmPassword}
                                     error={validation.confirmPassword.error}
                                     name="confirmPassword"
+                                    type="password"
                                     onChange={handleChange}
                                     sx={{
                                         height: '40px',
