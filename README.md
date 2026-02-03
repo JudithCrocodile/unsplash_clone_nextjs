@@ -128,7 +128,7 @@ The main focus was understanding differences in state management, component desi
 ## ToDo List
 
 - [x] Edit user profile
-- [ ] Change password
+- [x] Change password
 - [x] add X on dialog
 - [ ] Close account
 - [ ] Collection
