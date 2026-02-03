@@ -65,19 +65,18 @@ export default function Layout({ children, inAccountPage = false }: { children: 
     const handleLogout = () => {
         handleUserMenuClose();
 
-        fetcher(`/user/logout`, {}).then(res => {
-            if (res.status === 200) {
-                dispatch(logout())
-                dispatch(removeUserInfo())
-                setSnackbarMessage('Successfully logged out')
-                setIsShowSnackbar(true)
-                router.push(`/`)
+        fetcher(`/user/logout`, {})
 
-                setTimeout(() => {
-                    setIsShowSnackbar(false)
-                }, 2000)
-            }
-        })
+        dispatch(logout())
+        dispatch(removeUserInfo())
+        setSnackbarMessage('Successfully logged out')
+        setIsShowSnackbar(true)
+        router.push(`/`)
+
+        setTimeout(() => {
+            setIsShowSnackbar(false)
+        }, 2000)
+
 
 
     }
