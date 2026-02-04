@@ -6,7 +6,7 @@ const notLoginRoutes = ['/login', '/join'];
 export function middleware(req: NextRequest) {
     const token = req.cookies.get('token');
 
-    if(token && token.value && notLoginRoutes.includes(req.nextUrl.pathname)) {
+    if(token && token.value && notLoginRoutes.includes(req.nextUrl.pathname) && (token.value !== 'undefined' && token.value !== 'null')) {
         return NextResponse.redirect(new URL('/', req.url));
     };
 
