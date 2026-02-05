@@ -13,7 +13,7 @@ interface IPath {
     title: string,
 }
 
-export default function AccountLayout({ children }: {children: ReactNode}) {
+export default function AccountLayout({ children }: { children: ReactNode }) {
     const router = useRouter()
 
     const [title, setTitle] = useState<string>('')
@@ -39,13 +39,13 @@ export default function AccountLayout({ children }: {children: ReactNode}) {
             label: 'Change password',
             title: 'Change password',
         },
-        // {
-        //     value: '3',
-        //     path: '/account/close',
-        //     active: false,
-        //     label: 'Close account',
-        //     title: 'Close account',
-        // },
+        {
+            value: '3',
+            path: '/account/close',
+            active: false,
+            label: 'Close account',
+            title: 'Close account',
+        },
     ])
 
 

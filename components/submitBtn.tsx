@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
 import React, { ReactNode } from 'react'
 
-export default function SubmitBtn({ children, onClick, disabled, loading }: { children: ReactNode, onClick?: () => void, disabled?: boolean, loading?: boolean }) {
+export default function SubmitBtn({ children, onClick, disabled, loading, sx }: { children: ReactNode, onClick?: () => void, disabled?: boolean, loading?: boolean, sx?: any }) {
     const Btn = styled(ButtonBase)(({ theme }) => ({
         background: 'linear-gradient(to top, #0000 50%, #ffffff1a 100%), #111',
         color: '#fff',
@@ -18,7 +18,8 @@ export default function SubmitBtn({ children, onClick, disabled, loading }: { ch
         },
         '&.MuiButtonBase-root': {
             margin: '0',
-        }
+        },
+        ...sx
     }));
 
     return <Btn onClick={onClick} disabled={disabled || loading}>{children}</Btn>

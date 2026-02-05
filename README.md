@@ -130,7 +130,7 @@ The main focus was understanding differences in state management, component desi
 - [x] Edit user profile
 - [x] Change password
 - [x] add X on dialog
-- [ ] Close account
+- [x] Close account
 - [ ] Collection
 - [ ] Facebook login
 - [ ] location selector
