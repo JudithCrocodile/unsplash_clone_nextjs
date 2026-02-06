@@ -127,12 +127,13 @@ The main focus was understanding differences in state management, component desi
 
 ## ToDo List
 
-- [x] Edit user profile
-- [x] Change password
-- [x] add X on dialog
-- [x] Close account
+- [ ] improve image upload
 - [ ] Collection
 - [ ] Facebook login
 - [ ] location selector
 - [x] Forgot password
 - [x] Like ❤️
+- [x] Edit user profile
+- [x] Change password
+- [x] add X on dialog
+- [x] Close account
