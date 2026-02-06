@@ -27,16 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     error = userSearchResult.error;
   }
 
-  if(!user) {
-      if(error === 'expired') {
-          return res.status(401).json({error: 'Token expired'});
-      }
+  // if(!user) {
+  //     if(error === 'expired') {
+  //         return res.status(401).json({error: 'Token expired'});
+  //     }
 
-      if(error === 'invalid') {
-          return res.status(401).json({error: 'Invalid token'});
-      }
-      return res.status(404).json({error: 'user not found'});
-  }
+  //     if(error === 'invalid') {
+  //         return res.status(401).json({error: 'Invalid token'});
+  //     }
+  //     return res.status(404).json({error: 'user not found'});
+  // }
 
   if(userName.startsWith('@')){
     userName = userName.substring(1);
