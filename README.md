@@ -127,7 +127,7 @@ The main focus was understanding differences in state management, component desi
 
 ## ToDo List
 
-- [ ] improve image upload
+- [x] improve image upload
 - [ ] Collection
 - [ ] Facebook login
 - [ ] location selector

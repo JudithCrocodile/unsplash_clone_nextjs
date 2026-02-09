@@ -70,7 +70,8 @@ export default function UploadDialog({ open, handleClose }: props) {
     const [errorPhotosLength, setErrorPhotosLength] = useState<number>(0);
     const [showDropOverlay, setShowDropOverlay] = useState<boolean>(false);
     const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
 
     const maxImageLength = 10;
@@ -173,37 +174,82 @@ export default function UploadDialog({ open, handleClose }: props) {
         setSelectedFileDetail(newPhotoValues)
     }
 
+    const uploadToCloudinary = async (file: File) => {
+        if (!cloudName || !uploadPreset) {
+            throw new Error('Cloudinary is not configured');
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+            method: 'POST',
+            body: formData,
+        })
+
+        if (!response.ok) {
+            throw new Error('Cloudinary upload failed');
+        }
+
+        const data = await response.json();
+        return {
+            url: data.secure_url as string,
+            publicId: data.public_id as string,
+        }
+
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitLoading(true)
 
-        if (!selectedFileDetail) {
+        if (!selectedFileDetail || selectedFileDetail.length === 0) {
             setMessage('Please select a file first.');
             setIsShowSnackbar(true)
+            setSubmitLoading(true);
             return;
         }
 
-        const formData = new FormData();
-        for (let i: number = 0; i < selectedFileDetail.length; i++) {
-            const file = selectedFileDetail[i].originalFile
-            if (file) {
-                formData.append(`image_${i}`, file);
-                formData.append(`photoDetails_${i}`, JSON.stringify({
-                    tabs: selectedFileDetail[i].tabs,
-                    location: selectedFileDetail[i].location,
-                    description: selectedFileDetail[i].description,
-                }));
-            }
+        // const formData = new FormData();
+        // for (let i: number = 0; i < selectedFileDetail.length; i++) {
+        //     const file = selectedFileDetail[i].originalFile
+        //     if (file) {
+        //         formData.append(`image_${i}`, file);
+        //         formData.append(`photoDetails_${i}`, JSON.stringify({
+        //             tabs: selectedFileDetail[i].tabs,
+        //             location: selectedFileDetail[i].location,
+        //             description: selectedFileDetail[i].description,
+        //         }));
+        //     }
 
-        }
+        // }
 
         try {
+            const uploadPhotos = await Promise.all(
+                selectedFileDetail.map(async (photo) => {
+                    if (!photo.originalFile || !(photo.originalFile instanceof File)) {
+                        throw new Error('Invalid file');
+                    }
+
+                    const { url, publicId } = await uploadToCloudinary(photo.originalFile as File);
+                    return {
+                        url,
+                        publicId,
+                        tabs: photo.tabs,
+                        location: photo.location,
+                        description: photo.description,
+                    }
+                })
+            )
+
             const res = await fetch('/api/photo/upload', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 },
-                body: formData,
+                body: JSON.stringify({ photos: uploadPhotos }),
             });
 
 
@@ -226,6 +272,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                 setIsShowSnackbar(true)
             }
         } catch (error) {
+            setSubmitLoading(true)
             setMessage('Error uploading file');
             setIsShowSnackbar(true)
         }
@@ -551,7 +598,7 @@ export default function UploadDialog({ open, handleClose }: props) {
                                             <div className={`photo `} key={photoIndex} style={{ width: '356px' }}>
                                                 <div>
                                                     <div className="photo__img-container cursor-pointer relative">
-                                                        <NextImage src={detail.photoUrl as string} alt="prev-image" width="100" height="100" className={'photo__img flex-1'} style={{width: '100%'}} />
+                                                        <NextImage src={detail.photoUrl as string} alt="prev-image" width="100" height="100" className={'photo__img flex-1'} style={{ width: '100%' }} />
                                                         <div className="photo__img-detail-container absolute top-0 right-0 w-full h-full text-white">
                                                             <div className="photo__remove-btn-container top-2 right-2 absolute w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
                                                                 <CloseIcon color="primary" className="cursor-pointer" fontSize="medium" sx={{ "width": '17px', '&:hover': 'text.primary' }} onClick={() => removePhoto(photoIndex)}></CloseIcon>

@@ -8,7 +8,8 @@ export type TypePhoto = {
     location: string,
     createTime: string,
     photo_tags: TypeTag[],
-    fileId: string,
+    fileId?: string,
+    cloudinary_public_id?: string,
     liked: boolean,
     description: string,
 }
