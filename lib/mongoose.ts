@@ -6,11 +6,20 @@ if(!MONGODB_URI) {
 throw new Error('Please define the MONGODB_URI enviroment variable inside.env')
 }
 
-const globalAny = global as any;
-let cached: any = globalAny.mongoose;
+type MongooseCache = {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
+};
 
-if(!cached) {
-cached = globalAny.mongoose = {conn: null, promise: null}
+// 把快取掛在全域的 globalThis 上，這樣在開發模式下就不會因為熱重載而丟失快取，導致多次連線到資料庫
+const globalAny = global as typeof globalThis & {
+    mongoose?: MongooseCache;
+};
+
+let cached = globalAny.mongoose;
+
+if(!cached) { // 啟動時若沒有快取就初始化
+cached = globalAny.mongoose = { conn: null, promise: null }
 }
 
 async function connectToDatabase() {
@@ -19,13 +28,8 @@ async function connectToDatabase() {
     }
 
     if(!cached.promise) {
-        const opts = {
+        cached.promise = mongoose.connect(MONGODB_URI, {
             bufferCommands: false,
-            useNewUrlParser: true,
-        }
-
-        cached.promise = (await mongoose.connect(<string>MONGODB_URI, opts)).isObjectIdOrHexString((mongoose: any) => {
-            return mongoose;
         })
     }
 
