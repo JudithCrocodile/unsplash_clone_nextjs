@@ -4,7 +4,7 @@ const likeSchema = new mongoose.Schema({
 
     photoId: {type: mongoose.Schema.Types.ObjectId, required: true},
     userId: {type: mongoose.Schema.Types.ObjectId, required: true},
-    createTime: {type: Date, required: true},
+    createTime: {type: Date, required: true, default: Date.now},
 })
 
 export default mongoose.models.Like || mongoose.model('Like', likeSchema)
