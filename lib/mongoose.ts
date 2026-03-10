@@ -16,11 +16,7 @@ const globalAny = global as typeof globalThis & {
     mongoose?: MongooseCache;
 };
 
-let cached = globalAny.mongoose;
-
-if(!cached) { // 啟動時若沒有快取就初始化
-cached = globalAny.mongoose = { conn: null, promise: null }
-}
+const cached: MongooseCache = globalAny.mongoose ?? (globalAny.mongoose = { conn: null, promise: null });
 
 async function connectToDatabase() {
     if(cached.conn) {
@@ -28,7 +24,7 @@ async function connectToDatabase() {
     }
 
     if(!cached.promise) {
-        cached.promise = mongoose.connect(MONGODB_URI, {
+        cached.promise = mongoose.connect(MONGODB_URI!, {
             bufferCommands: false,
         })
     }
