@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const tabSchema = new mongoose.Schema({
     name: {type: String},
-    created_at: {type: String},
+    created_at: {type: Date, default: Date.now},
 }, 
     { collection: 'tabs' }
 )

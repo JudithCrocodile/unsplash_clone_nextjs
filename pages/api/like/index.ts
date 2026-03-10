@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
     }
 
-    const newLike = new Like({photoId, userId, createTime: new Date().toISOString()})
+    const newLike = new Like({photoId, userId, createTime: new Date()})
     await newLike.save()
     res.status(200).json({status: 200, message: 'Photo unliked successfully', data: true})
 
