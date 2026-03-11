@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,8 +21,7 @@ import type { RootState } from '@/store'
 import Link from 'next/link'
 import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
-
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+import { photoApi } from '@/lib/api';
 const inter = Inter({ subsets: ["latin"] });
 
 type Props = {
@@ -59,24 +58,19 @@ export default function Photo({ photoId }: Props) {
   const [loading, setLoading] = useState(false);
 
 
-  useEffect(() => {
-    getPhotoData()
-  }, []);
-
-  const getPhotoData = (): void => {
+  const getPhotoData = useCallback((): void => {
     setLoading(true)
-    fetcher(`/photo/get-photo/${photoId}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-    }).then(res => {
-      if (res.status === 200) {
+    photoApi.getPhotoDetail(token || '', photoId).then(res => {
+      if (res.status === 200 && res.data) {
         setPhotosData(res.data)
         setLoading(false)
       }
     })
-  }
+  }, [token, photoId])
+
+  useEffect(() => {
+    getPhotoData()
+  }, [getPhotoData]);
 
 
 

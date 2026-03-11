@@ -13,8 +13,7 @@ import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 import { logout } from '@/store/auth'
 import { removeUserInfo } from '@/store/user'
-
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api'
 
 export default function Password({ }) {
     const token = useSelector((state: RootState) => state.auth.token)
@@ -93,13 +92,7 @@ export default function Password({ }) {
 
         setLoading(true)
 
-        fetcher('/user/update-password', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ userInfo: userInfoForm }),
-        }).then(res => {
+        userApi.updatePassword(token || '', userInfoForm).then(res => {
             setLoading(false)
             if (res.status === 200) {
                 setMessage('Password updated')
@@ -111,7 +104,7 @@ export default function Password({ }) {
                 setMessage('Please login');
                 setIsShowSnackbar(true)
             } else {
-                setMessage(res.error || 'Failed to update password');
+                setMessage((res.error as string) || res.message || 'Failed to update password');
                 setIsShowSnackbar(true)
             }
         }).finally(() => {

@@ -6,14 +6,13 @@ import { styled } from '@mui/material/styles';
 import React, { useState, ChangeEvent } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router'
-import { useDispatch } from 'react-redux'
-import { setToken } from '@/store/auth'
-import { setUserInfo } from '@/store/user'
+import { useDispatch } from 'react-redux';
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import Head from 'next/head';
-
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
+import { logout } from '@/store/auth';
+import { removeUserInfo } from '@/store/user';
 
 export default function Login() {
     const router = useRouter()
@@ -38,16 +37,11 @@ export default function Login() {
     async function handleGoToLogin() {
         setLoading(true)
 
-        fetcher('/user/reset-password',
-            {
-                method: 'POST',
-                body: JSON.stringify(loginForm)
-            }
-        ).then(res => {
+        userApi.resetPassword(loginForm).then(res => {
             setLoading(false)
             if (res.status === 200) {
-                dispatch(setToken(res.token))
-                dispatch(setUserInfo(res.userInfo))
+                dispatch(logout())
+                dispatch(removeUserInfo())
                 router.push(`/login`, undefined, { shallow: true })
             } else {
                 setSnackbarMessage('Invalid password.')

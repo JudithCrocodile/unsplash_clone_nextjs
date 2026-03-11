@@ -5,8 +5,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import React, { useState, useEffect } from 'react'
-
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
+import { likeApi } from '@/lib/api';
 
 export default function LikeBtn({photoId, liked=false}: {photoId: string, liked: boolean}) {
   const userInfo = useSelector((state: RootState) => state.user.userInfo)
@@ -21,14 +20,11 @@ export default function LikeBtn({photoId, liked=false}: {photoId: string, liked:
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     e.stopPropagation()
-    fetcher('/like', {
-      method: 'POST',
-      body: JSON.stringify({
+    likeApi.toggle({
         photoId,
         userId: userInfo._id
-      })
     }).then(res => {
-      if (res.status === 200) {
+      if (res.status === 200 && res.data) {
         setIsLiked(res.data)
 
 

@@ -20,8 +20,7 @@ import { logout } from '@/store/auth'
 import { removeUserInfo } from '@/store/user'
 import { useDispatch } from 'react-redux'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
-
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 export default function Layout({ children, inAccountPage = false }: { children: ReactNode, inAccountPage?: boolean }) {
     const dispatch = useDispatch();
@@ -65,7 +64,7 @@ export default function Layout({ children, inAccountPage = false }: { children: 
     const handleLogout = () => {
         handleUserMenuClose();
 
-        fetcher(`/user/logout`, {})
+        userApi.logout()
 
         dispatch(logout())
         dispatch(removeUserInfo())

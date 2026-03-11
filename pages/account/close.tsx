@@ -18,8 +18,7 @@ import { logout } from '@/store/auth'
 import { removeUserInfo } from '@/store/user'
 import { useRouter } from 'next/router'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
-
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 
 export default function Close({ }) {
@@ -58,13 +57,7 @@ export default function Close({ }) {
 
         setLoading(true)
 
-        fetcher('/user/close-account', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ userInfo: userInfoForm }),
-        }).then(res => {
+        userApi.closeAccount(token || '', userInfoForm).then(res => {
             setLoading(false)
             if (res.status === 200) {
                 setMessage('Account closed successfully');
@@ -77,7 +70,7 @@ export default function Close({ }) {
                 setMessage('Please login');
                 setIsShowSnackbar(true)
             } else {
-                setMessage(res.error || 'Failed to update password');
+                setMessage((res.error as string) || res.message || 'Failed to update password');
                 setIsShowSnackbar(true)
             }
         }).finally(() => {

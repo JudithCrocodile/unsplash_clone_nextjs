@@ -12,8 +12,7 @@ import { setUserInfo } from '@/store/user'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import Head from 'next/head';
-
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 export default function Login() {
     const router = useRouter()
@@ -38,12 +37,7 @@ export default function Login() {
     async function handleGoToLogin() {
         setLoading(true)
 
-        fetcher('/user/forgot-password',
-            {
-                method: 'POST',
-                body: JSON.stringify(loginForm)
-            }
-        ).then(res => {
+        userApi.forgotPassword(loginForm).then(res => {
             setLoading(false)
             if (res.status === 200) {
                 router.push(`/login`, undefined, { shallow: true })

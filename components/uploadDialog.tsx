@@ -22,6 +22,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import { photoApi } from '@/lib/api';
 
 interface props {
     open: boolean,
@@ -207,7 +208,7 @@ export default function UploadDialog({ open, handleClose }: props) {
         if (!selectedFileDetail || selectedFileDetail.length === 0) {
             setMessage('Please select a file first.');
             setIsShowSnackbar(true)
-            setSubmitLoading(true);
+            setSubmitLoading(false);
             return;
         }
 
@@ -243,32 +244,25 @@ export default function UploadDialog({ open, handleClose }: props) {
                 })
             )
 
-            const res = await fetch('/api/photo/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ photos: uploadPhotos }),
-            });
+            const res = await photoApi.upload(token || '', { photos: uploadPhotos });
 
 
             setSubmitLoading(false)
 
-            if (res.status === 200) {
+            if (res?.status === 200) {
                 onClose();
                 setMessage('Upload successfully')
                 setIsShowSnackbar(true)
                 window.location.href = '/';
-            } else if (res.status === 401) {
+            } else if (res?.status === 401) {
                 dispatch(logout())
                 dispatch(removeUserInfo())
                 onClose();
                 router.push(`/login`)
-                setMessage('Please login');
+                setMessage(res?.message || 'Please login');
                 setIsShowSnackbar(true)
             } else {
-                setMessage('Failed to upload file');
+                setMessage(res?.message || 'Failed to upload file');
                 setIsShowSnackbar(true)
             }
         } catch (error) {

@@ -16,12 +16,12 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Image from "next/image";
+import { photoApi, tabApi } from '@/lib/api';
 
 interface StyledTabsProps {
     label: string;
 }
 
-const fetcher = (url: string, params: object) => fetch(`/api${url}`, params).then((res => res.json()))
 const inter = Inter({ subsets: ["latin"] });
 
 export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false, pageIntro }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean, pageIntro?: React.ReactNode }) {
@@ -104,24 +104,18 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         if (isLast || loading) {
             return;
         }
-        const params = JSON.stringify({
+        const params = {
             page: currentPage,
             tabId: propTabId || currentTab?._id,
             category: propTabName,
             userName,
             onlyShowLiked,
-        })
+        }
 
         setLoading(true)
-        fetcher('/photo/get-photo-page', {
-            method: 'POST',
-            body: params,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-        }).then(res => {
+        photoApi.getPhotoPage(token || '', params).then(res => {
 
-            if (res.status === 200) {
+            if (res.status === 200 && res.data) {
                 if (currentPage === 1) {
                     setPhotosList([...res.data.photos])
                 } else {
@@ -171,10 +165,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const getAllTabs = (): void => {
         if (!showCategoryBar) return;
         setGetTabLoading(true)
-        fetcher('/tab/get-tabs', {
-            method: 'POST',
-        }).then(res => {
-            if (res.status === 200) {
+        tabApi.getTabs().then(res => {
+            if (res.status === 200 && res.data) {
                 setGetTabLoading(false)
 
                 setAllTabs([...res.data])

@@ -6,9 +6,28 @@ import connectToDatabase from "@/lib/mongoose";
 import User from '../models/User'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({
+            status: 405,
+            code: 'METHOD_NOT_ALLOWED',
+            message: 'Method not allowed',
+            data: null,
+        });
+    }
+
     await connectToDatabase()
 
-    const {email, password, userName, firstName, lastName} = JSON.parse(req.body);
+    const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+    const {email, password, userName, firstName, lastName} = body;
+
+    if (!email || !password || !userName || !firstName || !lastName) {
+        return res.status(400).json({
+            status: 400,
+            code: 'INVALID_INPUT',
+            message: 'email, password, userName, firstName, lastName are required',
+            data: null,
+        });
+    }
 
     try {
         const saltRounds = 10;
@@ -24,10 +43,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             fileId: undefined,
         })
         await newUser.save();
-        res.status(200).send({status: 200, message: 'User registered successfully'});
+        return res.status(200).json({
+            status: 200,
+            code: 'USER_CREATED',
+            message: 'User registered successfully',
+            data: { userId: newUser._id },
+        });
     } catch (error) {
         console.log('error', error)
-        res.status(500).send({status: 500, message: 'User registered failed'});
+        return res.status(500).json({
+            status: 500,
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'User registered failed',
+            data: null,
+        });
     }
 
   }

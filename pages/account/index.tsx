@@ -16,8 +16,7 @@ import { removeUserInfo, setUserInfo, updateAvatar } from '@/store/user'
 import type { RootState } from '@/store'
 import Head from 'next/head';
 import { validateUserName } from '@/util';
-
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 export default function Account({ }) {
     const router = useRouter()
@@ -109,15 +108,9 @@ export default function Account({ }) {
             try {
                 setAvatarLoading(true)
 
-                fetcher('/user/upload-avatar', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData,
-                }).then(res => {
+                userApi.uploadAvatar(token || '', formData).then(res => {
                     setAvatarLoading(false)
-                    if (res.status === 200) {
+                    if (res.status === 200 && res.data) {
                         dispatch(updateAvatar(res.data))
 
                         setMessage('Profile image updated')
@@ -151,15 +144,9 @@ export default function Account({ }) {
 
         setLoading(true)
 
-        fetcher('/user/update-user', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ userInfo: userInfoForm }),
-        }).then(res => {
+        userApi.updateUser(token || '', userInfoForm).then(res => {
             setAvatarLoading(false)
-            if (res.status === 200) {
+            if (res.status === 200 && res.data) {
                 dispatch(setUserInfo(res.data))
                 setMessage('Profile updated')
                 setIsShowSnackbar(true)

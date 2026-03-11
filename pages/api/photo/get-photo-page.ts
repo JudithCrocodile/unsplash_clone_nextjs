@@ -8,7 +8,7 @@ import getUserByToken from '../util/getUserByToken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectToDatabase()
-  const body = JSON.parse(req.body)
+  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {})
   const page = parseInt(body.page) || 1
   const pageSize = parseInt(body.ppageSizeage) || 10;
   const tabId = body.tabId;
@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let userName = body.userName || '';
   let user: {
     _id: string
-  } = {_id: ''}
+  } | null = null
   let error: 'expired' | 'invalid' | null = null;
 
   const token = req.headers.authorization?.split(' ')[1];
@@ -86,7 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             as: 'likes'
           }
         },
-        ...(user ?[{
+        ...(user && user._id ? [{
           $addFields: {
             liked: {
               $in: [new mongoose.Types.ObjectId(user._id), '$likes.userId']

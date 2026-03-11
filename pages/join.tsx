@@ -11,8 +11,7 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import { validateEmail, validateUserName } from '@/util';
 import CircularProgress from '@mui/material/CircularProgress';
 import Head from 'next/head';
-
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 export default function Join() {
   const router = useRouter()
@@ -111,12 +110,7 @@ export default function Join() {
       setShowErrorMessage(false);
     }
 
-    fetcher('/user/create-user',
-      {
-        method: 'POST',
-        body: JSON.stringify(createForm)
-      }
-    ).then(res => {
+    userApi.createUser(createForm).then(res => {
       setLoading(false)
       if (res.status === 200) {
         // localStorage.setItem('token', res.token);

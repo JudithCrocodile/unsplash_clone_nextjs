@@ -12,8 +12,7 @@ import { setUserInfo } from '@/store/user'
 import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import Head from 'next/head';
-
-const fetcher = (url: string, params: object) => fetch(`api${url}`, params).then((res => res.json()))
+import { userApi } from '@/lib/api';
 
 export default function Login() {
     const router = useRouter()
@@ -38,16 +37,18 @@ export default function Login() {
     async function login() {
         setLoading(true)
 
-        fetcher('/user/login',
-            {
-                method: 'POST',
-                body: JSON.stringify(loginForm)
-            }
-        ).then(res => {
+        userApi.login(loginForm).then(res => {
             setLoading(false)
             if (res.status === 200) {
-                dispatch(setToken(res.token))
-                dispatch(setUserInfo(res.userInfo))
+                const token = res?.data?.token;
+                const userInfo = res?.data?.userInfo;
+                if (!token || !userInfo) {
+                    setSnackbarMessage('Login failed, please try again.')
+                    setIsShowSnackbar(true)
+                    return;
+                }
+                dispatch(setToken(token))
+                dispatch(setUserInfo(userInfo))
                 router.push(`/`, undefined, { shallow: true })
             } else {
                 setSnackbarMessage('Invalid email or password.')
