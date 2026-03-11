@@ -4,6 +4,11 @@ import User from '../models/User'
 import connectToDatabase from "@/lib/mongoose";
 const nodemailer = require("nodemailer");
 import crypto from 'crypto';
+import { getTrimmedString, isValidEmail, parseRequestBody } from "@/lib/api/validators";
+import { checkRateLimit, getClientIp } from "@/lib/api/security";
+
+const FORGOT_PASSWORD_RATE_LIMIT_MAX = 5;
+const FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
 const transporter = nodemailer.createTransport({
     // host: "gmail",
@@ -17,19 +22,64 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({
+            status: 405,
+            code: 'METHOD_NOT_ALLOWED',
+            message: 'Method not allowed',
+            data: null,
+        });
+    }
+
+    const ip = getClientIp(req);
+    const rateLimit = checkRateLimit({
+        key: `forgot-password:${ip}`,
+        limit: FORGOT_PASSWORD_RATE_LIMIT_MAX,
+        windowMs: FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS,
+    });
+
+    if (!rateLimit.allowed) {
+        return res.status(429).json({
+            status: 429,
+            code: 'TOO_MANY_REQUESTS',
+            message: `Too many reset requests. Please retry in ${rateLimit.retryAfterSeconds} seconds`,
+            data: null,
+        });
+    }
+
     await connectToDatabase()
 
-    const { email } = JSON.parse(req.body);
+    const body = parseRequestBody(req.body);
+    const email = getTrimmedString(body.email);
 
     if (!email) {
-        return res.status(400).json({ status: 400, message: 'Email is required' });
+        return res.status(400).json({
+            status: 400,
+            code: 'INVALID_INPUT',
+            message: 'Email is required',
+            data: null,
+        });
+    }
+
+    if (!isValidEmail(email)) {
+        return res.status(400).json({
+            status: 400,
+            code: 'INVALID_INPUT',
+            message: 'Invalid email format',
+            data: null,
+        });
     }
 
     // password validation
     const user = await User.findOne({ email });
 
     if (!user) {
-        return res.status(404).send({ status: 404, message: 'user not found' })
+        return res.status(200).json({
+            status: 200,
+            code: 'RESET_LINK_SENT',
+            message: 'If this account exists, reset instructions have been sent',
+            data: null,
+        });
     }
 
     const token = crypto.randomBytes(32).toString('hex');
@@ -77,7 +127,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     )
 
     if (!updatedUser) {
-        res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({
+            status: 404,
+            code: 'USER_NOT_FOUND',
+            message: 'user not found',
+            data: null,
+        })
     }
-    res.status(200).send({ status: 200, message: 'Has sent reset password instructions to your email' })
+    return res.status(200).json({
+        status: 200,
+        code: 'RESET_LINK_SENT',
+        message: 'If this account exists, reset instructions have been sent',
+        data: null,
+    })
 }

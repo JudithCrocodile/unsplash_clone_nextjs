@@ -5,6 +5,10 @@ import bcrypt from 'bcrypt';
 import User from '../models/User'
 import connectToDatabase from "@/lib/mongoose";
 import { getTrimmedString, isValidEmail, isValidPassword, parseRequestBody, PASSWORD_MIN_LENGTH } from "@/lib/api/validators";
+import { checkRateLimit, getClientIp } from "@/lib/api/security";
+
+const LOGIN_RATE_LIMIT_MAX = 5;
+const LOGIN_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -12,6 +16,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         status: 405,
         code: 'METHOD_NOT_ALLOWED',
         message: 'Method not allowed',
+        data: null,
+      });
+    }
+
+    const ip = getClientIp(req);
+    const rateLimit = checkRateLimit({
+      key: `login:${ip}`,
+      limit: LOGIN_RATE_LIMIT_MAX,
+      windowMs: LOGIN_RATE_LIMIT_WINDOW_MS,
+    });
+
+    if (!rateLimit.allowed) {
+      return res.status(429).json({
+        status: 429,
+        code: 'TOO_MANY_REQUESTS',
+        message: `Too many login attempts. Please retry in ${rateLimit.retryAfterSeconds} seconds`,
         data: null,
       });
     }
@@ -53,8 +73,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = await User.findOne({email});
 
     if(user && bcrypt.compareSync(password, user.password)) {
-      const user = await User.findOne({email});
-      if(user) {
         const payload = {
             userId: user._id,
         }
@@ -67,20 +85,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           token,
           userInfo: user,
         })
-      } else {
-        return res.status(404).json({
-          status: 404,
-          code: 'USER_NOT_FOUND',
-          message: 'user not found',
-          data: null,
-        })
-      }
       
     } else {
       return res.status(401).json({
         status: 401,
         code: 'INVALID_CREDENTIALS',
-        message: 'email or password error',
+        message: 'Invalid credentials',
         data: null,
       })
     }
