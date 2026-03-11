@@ -2,7 +2,7 @@
 
 A full-stack photo platform built with Next.js, React, and MongoDB.
 
-This project demonstrates end-to-end product delivery:
+Highlights:
 - Frontend: upload workflow, photo feed, auth UI, account settings
 - Backend: API Routes, MongoDB models, JWT auth, password reset, baseline security hardening
 
@@ -32,29 +32,6 @@ This project demonstrates end-to-end product delivery:
 
 ---
 
-## 🧱 Architecture Diagram
-
-```mermaid
-flowchart LR
-        U[Browser] --> FE[Next.js Pages / Components]
-        FE --> API[Next.js API Routes]
-        API --> DB[(MongoDB)]
-        API --> CLD[Cloudinary]
-        API --> MAIL[Nodemailer]
-
-        subgraph Security
-                RL[In-memory Rate Limit]
-                JWT[JWT Validate / Expire Check]
-                IV[Input Validation]
-        end
-
-        API --> RL
-        API --> JWT
-        API --> IV
-```
-
----
-
 ## ✨ Features
 
 - Email signup / login
@@ -62,76 +39,6 @@ flowchart LR
 - Forgot password (email + reset token)
 - Image upload (Cloudinary)
 - Photo feed pagination, category tags, likes
-
----
-
-## 🔌 API Examples (Standardized Response Format)
-
-### 1) Login
-`POST /api/user/login`
-
-Request:
-```json
-{
-    "email": "demo@example.com",
-    "password": "password123"
-}
-```
-
-Success:
-```json
-{
-    "status": 200,
-    "code": "LOGIN_SUCCESS",
-    "message": "Login successful",
-    "data": {
-        "token": "<jwt>",
-        "userInfo": { "_id": "...", "email": "demo@example.com" }
-    }
-}
-```
-
-Error:
-```json
-{
-    "status": 401,
-    "code": "INVALID_CREDENTIALS",
-    "message": "Invalid credentials",
-    "data": null
-}
-```
-
-### 2) Create User
-`POST /api/user/create-user`
-
-Request:
-```json
-{
-    "email": "demo@example.com",
-    "password": "password123",
-    "userName": "demo_user",
-    "firstName": "Demo",
-    "lastName": "User"
-}
-```
-
-### 3) Photo Upload
-`POST /api/photo/upload` (Bearer token required)
-
-Request:
-```json
-{
-    "photos": [
-        {
-            "url": "https://res.cloudinary.com/...",
-            "publicId": "abc123",
-            "tabs": ["Nature", "Travel"],
-            "location": "Tokyo",
-            "description": "city night"
-        }
-    ]
-}
-```
 
 ---
 
@@ -163,49 +70,14 @@ pnpm start
 
 ---
 
-## 🔧 Environment Variables (.env)
-
-```bash
-MONGODB_URI=
-JWT_SECRET=
-MAIL_PASS=
-NEXT_PUBLIC_DOMAIN=http://localhost:3000
-
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
-```
-
-Descriptions:
-- `MONGODB_URI`: MongoDB connection string
-- `JWT_SECRET`: JWT signing secret
-- `MAIL_PASS`: email provider app password (forgot password flow)
-- `NEXT_PUBLIC_DOMAIN`: base domain used to build reset links
-- `NEXT_PUBLIC_CLOUDINARY_*`: Cloudinary upload settings
-
----
-
 ## ✅ Testing (Manual Checklist)
 
-There is currently no automated test suite. Manual verification flow:
+No automated test suite yet. Manual verification flow:
 1. Sign up → Login
 2. Upload photo → verify it appears on the homepage
 3. Like / Unlike
 4. Forgot password email → Reset password
 5. Update profile and avatar
-
-
-
----
-
-## 👤 Demo Account
-
-
-- Email: `demo@example.com`
-- Password: `Demo1234!`
-
-Notes:
-- Credentials may be rotated periodically.
-- Do not upload sensitive or private data.
 
 ---
 
@@ -217,18 +89,20 @@ Notes:
 
 ---
 
-## 📁 Project Structure (High Level)
+## UI / UX Reference
 
-```text
-components/
-lib/
-pages/
-    api/
-public/
-store/
-styles/
-types/
-```
+The UI and user flow of this project are inspired by Unsplash.
+
+The purpose of using Unsplash as a regerence was to focus on frontend architecture, data flow, and full-stack implementation rather than UI/UX design from scratch.
+
+This project is intended for learning and rechnical practice only, not for commercial use.
+
+---
+
+## Notes
+
+This project was built to practice transitioning from Vue to React.
+The main focus was understanding differences in state management, component design, and data flow between the two frameworks.
 
 ---
 
@@ -237,10 +111,3 @@ types/
 - [ ] Move rate-limiting store to Redis
 - [ ] Add CI pipeline (lint + build + test)
 - [ ] Improve query/cache performance for photo feed
-
----
-
-## UI / UX Reference
-
-The interface and user flow are inspired by Unsplash.
-This project is for technical practice and portfolio demonstration only, not for commercial use.
