@@ -3,6 +3,7 @@ import Photo from '../models/Photo'
 import Tab from '../models/Tab'
 import connectToDatabase from "@/lib/mongoose";
 import getUserByToken from '../util/getUserByToken';
+import { MAX_TAB_LENGTH, MAX_TABS_PER_PHOTO, parseRequestBody } from "@/lib/api/validators";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -58,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+        const body = parseRequestBody(req.body);
         const photos = Array.isArray(body.photos) ? body.photos : [];
 
         if (photos.length === 0) {
@@ -73,7 +74,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         for (const photo of photos) {
             const { url, publicId, tabs = [], location = '', description = '' } = photo || {};
 
-            if (!url) {
+            if (!photo || typeof photo !== 'object') {
+                return res.status(400).json({
+                    status: 400,
+                    code: 'INVALID_INPUT',
+                    message: 'Each photo item must be an object',
+                    data: null,
+                });
+            }
+
+            if (!url || typeof url !== 'string') {
                 return res.status(400).json({
                     status: 400,
                     code: 'INVALID_INPUT',
@@ -82,14 +92,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 });
             }
 
+            if (!Array.isArray(tabs)) {
+                return res.status(400).json({
+                    status: 400,
+                    code: 'INVALID_INPUT',
+                    message: 'tabs must be an array',
+                    data: null,
+                });
+            }
+
+            if (tabs.length > MAX_TABS_PER_PHOTO) {
+                return res.status(400).json({
+                    status: 400,
+                    code: 'INVALID_INPUT',
+                    message: `Each photo can have at most ${MAX_TABS_PER_PHOTO} tabs`,
+                    data: null,
+                });
+            }
+
             const tabIds = [];
 
             // find or create tab, find tab id
             for (const tabName of tabs) {
-                if (tabName) {
-                    let tabDoc = await Tab.findOne({ name: tabName })
+                if (typeof tabName !== 'string') {
+                    return res.status(400).json({
+                        status: 400,
+                        code: 'INVALID_INPUT',
+                        message: 'Each tab must be a string',
+                        data: null,
+                    });
+                }
+
+                const normalizedTabName = tabName.trim();
+
+                if (normalizedTabName.length > MAX_TAB_LENGTH) {
+                    return res.status(400).json({
+                        status: 400,
+                        code: 'INVALID_INPUT',
+                        message: `Each tab must be less than or equal to ${MAX_TAB_LENGTH} characters`,
+                        data: null,
+                    });
+                }
+
+                if (normalizedTabName) {
+                    let tabDoc = await Tab.findOne({ name: normalizedTabName })
                     if (!tabDoc) {
-                        tabDoc = new Tab({ name: tabName })
+                        tabDoc = new Tab({ name: normalizedTabName })
                         await tabDoc.save();
                     }
 

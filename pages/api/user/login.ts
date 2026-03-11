@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt';
 import User from '../models/User'
 import connectToDatabase from "@/lib/mongoose";
+import { getTrimmedString, isValidEmail, isValidPassword, parseRequestBody, PASSWORD_MIN_LENGTH } from "@/lib/api/validators";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -17,14 +18,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await connectToDatabase()
 
-    const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const {email, password } = body;
+    const body = parseRequestBody(req.body);
+    const email = getTrimmedString(body.email);
+    const password = typeof body.password === 'string' ? body.password : '';
 
     if (!email || !password) {
       return res.status(400).json({
         status: 400,
         code: 'INVALID_INPUT',
         message: 'Email and password are required',
+        data: null,
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        status: 400,
+        code: 'INVALID_INPUT',
+        message: 'Invalid email format',
+        data: null,
+      });
+    }
+
+    if (!isValidPassword(password)) {
+      return res.status(400).json({
+        status: 400,
+        code: 'INVALID_INPUT',
+        message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
         data: null,
       });
     }
