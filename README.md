@@ -1,7 +1,10 @@
-# Unsplash Clone Prject
-A full-stack photo web application built with React, Next.js, and MongoDB.
+# Unsplash Clone (Next.js Full-Stack)
 
-This project focuses on frontend architecture, API integration, and data flow between client and server.
+A full-stack photo platform built with Next.js, React, and MongoDB.
+
+This project demonstrates end-to-end product delivery:
+- Frontend: upload workflow, photo feed, auth UI, account settings
+- Backend: API Routes, MongoDB models, JWT auth, password reset, baseline security hardening
 
 <img width="1728" alt="unsplash_clone" src="https://github.com/user-attachments/assets/bbcc71d3-7842-4777-9481-65cbe29ca075">
 
@@ -15,125 +18,229 @@ This project focuses on frontend architecture, API integration, and data flow be
 ## 🛠 Tech Stack
 
 ### Frontend
-- React
-- Next.js (SSR / API Routes)
-- Javascript / TypeScript
-- Fetch API
+- Next.js (Pages Router)
+- React + TypeScript
+- Redux Toolkit
+- MUI + SCSS/Tailwind
 
 ### Backend
-- Node.js
-- MongoDB(Mongoose)
+- Next.js API Routes
+- MongoDB + Mongoose
+- JWT / bcrypt
+- Nodemailer (forgot password flow)
+- Cloudinary (image upload)
+
+---
+
+## 🧱 Architecture Diagram
+
+```mermaid
+flowchart LR
+        U[Browser] --> FE[Next.js Pages / Components]
+        FE --> API[Next.js API Routes]
+        API --> DB[(MongoDB)]
+        API --> CLD[Cloudinary]
+        API --> MAIL[Nodemailer]
+
+        subgraph Security
+                RL[In-memory Rate Limit]
+                JWT[JWT Validate / Expire Check]
+                IV[Input Validation]
+        end
+
+        API --> RL
+        API --> JWT
+        API --> IV
+```
 
 ---
 
 ## ✨ Features
 
-- User photo upload
-- Image preview before upload
-- Form state management
-- API-based data submission
-- Server-side image handling
-- MongoDB data persistence
+- Email signup / login
+- Profile editing / password change / account closure
+- Forgot password (email + reset token)
+- Image upload (Cloudinary)
+- Photo feed pagination, category tags, likes
 
 ---
 
-##  🏗 Architecture Overview
+## 🔌 API Examples (Standardized Response Format)
 
-The application follows a client-server architecture:
+### 1) Login
+`POST /api/user/login`
 
-- Frontend handles UI rendering, user interaction, and form state.
-- Backend provides RESTful APIs for data processing and persistence.
-- Images and metadata are sent via multiple/form-data.
-- MongoDB stores image metadata and user data.
+Request:
+```json
+{
+    "email": "demo@example.com",
+    "password": "password123"
+}
+```
+
+Success:
+```json
+{
+    "status": 200,
+    "code": "LOGIN_SUCCESS",
+    "message": "Login successful",
+    "data": {
+        "token": "<jwt>",
+        "userInfo": { "_id": "...", "email": "demo@example.com" }
+    }
+}
+```
+
+Error:
+```json
+{
+    "status": 401,
+    "code": "INVALID_CREDENTIALS",
+    "message": "Invalid credentials",
+    "data": null
+}
+```
+
+### 2) Create User
+`POST /api/user/create-user`
+
+Request:
+```json
+{
+    "email": "demo@example.com",
+    "password": "password123",
+    "userName": "demo_user",
+    "firstName": "Demo",
+    "lastName": "User"
+}
+```
+
+### 3) Photo Upload
+`POST /api/photo/upload` (Bearer token required)
+
+Request:
+```json
+{
+    "photos": [
+        {
+            "url": "https://res.cloudinary.com/...",
+            "publicId": "abc123",
+            "tabs": ["Nature", "Travel"],
+            "location": "Tokyo",
+            "description": "city night"
+        }
+    ]
+}
+```
 
 ---
 
-## 🔄 Data Flow
+## 🔐 Security & Validation
+- JWT token expiry/invalid handling (middleware + API)
+- Basic rate-limiting for Login / Forgot Password / Reset Password
+- API input validation:
+    - email format
+    - minimum password length
+    - photos payload structure and tabs length limits
+- Unified login error messages (to reduce account enumeration risk)
 
-1. User selects images on the frontend.
-2. Frontend manages form state using React hooks.
-3. Image and metadata are sent to backend via API.
-4. Backend processes the request and stores data in MongoDB.
-5. API response is returned and UI updates accordingly.
+> Note: current rate-limiting is single-instance in-memory; Redis is recommended for multi-instance deployments.
 
 ---
-## ⚙️ Getting Started
+
+## ⚙️ Local Setup
 
 ```bash
-# install dependencies
-npm install
+pnpm install
+pnpm dev
+```
 
-# run frontend
-npm run dev
-
-# run backend
-npm start
-
+Production build:
+```bash
+pnpm build
+pnpm start
 ```
 
 ---
 
-## 📁 Folder Structure
+## 🔧 Environment Variables (.env)
 
+```bash
+MONGODB_URI=
+JWT_SECRET=
+MAIL_PASS=
+NEXT_PUBLIC_DOMAIN=http://localhost:3000
+
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
 ```
-├── frontend
-│   ├── components
-│   └── pages
-│
-└── backend
-    └── pages
-        ├── api
-        │   ├── like
-        │   ├── photo
-        │   ├── tab
-        │   └── user
-        └── models
 
+Descriptions:
+- `MONGODB_URI`: MongoDB connection string
+- `JWT_SECRET`: JWT signing secret
+- `MAIL_PASS`: email provider app password (forgot password flow)
+- `NEXT_PUBLIC_DOMAIN`: base domain used to build reset links
+- `NEXT_PUBLIC_CLOUDINARY_*`: Cloudinary upload settings
+
+---
+
+## ✅ Testing (Manual Checklist)
+
+There is currently no automated test suite. Manual verification flow:
+1. Sign up → Login
+2. Upload photo → verify it appears on the homepage
+3. Like / Unlike
+4. Forgot password email → Reset password
+5. Update profile and avatar
+
+
+
+---
+
+## 👤 Demo Account
+
+
+- Email: `demo@example.com`
+- Password: `Demo1234!`
+
+Notes:
+- Credentials may be rotated periodically.
+- Do not upload sensitive or private data.
+
+---
+
+## ⚖️ Technical Decisions & Trade-offs
+- **Next.js API Routes**: fast iteration in a single repo; can be split into a dedicated backend service when scale/ownership grows.
+- **In-memory rate limit**: zero infra cost for MVP; not shared across multiple instances.
+- **Standardized API response shape**: simpler and more consistent frontend error handling.
+- **Shared API client/functions**: pages no longer depend on raw URLs, reducing maintenance overhead.
+
+---
+
+## 📁 Project Structure (High Level)
+
+```text
+components/
+lib/
+pages/
+    api/
+public/
+store/
+styles/
+types/
 ```
 
 ---
 
-## 🔍 Key Implementation Details
-- Used React Hooks to manage component state and side effects.
-- Implemented API abstraction to centralize HTTP requests.
-- Separated reusable UI components from page logic.
-- Designed backend APIs to be frontend-friendly and predictable.
-
----
-
-## 📌 Future Improvements
-- Authentication system
-- Image optimization
-- Pagination and infinite ascroll
-- Performance optimization
+## 🗺 Roadmap
+- [ ] Add automated API integration tests
+- [ ] Move rate-limiting store to Redis
+- [ ] Add CI pipeline (lint + build + test)
+- [ ] Improve query/cache performance for photo feed
 
 ---
 
 ## UI / UX Reference
 
-The UI and user flow of this project are inspired by Unsplash.
-
-The purpose of using Unsplash as a regerence was to focus on frontend architecture, data flow, and full-stack implementation rather than UI/UX design from scratch.
-
-This project is intended for learning and rechnical practice only, not for commercial use.
-
----
-
-## Notes
-
-This project was built to practice transitioning from Vue to React.
-The main focus was understanding differences in state management, component design, and data flow between the two frameworks.
-
-
-## ToDo List
-
-- [x] improve image upload
-- [ ] Collection
-- [ ] Facebook login
-- [ ] location selector
-- [x] Forgot password
-- [x] Like ❤️
-- [x] Edit user profile
-- [x] Change password
-- [x] add X on dialog
-- [x] Close account
+The interface and user flow are inspired by Unsplash.
+This project is for technical practice and portfolio demonstration only, not for commercial use.
