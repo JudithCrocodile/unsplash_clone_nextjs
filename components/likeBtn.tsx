@@ -7,24 +7,24 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import React, { useState, useEffect } from 'react'
 import { likeApi } from '@/lib/api';
 
-export default function LikeBtn({photoId, liked=false}: {photoId: string, liked: boolean}) {
+export default function LikeBtn({ photoId, liked = false }: { photoId: string, liked: boolean }) {
   const userInfo = useSelector((state: RootState) => state.user.userInfo)
-  
+
   const [isShowSnackbar, setIsShowSnackbar] = useState(false);
   const [message, setMessage] = useState<string>('');
   const [isLiked, setIsLiked] = useState<boolean>(liked);
 
-  useEffect(()=>{
+  useEffect(() => {
     setIsLiked(liked)
   }, [liked])
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     e.stopPropagation()
     likeApi.toggle({
-        photoId,
-        userId: userInfo._id
+      photoId,
+      userId: userInfo._id
     }).then(res => {
-      if (res.status === 200 && res.data) {
+      if (res.status === 200 && res.data !== undefined) {
         setIsLiked(res.data)
 
 
@@ -32,7 +32,7 @@ export default function LikeBtn({photoId, liked=false}: {photoId: string, liked:
         setMessage('an error occured, please try again later')
         setIsShowSnackbar(true)
 
-        setTimeout(()=>{
+        setTimeout(() => {
           setIsShowSnackbar(false)
         }, 2000)
 
@@ -42,16 +42,16 @@ export default function LikeBtn({photoId, liked=false}: {photoId: string, liked:
 
   return (
     <div className={""}>
-      <OperationBtn activeLike={isLiked} line className={"item__favorite-btn "} onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>):void=>handleBtnClick(e)}>
+      <OperationBtn activeLike={isLiked} line className={"item__favorite-btn "} onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => handleBtnClick(e)}>
         <FavoriteIcon />
       </OperationBtn>
 
       <Snackbar
-                open={isShowSnackbar}
-                autoHideDuration={6000}
-                message={message}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            />
+        open={isShowSnackbar}
+        autoHideDuration={6000}
+        message={message}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      />
     </div>
   )
 }
