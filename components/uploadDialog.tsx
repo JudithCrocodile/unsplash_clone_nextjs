@@ -99,11 +99,11 @@ export default function UploadDialog({ open, handleClose }: props) {
         let newFiles: File[];
 
         if (files instanceof FileList) {
-            newFiles = Array.from(files); // 将 FileList 转换为数组
+            newFiles = Array.from(files); // 將 FileList 轉換為數組
         } else if (files instanceof File) {
-            newFiles = [files]; // 将单个 File 包裹在数组中
+            newFiles = [files]; // 將單個 File 包裹在數組中
         } else {
-            newFiles = files; // 已经是 File[] 类型
+            newFiles = files; // 已經是 File[] 類型
         }
 
         const newSelectedFile = [...newFiles]
