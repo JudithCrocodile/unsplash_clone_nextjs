@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import { useRouter } from 'next/router'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import LikeBtn from '@/components/likeBtn'
 import AuthorInfo from '../components/authorInfo'
@@ -26,9 +26,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false, pageIntro }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean, pageIntro?: React.ReactNode }) {
     const [columns, setColumns] = useState(3);
-    const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
+    // const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
     const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
-    const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
+    // const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
     const [photosList, setPhotosList] = useState<TypePhoto[]>([]);
     const [loading, setLoading] = useState(false);
@@ -39,35 +39,61 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
     const [windowSize, setWindowSize] = useState({
         width: 0,
-        // height: 0
     })
-
-    useEffect(() => {
-        // getPhotoList(1)
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                // height: window.innerHeight,
-            })
-        }
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => window.removeEventListener('resize', handleResize)
-    }, [])
 
     useEffect(() => {
         setCurrentPage(1)
         setIsLast(false)
-        getPhotoList()
-    }, [propTabName, userName, currentTabName])
+        // getPhotoList()
+        setPhotosList([])
+    }, [propTabName, userName, currentTab?._id])
+
+    // 取得照片列表
+    useEffect(() => {
+        let canceled = false;
+
+        const shouldStopFetching = currentPage > 1 && isLast;
+        if (shouldStopFetching) return;
+
+        const params = {
+            page: currentPage,
+            tabId: propTabId || currentTab?._id,
+            category: propTabName,
+            userName,
+            onlyShowLiked,
+        }
+
+        setLoading(true)
+        photoApi.getPhotoPage(token || '', params).then(res => {
+            if (canceled) return;
+
+            const data = res.data;
+
+            if (res.status === 200 && data) {
+                if (currentPage === 1) {
+                    setPhotosList([...data.photos])
+                } else {
+
+                    setPhotosList((prev) => [...prev, ...data.photos])
+                }
+
+                setIsLast(data.isLast)
+            }
+        }).finally(() => {
+            if (!canceled) {
+                setLoading(false)
+            }
+        })
+
+        return () => {
+            canceled = true;
+        }
+    }, [currentPage, propTabName, userName, currentTab?._id, onlyShowLiked, token, propTabId, isLast])
 
     useEffect(() => {
         function handleResize() {
             setWindowSize({
                 width: window.innerWidth,
-                // height: window.innerHeight,
             })
 
             if (window.innerWidth > 1024) { //lg
@@ -84,61 +110,19 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         handleResize();
 
         return () => window.removeEventListener('resize', handleResize)
-    }, [])
+    }, [inDetailPage])
 
 
     const loadMore = () => {
         if (!isLast && !loading) {
 
-            setCurrentPage(currentPage + 1)
+            setCurrentPage((prev) => prev + 1)
         }
 
     }
 
-    useEffect(() => {
-        getPhotoList()
-    }, [currentPage])
-
-
-    const getPhotoList = (): void => {
-        if (isLast || loading) {
-            return;
-        }
-        const params = {
-            page: currentPage,
-            tabId: propTabId || currentTab?._id,
-            category: propTabName,
-            userName,
-            onlyShowLiked,
-        }
-
-        setLoading(true)
-        photoApi.getPhotoPage(token || '', params).then(res => {
-
-            if (res.status === 200 && res.data) {
-                if (currentPage === 1) {
-                    setPhotosList([...res.data.photos])
-                } else {
-                    const newPhotoList: TypePhoto[] = [...photosList, ...res.data.photos]
-
-
-                    setPhotosList(newPhotoList)
-                }
-
-                setIsLast(res.data.isLast)
-
-
-                setLoading(false)
-            }
-        })
-    }
-
-    useEffect(() => {
-        listPhotoByColumn()
-    }, [columns, photosList])
-
-    // photo list by columns
-    const listPhotoByColumn = () => {
+    // set photo list by columns
+    const columnsPhotos = useMemo(() => {
         const allPhotoList = [...photosList]
         const columnData = []
         const size = Math.ceil(photosList.length / columns) // size of each column
@@ -149,8 +133,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         }
 
         columnData[columnData.length - 1] = [...columnData[columnData.length - 1], ...allPhotoList] // remainder
-        setColumnsPhotos(columnData)
-    }
+        return columnData;
+    }, [columns, photosList])
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -162,7 +146,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     const [allTabs, setAllTabs] = React.useState<TypeTag[]>([]);
     const [getTabLoading, setGetTabLoading] = React.useState(false)
 
-    const getAllTabs = (): void => {
+    // 取得所有tab清單
+    useEffect(() => {
         if (!showCategoryBar) return;
         setGetTabLoading(true)
         tabApi.getTabs().then(res => {
@@ -172,11 +157,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                 setAllTabs([...res.data])
             }
         })
-    }
-
-    useEffect(() => {
-        getAllTabs()
-    }, [])
+    }, [showCategoryBar])
 
     useEffect(() => {
         const tagName: string = router.query.category as string
@@ -184,12 +165,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
 
         if (tag) {
             setCurrentTab(tag)
-            setCurrentTabName(tagName)
         } else {
             setCurrentTab(null)
-            setCurrentTabName('Photos')
         }
-    }, [allTabs])
+    }, [allTabs, router.query.category])
 
 
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -197,17 +176,17 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         const newTab: TypeTag | undefined = allTabs.find(t => t.name === newValue)
         if (newTab) {
             setCurrentTab(newTab)
-            setCurrentTabName(newTab.name)
 
             router.push(`/s/photos/${newTab.name}`)
 
         } else {
             setCurrentTab(null)
-            setCurrentTabName('Photos')
             router.push(`/`)
         }
 
     }
+
+    const selectedTabName = currentTab?.name || 'Photos'
 
     return (
         <main
@@ -216,7 +195,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             {
                 (showCategoryBar && !getTabLoading) &&
                 <div className="category w-full px-6 flex gap-6 items-center">
-                    <StyledTabs value={currentTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
+                    <StyledTabs value={selectedTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         <CustomerTab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
                         <div className="self-center relative" style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}>

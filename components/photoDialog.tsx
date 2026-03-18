@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -105,6 +105,11 @@ export default function Photo({ photoId }: Props) {
 
   }
 
+  const relatedTagIds: string[] = useMemo(
+    () => photosData?.photo_tags?.map(t => t._id) || [],
+    [photosData.photo_tags]
+  )
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
@@ -147,10 +152,10 @@ export default function Photo({ photoId }: Props) {
         }} onClick={handleClose} className="fixed text-white top-2 left-2 hidden md:block cursor-pointer">
           <CloseIcon></CloseIcon>
         </Container>
-        
+
 
         <DialogContent sx={{ padding: '0' }}>
-          {
+          {photosData._id !== '' &&
             <div className="detail">
               <div className="p-3">
                 <div className="flex justify-between flex-col md:flex-row">
@@ -196,7 +201,7 @@ export default function Photo({ photoId }: Props) {
 
                   <h3 className={'mb-6 text-2xl my-6 font-semibold'}>Related images</h3>
                   <div>
-                    <PhotoList inDetailPage showCategoryBar={false} showTitle={false} propTabId={photosData?.photo_tags?.map(t => t._id)}></PhotoList>
+                    <PhotoList inDetailPage showCategoryBar={false} showTitle={false} propTabId={relatedTagIds}></PhotoList>
 
 
                   </div>

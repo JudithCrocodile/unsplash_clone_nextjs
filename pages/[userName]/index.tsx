@@ -11,6 +11,11 @@ import Head from 'next/head';
 export default function Account() {
     const userInfo = useSelector((state: RootState) => state.user.userInfo)
     const router = useRouter()
+
+    if (!router.isReady || typeof router.query.userName !== 'string') {
+        return;
+    }
+
     const userName: string = router.query.userName as string
 
     return (
