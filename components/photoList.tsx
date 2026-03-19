@@ -1,13 +1,10 @@
 import { Inter } from "next/font/google";
 import { useRouter } from 'next/router'
-import React, { useState, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import LikeBtn from '@/components/likeBtn'
 import AuthorInfo from '../components/authorInfo'
-import useSWR from 'swr';
 import { TypePhoto } from '@/types'
 import { TypeTag } from '@/types'
-import { Input, Tabs, Tab, Button } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { StyledTabs, CustomerTab } from '@/components/tab'
 import Skeleton from '@mui/material/Skeleton';
@@ -25,42 +22,65 @@ interface StyledTabsProps {
 const inter = Inter({ subsets: ["latin"] });
 
 export default function PhotoList({ propTabId, showCategoryBar = true, showTitle = true, propTabName = null, userName = undefined, fullHeight = true, onlyShowLiked = false, inDetailPage = false, pageIntro }: { propTabId?: string[], showCategoryBar?: boolean, showTitle?: boolean, category?: string | null, userName?: string | string[] | undefined, propTabName?: string | null, fullHeight?: boolean, onlyShowLiked?: boolean, inDetailPage?: boolean, pageIntro?: React.ReactNode }) {
+
+    const router = useRouter()
+
     const [columns, setColumns] = useState(3);
-    // const [columnsPhotos, setColumnsPhotos] = useState<any[]>([[]]);
-    const [currentTab, setCurrentTab] = React.useState<TypeTag | null>(null)
-    // const [currentTabName, setCurrentTabName] = React.useState<string>('Photos')
     const token = useSelector((state: RootState) => state.auth.token)
     const [photosList, setPhotosList] = useState<TypePhoto[]>([]);
     const [loading, setLoading] = useState(false);
     const [isLast, setIsLast] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const emptyItems = [[], [], [], [], [], [], [], [], [], []]
+    const [allTabs, setAllTabs] = React.useState<TypeTag[]>([]);
+    const [getTabLoading, setGetTabLoading] = React.useState(false)
 
-    const [windowSize, setWindowSize] = useState({
-        width: 0,
-    })
+    const emptyItems = Array.from({ length: 10 }, (_, index) => index); // 用於顯示 skeleton 的空項目列表
 
+    const routerCategory = typeof router.query.category === 'string' ? router.query.category : null;
+    const currentTab: TypeTag | null = allTabs.find(e => e.name === routerCategory) ?? null;
+
+    const selectedTabName = currentTab?.name || 'Photos'
+
+    const activeTabId = propTabId || currentTab?._id;
+
+    const queryParams = useMemo(() => {
+        return {
+            tabId: activeTabId,
+            category: propTabName,
+            userName,
+            onlyShowLiked,
+        }
+    }, [activeTabId, propTabName, userName, onlyShowLiked])
+
+    const queryKey = useMemo(() => {
+        return JSON.stringify(queryParams)
+    }, [queryParams])
+
+    const previousQueryKeyRef = useRef(queryKey)
+
+    // reset photo list when category or userName or liked filter changed
     useEffect(() => {
         setCurrentPage(1)
         setIsLast(false)
-        // getPhotoList()
         setPhotosList([])
-    }, [propTabName, userName, currentTab?._id])
+    }, [queryParams])
 
     // 取得照片列表
     useEffect(() => {
         let canceled = false;
 
-        const shouldStopFetching = currentPage > 1 && isLast;
-        if (shouldStopFetching) return;
+        const queryChanged = previousQueryKeyRef.current !== queryKey;
+
+        // skip if query changed and current page is not 1, because the effect will be triggered again with page reset to 1
+        if (queryChanged && currentPage !== 1) {
+            previousQueryKeyRef.current = queryKey;
+            return;
+        }
 
         const params = {
+            ...queryParams,
             page: currentPage,
-            tabId: propTabId || currentTab?._id,
-            category: propTabName,
-            userName,
-            onlyShowLiked,
         }
 
         setLoading(true)
@@ -88,13 +108,10 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         return () => {
             canceled = true;
         }
-    }, [currentPage, propTabName, userName, currentTab?._id, onlyShowLiked, token, propTabId, isLast])
+    }, [currentPage, token, queryParams])
 
     useEffect(() => {
         function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-            })
 
             if (window.innerWidth > 1024) { //lg
 
@@ -122,9 +139,9 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
     }
 
     // set photo list by columns
-    const columnsPhotos = useMemo(() => {
+    const columnsPhotos: TypePhoto[][] = useMemo(() => {
         const allPhotoList = [...photosList]
-        const columnData = []
+        const columnData: TypePhoto[][] = []
         const size = Math.ceil(photosList.length / columns) // size of each column
 
         for (let i = 0; i < columns; i++) {
@@ -136,15 +153,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         return columnData;
     }, [columns, photosList])
 
-    const router = useRouter()
-    const searchParams = useSearchParams()
-
-    const photoId = searchParams.get('photoId')
 
     const goToPhotoPage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, item: TypePhoto) => { e.stopPropagation(); router.push(`/?photoId=${item._id}`, undefined, { shallow: true }) }
-
-    const [allTabs, setAllTabs] = React.useState<TypeTag[]>([]);
-    const [getTabLoading, setGetTabLoading] = React.useState(false)
 
     // 取得所有tab清單
     useEffect(() => {
@@ -152,41 +162,20 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         setGetTabLoading(true)
         tabApi.getTabs().then(res => {
             if (res.status === 200 && res.data) {
-                setGetTabLoading(false)
-
-                setAllTabs([...res.data])
+                setAllTabs(res.data)
             }
+        }).finally(() => {
+            setGetTabLoading(false)
         })
     }, [showCategoryBar])
 
-    useEffect(() => {
-        const tagName: string = router.query.category as string
-        const tag: TypeTag | undefined = allTabs.find(e => e.name === tagName)
-
-        if (tag) {
-            setCurrentTab(tag)
-        } else {
-            setCurrentTab(null)
-        }
-    }, [allTabs, router.query.category])
-
-
     const handleCategoryChange = (event: React.SyntheticEvent, newValue: string) => {
-
-        const newTab: TypeTag | undefined = allTabs.find(t => t.name === newValue)
-        if (newTab) {
-            setCurrentTab(newTab)
-
-            router.push(`/s/photos/${newTab.name}`)
-
-        } else {
-            setCurrentTab(null)
+        if (newValue === 'Photos') {
             router.push(`/`)
+            return;
         }
-
+        router.push(`/s/photos/${newValue}`)
     }
-
-    const selectedTabName = currentTab?.name || 'Photos'
 
     return (
         <main
@@ -203,8 +192,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                         </div>
 
                         {
-                            allTabs.map((tab: TypeTag, tabIndex: number) =>
-                                (<CustomerTab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tabIndex} label={tab.name} />)
+                            allTabs.map((tab: TypeTag) =>
+                                (<CustomerTab value={tab.name} sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} key={tab._id} label={tab.name} />)
                             )
                         }
                     </StyledTabs>
@@ -214,7 +203,6 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
             }
             {showCategoryBar && <Divider className="w-full" sx={{ marginTop: '-1px' }}></Divider>}
             <div className={`pb-12 ${(inDetailPage || columns === 1) ? 'px-0' : 'px-6'} w-full max-w-[1336px] ${!showTitle && 'mt-0 px-0'}`}>
-                {/* {showTitle && <h2 className={'mb-14 text-3xl'}>Unsplash</h2>} */}
                 {pageIntro}
                 {photosList.length > 0 ?
                     <InfiniteScroll
@@ -230,7 +218,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                                 (
                                     <div key={columnIndex} className={'flex flex-col gap-y-6'}>
                                         {column.map((item: TypePhoto, index: number) => (
-                                            <li className={"item"} key={index}>
+                                            <li className={"item"} key={item._id}>
                                                 {item.path ? <div onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => goToPhotoPage(event, item)}>
                                                     <div className={'item__container mx-auto w-full'}>
                                                         <div className="md:hidden">
@@ -284,8 +272,8 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                     :
                     loading ? <ul className={`grid grid-rows-auto ${columns === 2 ? 'grid-cols-2' : columns === 3 ? 'grid-cols-3' : 'grid-cols-1'} gap-6`}>
                         {(columnsPhotos.map((column: TypePhoto[], columnIndex: number) => (<div key={columnIndex} className={'flex flex-col gap-y-6'}>
-                            {emptyItems.map((item, index) => (
-                                <li className={"item"} key={index}><Skeleton key={index} variant="rectangular" width={'100%'} height={300} /></li>
+                            {emptyItems.map((item) => (
+                                <li className={"item"} key={item}><Skeleton variant="rectangular" width={'100%'} height={300} /></li>
                             ))}
                         </div>)
                         ))}
