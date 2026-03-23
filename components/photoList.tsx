@@ -108,7 +108,7 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
         return () => {
             canceled = true;
         }
-    }, [currentPage, token, queryParams])
+    }, [currentPage, token, queryParams, queryKey])
 
     useEffect(() => {
         function handleResize() {
@@ -187,9 +187,14 @@ export default function PhotoList({ propTabId, showCategoryBar = true, showTitle
                     <StyledTabs value={selectedTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
                         scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
                         <CustomerTab value="Photos" label='Photos' sx={{ paddingLeft: 0, paddingRight: 0, minWidth: 'unset' }} />
-                        <div className="self-center relative" style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}>
-                            <span className="text-[#767676] text-[10px] tracking-[0.1px] absolute top-0 left-4 left-[24px] -translate-y-2.5">Featured</span>
-                        </div>
+
+                    </StyledTabs>
+                    <div className="self-center relative" style={{ backgroundColor: '#d1d1d1', height: '32px', width: '1px' }}>
+                        <span className="text-[#767676] text-[10px] tracking-[0.1px] absolute top-0 left-4 left-[24px] -translate-y-2.5">Featured</span>
+                    </div>
+
+                    <StyledTabs value={selectedTabName} onChange={handleCategoryChange} aria-label="category tabs" variant="scrollable"
+                        scrollButtons="auto" allowScrollButtonsMobile sx={{ '.MuiTabs-flexContainer': { gap: '24px' } }}>
 
                         {
                             allTabs.map((tab: TypeTag) =>

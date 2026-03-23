@@ -11,7 +11,7 @@ const StyledTabs = styled(Tabs)({
 
 
 interface StyledTabsProps extends TabProps {
-    label: string;
+  label: ReactNode;
     // iconPosition: string;
     value: string | number;
     icon?: any,
